@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== "production") {
 // Enable SQLite WAL mode on start
 export async function initializeDatabasePragmas() {
   try {
-    await prisma.$executeRawUnsafe(`PRAGMA journal_mode = WAL;`);
+    await prisma.$queryRawUnsafe(`PRAGMA journal_mode = WAL;`);
     await prisma.$executeRawUnsafe(`PRAGMA synchronous = NORMAL;`);
     await prisma.$executeRawUnsafe(`PRAGMA foreign_keys = ON;`);
     await prisma.$executeRawUnsafe(`PRAGMA busy_timeout = 5000;`);
