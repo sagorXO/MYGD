@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY GERMAN DÖNER — Kitchen Display System (KDS)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #141414;
+      color: #FFFFFF;
+    }
+    .font-space {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #181818;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #333333;
+      border-radius: 4px;
+    }
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.4); }
+      50% { box-shadow: 0 0 35px rgba(255, 59, 48, 0.7); }
+    }
+    .glow-urgent {
+      animation: pulse-red 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col select-none bg-[#141414]">
+
+  <!-- TOP BAR (64px) -->
+  <header class="h-16 bg-[#1E1E1E] border-b border-[#2C2C2C] px-6 flex items-center justify-between shadow-lg shrink-0 z-20">
+    <!-- Brand & KDS Station Filter -->
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-[#FF5722] flex items-center justify-center font-black text-white text-base shadow-md">
+          GD
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base tracking-wider font-space text-white">MY GERMAN DÖNER</span>
+            <span class="px-2 py-0.5 rounded bg-[#2A2A2A] text-[#FF5722] text-xs font-mono font-bold border border-[#FF5722]/30">KDS v2.4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Station Filter Tabs -->
+      <nav class="flex items-center bg-[#141414] p-1 rounded-xl border border-[#2E2E2E]" id="station-filters">
+        <button onclick="setStation('ALL')" id="tab-ALL" class="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider bg-[#FF5722] text-white shadow-md">
+          ALL
+        </button>
+        <button onclick="setStation('GRILL')" id="tab-GRILL" class="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider text-neutral-400 hover:text-neutral-200">
+          GRILL / MEAT
+        </button>
+        <button onclick="setStation('ASSEMBLY')" id="tab-ASSEMBLY" class="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider text-neutral-400 hover:text-neutral-200">
+          ASSEMBLY / SAUCES
+        </button>
+        <button onclick="setStation('FRYER')" id="tab-FRYER" class="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider text-neutral-400 hover:text-neutral-200">
+          FRYER / SIDES
+        </button>
+      </nav>
+    </div>
+
+    <!-- Center: Order Counters -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#E53935]/15 border border-[#E53935]/40 text-[#FF5252] text-xs font-bold font-mono">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#FF5252] animate-ping"></span>
+        <span id="urgent-count">1 URGENT</span>
+      </div>
+      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#FFB300]/15 border border-[#FFB300]/40 text-[#FFC107] text-xs font-bold font-mono">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#FFC107]"></span>
+        <span id="prep-count">2 IN PREP</span>
+      </div>
+      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#43A047]/15 border border-[#43A047]/40 text-[#66BB6A] text-xs font-bold font-mono">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#66BB6A]"></span>
+        <span id="ready-count">1 READY</span>
+      </div>
+    </div>
+
+    <!-- Right: Avg Time, Clock -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-[#252525] px-3.5 py-1.5 rounded-xl border border-[#333]">
+        <span class="text-xs text-neutral-400">Avg Prep:</span>
+        <span class="font-mono font-bold text-sm text-white">4:12 min</span>
+      </div>
+      <div id="kitchen-clock" class="text-lg font-mono font-bold text-neutral-200 bg-[#121212] px-3.5 py-1.5 rounded-xl border border-[#2B2B2B] tracking-wider">
+        19:35:00
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN 4-COLUMN ORDER TICKET GRID -->
+  <main class="flex-1 grid grid-cols-4 gap-4 p-4 overflow-hidden bg-[#141414]" id="ticket-grid">
+
+    <!-- TICKET 1: URGENT RED BORDER (>8m) -->
+    <div id="ticket-1" class="flex flex-col bg-[#1E1E1E] rounded-2xl border-2 border-[#FF3B30] glow-urgent overflow-hidden h-full shadow-2xl transition-all">
+      <!-- Ticket Header -->
+      <div class="p-4 bg-[#252525] border-b border-[#303030] flex items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">Ticket 1</span>
+          <span class="text-2xl font-black font-mono tracking-tight text-white">EMBA-045</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/40">
+            DINE IN
+          </span>
+          <div class="px-3 py-1 rounded-md bg-[#FF3B30]/15 border border-[#FF3B30]/40 text-[#FF3B30] font-mono font-black text-sm tracking-wider flex items-center gap-1">
+            ⏱ <span id="timer-1">09:24</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Item 1 -->
+        <div onclick="toggleItemDone(this)" class="p-3.5 rounded-xl bg-[#282828] border border-[#383838] hover:border-neutral-500 transition-all cursor-pointer">
+          <div class="text-lg font-extrabold text-white font-space">
+            2x Classic Döner
+          </div>
+          <div class="mt-2.5 flex flex-wrap gap-1.5">
+            <span class="text-xs px-2.5 py-1 rounded-md bg-[#FF5722]/20 text-[#FF8A65] border border-[#FF5722]/50 font-bold">
+              🍗 Chicken
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 font-medium">
+              🌿 Kräuter + Knoblauch
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-red-950/80 text-red-400 border border-red-500/70 font-black animate-pulse">
+              🔥 SCHARF Level 4
+            </span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div onclick="toggleItemDone(this)" class="p-3.5 rounded-xl bg-[#282828] border border-[#383838] hover:border-neutral-500 transition-all cursor-pointer">
+          <div class="text-lg font-extrabold text-white font-space">
+            1x Pommes Spezial
+          </div>
+          <div class="mt-2.5 flex flex-wrap gap-1.5">
+            <span class="text-xs px-2.5 py-1 rounded-md bg-amber-950/60 text-amber-300 border border-amber-500/50 font-medium">
+              🍟 Curry Ketchup & Mayo
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-[#333333] text-neutral-200 border border-neutral-600">
+              🧅 Fresh Diced Onions
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bump Button -->
+      <div class="p-3.5 bg-[#242424] border-t border-[#303030]">
+        <button onclick="bumpTicket('ticket-1')" class="w-full py-4 rounded-xl bg-[#2E7D32] hover:bg-[#388E3C] active:scale-[0.98] text-white font-black text-xl uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-400 shadow-lg shadow-green-950/50 transition-all">
+          ✓ BUMP
+        </button>
+      </div>
+    </div>
+
+    <!-- TICKET 2: IN PREP AMBER BORDER (4-8m) -->
+    <div id="ticket-2" class="flex flex-col bg-[#1E1E1E] rounded-2xl border-2 border-[#FF9500] shadow-[0_0_15px_rgba(255,149,0,0.25)] overflow-hidden h-full shadow-2xl transition-all">
+      <div class="p-4 bg-[#252525] border-b border-[#303030] flex items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">Ticket 2</span>
+          <span class="text-2xl font-black font-mono tracking-tight text-white">EMBA-046</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/40">
+            TAKE AWAY
+          </span>
+          <div class="px-3 py-1 rounded-md bg-[#FF9500]/15 border border-[#FF9500]/40 text-[#FF9500] font-mono font-black text-sm tracking-wider flex items-center gap-1">
+            ⏱ <span id="timer-2">05:18</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Item 1 -->
+        <div onclick="toggleItemDone(this)" class="p-3.5 rounded-xl bg-[#282828] border border-[#383838] hover:border-neutral-500 transition-all cursor-pointer">
+          <div class="text-lg font-extrabold text-white font-space">
+            1x Döner Box
+          </div>
+          <div class="mt-2.5 flex flex-wrap gap-1.5">
+            <span class="text-xs px-2.5 py-1 rounded-md bg-[#FF5722]/20 text-[#FF8A65] border border-[#FF5722]/50 font-bold">
+              🥩 Beef / Lamb
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 font-medium">
+              🧄 Knoblauch Sauce
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-amber-950/60 text-amber-300 border border-amber-500/50">
+              🍟 Crispy Fries
+            </span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div onclick="toggleItemDone(this)" class="p-3.5 rounded-xl bg-[#282828] border border-[#383838] hover:border-neutral-500 transition-all cursor-pointer">
+          <div class="text-lg font-extrabold text-white font-space">
+            1x Veggie Döner
+          </div>
+          <div class="mt-2.5 flex flex-wrap gap-1.5">
+            <span class="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-400 border border-emerald-500/50 font-bold">
+              🌱 Falafel (3 pcs)
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-[#333333] text-neutral-200 border border-neutral-600">
+              Hummus & Kräuter
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-blue-950/60 text-blue-300 border border-blue-500/40">
+              Mild
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3.5 bg-[#242424] border-t border-[#303030]">
+        <button onclick="bumpTicket('ticket-2')" class="w-full py-4 rounded-xl bg-[#2E7D32] hover:bg-[#388E3C] active:scale-[0.98] text-white font-black text-xl uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-400 shadow-lg shadow-green-950/50 transition-all">
+          ✓ BUMP
+        </button>
+      </div>
+    </div>
+
+    <!-- TICKET 3: NEW GREEN BORDER (<4m) -->
+    <div id="ticket-3" class="flex flex-col bg-[#1E1E1E] rounded-2xl border-2 border-[#34C759] shadow-[0_0_15px_rgba(52,199,89,0.25)] overflow-hidden h-full shadow-2xl transition-all">
+      <div class="p-4 bg-[#252525] border-b border-[#303030] flex items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">Ticket 3</span>
+          <span class="text-2xl font-black font-mono tracking-tight text-white">EMBA-047</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/40">
+            DINE IN
+          </span>
+          <div class="px-3 py-1 rounded-md bg-[#34C759]/15 border border-[#34C759]/40 text-[#34C759] font-mono font-black text-sm tracking-wider flex items-center gap-1">
+            ⏱ <span id="timer-3">01:45</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Item 1 -->
+        <div onclick="toggleItemDone(this)" class="p-3.5 rounded-xl bg-[#282828] border border-[#383838] hover:border-neutral-500 transition-all cursor-pointer">
+          <div class="text-lg font-extrabold text-white font-space">
+            1x Döner Spezial
+          </div>
+          <div class="mt-2.5 flex flex-wrap gap-1.5">
+            <span class="text-xs px-2.5 py-1 rounded-md bg-[#FF5722]/20 text-[#FF8A65] border border-[#FF5722]/50 font-bold">
+              🥩 Extra Meat (+100g)
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-500/40">
+              🧄 Knoblauch & Kräuter
+            </span>
+            <span class="text-xs px-2.5 py-1 rounded-md bg-red-950/80 text-red-400 border border-red-500/80 font-black animate-pulse">
+              🔥🔥 Scharf Level 5 Hölle!
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3.5 bg-[#242424] border-t border-[#303030]">
+        <button onclick="bumpTicket('ticket-3')" class="w-full py-4 rounded-xl bg-[#2E7D32] hover:bg-[#388E3C] active:scale-[0.98] text-white font-black text-xl uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-400 shadow-lg shadow-green-950/50 transition-all">
+          ✓ BUMP
+        </button>
+      </div>
+    </div>
+
+    <!-- TICKET 4: READY GRAY / DONE (RECALL) -->
+    <div id="ticket-4" class="flex flex-col bg-[#1E1E1E] rounded-2xl border border-[#3A3A3A] opacity-70 overflow-hidden h-full shadow-2xl transition-all">
+      <div class="p-4 bg-[#252525] border-b border-[#303030] flex items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block">Ticket 4</span>
+          <span class="text-2xl font-black font-mono tracking-tight text-white">EMBA-044</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/40">
+            DELIVERY
+          </span>
+          <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs border border-emerald-500/40">
+            ✓ READY
+          </span>
+        </div>
+      </div>
+
+      <div class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Completed items -->
+        <div class="p-3.5 rounded-xl bg-[#181818] border border-neutral-800 opacity-40 line-through">
+          <div class="text-lg font-bold text-white font-space">
+            2x Jumbo Dürüm Döner
+          </div>
+          <div class="mt-2 text-xs text-neutral-400">
+            Mixed Meat · Tzatziki & Scharf
+          </div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-[#181818] border border-neutral-800 opacity-40 line-through">
+          <div class="text-lg font-bold text-white font-space">
+            1x Halloumi Box & Cola
+          </div>
+          <div class="mt-2 text-xs text-neutral-400">
+            Halloumi Cheese · Chilled 0.33L
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3.5 bg-[#242424] border-t border-[#303030]">
+        <button onclick="recallTicket('ticket-4')" class="w-full py-4 rounded-xl bg-[#3A3A3A] hover:bg-[#4A4A4A] active:scale-[0.98] text-neutral-200 font-extrabold text-base uppercase tracking-wider flex items-center justify-center gap-2 border border-neutral-600 shadow-md transition-all">
+          ↺ RECALL TICKET
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Interactive JavaScript logic -->
+  <script>
+    // Live clock
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      document.getElementById('kitchen-clock').innerText = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Timer seconds state
+    const timers = {
+      1: 564, // 09:24
+      2: 318, // 05:18
+      3: 105, // 01:45
+    };
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60).toString().padStart(2, '0');
+      const s = (secs % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    setInterval(() => {
+      for (const id in timers) {
+        timers[id]++;
+        const el = document.getElementById(`timer-${id}`);
+        if (el) el.innerText = formatTime(timers[id]);
+      }
+    }, 1000);
+
+    function bumpTicket(id) {
+      const ticket = document.getElementById(id);
+      if (!ticket) return;
+      ticket.classList.add('opacity-50', 'scale-95');
+      setTimeout(() => {
+        ticket.classList.remove('glow-urgent', 'border-[#FF3B30]', 'border-[#FF9500]', 'border-[#34C759]', 'scale-95');
+        ticket.classList.add('border-[#3A3A3A]', 'opacity-70');
+        const btn = ticket.querySelector('button');
+        btn.className = "w-full py-4 rounded-xl bg-[#3A3A3A] hover:bg-[#4A4A4A] text-neutral-200 font-extrabold text-base uppercase tracking-wider flex items-center justify-center gap-2 border border-neutral-600 shadow-md transition-all";
+        btn.innerHTML = "↺ RECALL TICKET";
+        btn.setAttribute('onclick', `recallTicket('${id}')`);
+      }, 200);
+    }
+
+    function recallTicket(id) {
+      const ticket = document.getElementById(id);
+      if (!ticket) return;
+      ticket.classList.remove('border-[#3A3A3A]', 'opacity-70');
+      ticket.classList.add('border-[#FF9500]', 'opacity-100');
+      const btn = ticket.querySelector('button');
+      btn.className = "w-full py-4 rounded-xl bg-[#2E7D32] hover:bg-[#388E3C] text-white font-black text-xl uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-400 shadow-lg shadow-green-950/50 transition-all";
+      btn.innerHTML = "✓ BUMP";
+      btn.setAttribute('onclick', `bumpTicket('${id}')`);
+    }
+
+    function toggleItemDone(elem) {
+      elem.classList.toggle('line-through');
+      elem.classList.toggle('opacity-40');
+      elem.classList.toggle('bg-[#181818]');
+    }
+
+    function setStation(name) {
+      const tabs = ['ALL', 'GRILL', 'ASSEMBLY', 'FRYER'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === name) {
+          btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider bg-[#FF5722] text-white shadow-md";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all tracking-wider text-neutral-400 hover:text-neutral-200";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

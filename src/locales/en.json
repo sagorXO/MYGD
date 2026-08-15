@@ -1,0 +1,97 @@
+{
+  "brand": {
+    "name": "MY GERMAN DÖNER",
+    "shortName": "MYGD",
+    "tagline": "BITE THE HYPE",
+    "subtitle": "The First Real German Doener in Cyprus",
+    "est": "CYPRUS · EST. 2026",
+    "address": "Pavlides Court, Agíou Stefánou 134, Emba, Paphos"
+  },
+  "attract": {
+    "tapToOrder": "TAP TO ORDER",
+    "dineIn": "Dine In",
+    "takeAway": "Take Away",
+    "touchToStart": "Touch anywhere on screen to start",
+    "contactless": "Contactless, Card, QR & Cash Accepted"
+  },
+  "menu": {
+    "allCategories": "All Items",
+    "customize": "CUSTOMIZE",
+    "popular": "POPULAR",
+    "new": "NEW",
+    "veggie": "VEGGIE",
+    "spicy": "SPICY",
+    "chefChoice": "CHEF'S PICK",
+    "viewCart": "VIEW CART",
+    "itemsInCart": "Items in your order",
+    "itemInCart": "Item in your order",
+    "emptyCart": "Your cart is empty",
+    "emptyPrompt": "Select your favorite German Döner, Wraps, Bowls, or Sides to get started."
+  },
+  "customization": {
+    "title": "CUSTOMIZE YOUR MEAL",
+    "chooseMeat": "Choose Your Meat",
+    "chooseBread": "Choose Your Bread / Size",
+    "sauces": "Select Sauces (Pick up to 3)",
+    "extras": "Delicious Extras (+€1.00 each)",
+    "spiceLevel": "Spice Level",
+    "spiceMild": "Level 1: Mild (Keine Schärfe)",
+    "spiceMedium": "Level 2: Medium (Leicht Scharf)",
+    "spiceScharf": "Level 3: Scharf (Berlin Hot)",
+    "spiceExtra": "Level 4: Extra Scharf (Chili Kick)",
+    "spiceHolle": "Level 5: Hölle! (Volle Schärfe)",
+    "makeItMeal": "MAKE IT A MEAL DEAL",
+    "mealDescription": "Add Berlin Fries + 330ml Drink for only €3.50",
+    "selectDrink": "Choose Your Drink",
+    "selectSide": "Choose Your Side",
+    "specialNotes": "Special kitchen notes or dietary requests...",
+    "addToCart": "ADD TO ORDER",
+    "required": "REQUIRED",
+    "optional": "OPTIONAL"
+  },
+  "cart": {
+    "yourOrder": "YOUR ORDER",
+    "addMoreItems": "+ Add More Items",
+    "specialInstructions": "Kitchen Notes / Instructions",
+    "subtotal": "Subtotal (excl. VAT)",
+    "vat": "Cyprus VAT (19%)",
+    "total": "Total Amount",
+    "proceedToPayment": "PROCEED TO PAYMENT",
+    "clearCart": "Clear Order"
+  },
+  "payment": {
+    "choosePayment": "SELECT PAYMENT METHOD",
+    "totalDue": "TOTAL AMOUNT DUE",
+    "card": "Credit / Debit Card",
+    "cardSubtitle": "Visa, Mastercard, Maestro",
+    "contactless": "Contactless NFC",
+    "contactlessSubtitle": "Apple Pay, Google Pay, Smartwatch",
+    "cash": "Pay with Cash",
+    "cashSubtitle": "Pay at cash counter with receipt",
+    "qrCode": "Instant QR Pay",
+    "qrCodeSubtitle": "Revolut Pay, QuickPay, SEPA",
+    "confirmPayment": "PAY NOW",
+    "securing": "Connecting to Card Terminal...",
+    "terminalSecure": "Encrypted EMV & PCI-DSS Terminal Processing",
+    "scanQrPrompt": "Scan QR Code with your Banking App"
+  },
+  "confirmation": {
+    "orderConfirmed": "ORDER CONFIRMED!",
+    "thankYou": "Danke! Your order has been sent directly to the kitchen.",
+    "orderNumber": "YOUR ORDER NUMBER",
+    "estimatedWait": "Estimated wait time:",
+    "takePhotoPrompt": "📸 Snap a photo of your order number",
+    "receiptPrinting": "Thermal receipt is printing...",
+    "receiptReprint": "Reprint Receipt",
+    "startNewOrder": "START NEW ORDER"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading..."
+  }
+}

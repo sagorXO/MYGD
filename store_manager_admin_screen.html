@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY GERMAN DÖNER HQ — Store Manager Admin & Analytics Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#FF5722',
+              'orange-hover': '#F4511E',
+              'orange-glow': 'rgba(255, 87, 34, 0.35)',
+              gold: '#E5A93C',
+              dark: '#1A1A1A',
+              card: '#242424',
+              surface: '#2A2A2A',
+              border: '#333333',
+              green: '#10B981',
+              red: '#EF4444'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #1E1E1E;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #333333;
+      border-radius: 3px;
+    }
+    .glow-orange {
+      box-shadow: 0 0 20px rgba(255, 87, 34, 0.25);
+    }
+    .glow-pill {
+      box-shadow: 0 0 12px rgba(255, 87, 34, 0.35);
+    }
+    .switch-toggle:checked ~ .switch-bg {
+      background-color: #FF5722;
+    }
+    .switch-toggle:checked ~ .switch-dot {
+      transform: translateX(18px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 lg:p-6 bg-[#0E0E0E]">
+
+  <!-- Main Dashboard Container 1440x900 Aspect Optimized -->
+  <div class="w-full max-w-[1440px] min-h-[880px] bg-[#1A1A1A] rounded-2xl border border-[#2E2E2E] shadow-2xl overflow-hidden flex flex-row">
+    
+    <!-- LEFT SIDEBAR (240px Fixed) -->
+    <aside class="w-[240px] shrink-0 bg-[#161616] border-r border-[#2A2A2A] flex flex-col justify-between p-4">
+      
+      <div>
+        <!-- Brand Header -->
+        <div class="flex items-center gap-3 px-2 py-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF5722] to-[#FF8A65] flex items-center justify-center shadow-lg shadow-[#FF5722]/30">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 10.5c-1.93 0-3.5-1.57-3.5-3.5 0-1.8 1.34-3.28 3.09-3.47.27.69.75 1.28 1.37 1.69-.36.56-.58 1.23-.58 1.95 0 .11.01.22.03.33h-.41zM14.5 9c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-display font-bold text-sm tracking-wider text-white uppercase leading-none">MY GERMAN</h1>
+            <p class="font-display font-extrabold text-sm text-[#FF5722] tracking-wider leading-none mt-1">DÖNER HQ</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1.5">
+          <!-- Overview (Active) -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FF5722]/15 text-[#FF5722] font-semibold text-sm border border-[#FF5722]/30 glow-pill transition-all">
+            <svg class="w-4 h-4 text-[#FF5722]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span>Overview</span>
+          </a>
+
+          <!-- Live Orders -->
+          <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+              <span>Live Orders</span>
+            </div>
+            <span class="px-2 py-0.5 text-xs font-mono font-bold bg-[#EF4444] text-white rounded-full">12</span>
+          </a>
+
+          <!-- Menu & Inventory CRUD -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+            <span>Menu & Inventory</span>
+          </a>
+
+          <!-- Pricing & Locations -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+            <span>Pricing & Locations</span>
+          </a>
+
+          <!-- Hardware & Printers -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span>Hardware & Printers</span>
+          </a>
+
+          <!-- Staff & Security -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <span>Staff & Security</span>
+          </a>
+
+          <!-- Reports -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#9E9E9E] hover:text-white hover:bg-[#222222] font-medium text-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span>Reports & VAT</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Bottom Profile & Shift Widget -->
+      <div class="bg-[#1F1F1F] p-3 rounded-xl border border-[#2E2E2E]">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse"></div>
+            <span class="text-xs font-medium text-[#9E9E9E]">Shift Active</span>
+          </div>
+          <span class="text-xs font-mono text-[#E5A93C] font-semibold">06h 42m</span>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-[#2A2A2A]">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-[#FF5722]/20 border border-[#FF5722]/40 text-[#FF5722] font-bold text-xs flex items-center justify-center">
+              MS
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white leading-tight">Marco S.</p>
+              <p class="text-[10px] text-[#9E9E9E] leading-tight">Manager</p>
+            </div>
+          </div>
+          <button title="Lock Terminal" class="text-[#9E9E9E] hover:text-white p-1 rounded hover:bg-[#2A2A2A]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN BODY -->
+    <div class="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+      
+      <!-- TOP BAR -->
+      <header class="h-[72px] bg-[#1A1A1A] border-b border-[#2A2A2A] px-6 flex items-center justify-between shrink-0">
+        
+        <!-- Left: Location & Date Filter -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-[#242424] px-3.5 py-1.5 rounded-xl border border-[#333333] cursor-pointer hover:border-[#FF5722] transition-colors">
+            <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+            <span class="text-sm font-semibold text-white">Emba Store #01</span>
+            <svg class="w-4 h-4 text-[#9E9E9E]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+
+          <div class="flex items-center gap-2 bg-[#242424] px-3.5 py-1.5 rounded-xl border border-[#333333] text-sm text-[#CCCCCC]">
+            <svg class="w-4 h-4 text-[#E5A93C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="font-medium">Today: 15 Aug 2026</span>
+            <svg class="w-3.5 h-3.5 text-[#9E9E9E]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Center: Telemetry Status Badge -->
+        <div class="hidden xl:flex items-center gap-2 px-3.5 py-1.5 bg-[#1F2922] border border-[#10B981]/30 rounded-full text-xs font-medium text-[#10B981]">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#10B981]"></span>
+          </span>
+          <span>3 Kiosks Online · 2 POS Online · Printers OK (Star Micronics)</span>
+        </div>
+
+        <!-- Right: VAT Toggle & Manager Profile -->
+        <div class="flex items-center gap-4">
+          <!-- Cyprus VAT Status -->
+          <div class="flex items-center gap-1.5 bg-[#242424] px-3 py-1.5 rounded-xl border border-[#333333]">
+            <span class="text-[11px] font-mono text-[#E5A93C] font-bold">CY VAT 19%</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+          </div>
+
+          <!-- Notification Bell -->
+          <button class="relative p-2 rounded-xl bg-[#242424] border border-[#333333] text-[#9E9E9E] hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#EF4444] rounded-full"></span>
+          </button>
+
+          <!-- Manager Profile -->
+          <div class="flex items-center gap-2.5 pl-2">
+            <img class="w-8 h-8 rounded-full border border-[#FF5722]" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Marco S.">
+            <div class="hidden md:block text-left">
+              <p class="text-xs font-semibold text-white">Marco S.</p>
+              <p class="text-[10px] text-[#9E9E9E]">Store Manager</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD BODY CONTENT -->
+      <main class="p-6 space-y-6">
+        
+        <!-- 4 TOP KPI METRIC CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- KPI 1: Gross Sales (Highlighted) -->
+          <div class="bg-[#242424] rounded-2xl p-5 border-2 border-[#FF5722] relative overflow-hidden shadow-lg shadow-[#FF5722]/10">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-[#FF5722]/10 rounded-full blur-xl pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Today's Gross Sales</span>
+              <span class="px-2 py-0.5 rounded-md bg-[#10B981]/20 text-[#10B981] text-xs font-bold flex items-center gap-0.5">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                +14%
+              </span>
+            </div>
+            <h2 class="text-3xl font-extrabold text-[#FF5722] font-mono tracking-tight">€2,845.50</h2>
+            <p class="text-xs text-[#9E9E9E] mt-1.5 font-medium">+€352.10 vs last week same time</p>
+          </div>
+
+          <!-- KPI 2: Total Orders -->
+          <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333] hover:border-[#444444] transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Total Orders</span>
+              <span class="text-xs font-mono text-[#CCCCCC] bg-[#1E1E1E] px-2 py-0.5 rounded">Avg: €13.05</span>
+            </div>
+            <h2 class="text-3xl font-extrabold text-white font-mono tracking-tight">218 Orders</h2>
+            <p class="text-xs text-[#9E9E9E] mt-1.5 font-medium">124 Dine-in · 94 Takeaway / Delivery</p>
+          </div>
+
+          <!-- KPI 3: Cyprus VAT (19%) -->
+          <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333] hover:border-[#444444] transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Cyprus VAT (19%)</span>
+              <span class="text-xs font-mono text-[#E5A93C] bg-[#E5A93C]/15 px-2 py-0.5 rounded font-semibold">CY Tax Sync</span>
+            </div>
+            <h2 class="text-3xl font-extrabold text-[#FFFFFF] font-mono tracking-tight">€454.33</h2>
+            <p class="text-xs text-[#9E9E9E] mt-1.5 font-medium">Net Sales: €2,391.17 · Tax Authority OK</p>
+          </div>
+
+          <!-- KPI 4: Avg Prep Time -->
+          <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333] hover:border-[#444444] transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Avg Kitchen Prep</span>
+              <span class="px-2 py-0.5 rounded-md bg-[#10B981]/20 text-[#10B981] text-xs font-bold">Optimal</span>
+            </div>
+            <h2 class="text-3xl font-extrabold text-[#10B981] font-mono tracking-tight">5m 12s</h2>
+            <p class="text-xs text-[#9E9E9E] mt-1.5 font-medium">Target &lt; 6m 00s · Kitchen Display Sync</p>
+          </div>
+
+        </div>
+
+        <!-- MAIN 2-COLUMN SECTION (60% / 40%) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- LEFT SECTION (60% -> 7 Cols in 12-col grid) -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Hourly Sales & Orders Chart Card -->
+            <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333]">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="font-display font-bold text-base text-white">Live Hourly Sales & Order Flow</h3>
+                  <p class="text-xs text-[#9E9E9E]">Real-time POS and Kiosk throughput comparison</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-sm bg-[#FF5722]"></span>
+                    <span class="text-[#CCCCCC]">Revenue (€)</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-1.5 rounded-full bg-[#E5A93C]"></span>
+                    <span class="text-[#CCCCCC]">Orders</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Chart Canvas -->
+              <div class="h-[220px] w-full">
+                <canvas id="hourlySalesChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Top Selling Items Table Card -->
+            <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333]">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="font-display font-bold text-base text-white">Top Selling Menu Items</h3>
+                  <p class="text-xs text-[#9E9E9E]">Best performing products by revenue & velocity</p>
+                </div>
+                <button class="text-xs text-[#FF5722] hover:underline font-semibold">View Full Menu CRUD &rarr;</button>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="text-[#9E9E9E] border-b border-[#333333]">
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider">Item Name</th>
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider">Category</th>
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider text-right">Units Sold</th>
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider text-right">Revenue</th>
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider text-right">Margin</th>
+                      <th class="pb-2.5 font-semibold uppercase tracking-wider text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[#2E2E2E]">
+                    <!-- Item 1 -->
+                    <tr class="hover:bg-[#2A2A2A]/50 transition-colors">
+                      <td class="py-3 flex items-center gap-2.5 font-medium text-white">
+                        <span class="text-base">🥙</span>
+                        <span>Classic Döner (Bread)</span>
+                      </td>
+                      <td class="py-3 text-[#9E9E9E]">Döner & Kebaps</td>
+                      <td class="py-3 text-right font-mono font-semibold text-white">88</td>
+                      <td class="py-3 text-right font-mono font-bold text-[#FF5722]">€704.00</td>
+                      <td class="py-3 text-right font-mono text-[#10B981]">72%</td>
+                      <td class="py-3 text-center">
+                        <span class="px-2 py-0.5 rounded-full bg-[#FF5722]/15 text-[#FF5722] font-semibold text-[10px]">High Demand</span>
+                      </td>
+                    </tr>
+                    <!-- Item 2 -->
+                    <tr class="hover:bg-[#2A2A2A]/50 transition-colors">
+                      <td class="py-3 flex items-center gap-2.5 font-medium text-white">
+                        <span class="text-base">🌯</span>
+                        <span>Döner Spezial (Extra Sauce)</span>
+                      </td>
+                      <td class="py-3 text-[#9E9E9E]">Döner & Kebaps</td>
+                      <td class="py-3 text-right font-mono font-semibold text-white">54</td>
+                      <td class="py-3 text-right font-mono font-bold text-[#FF5722]">€513.00</td>
+                      <td class="py-3 text-right font-mono text-[#10B981]">68%</td>
+                      <td class="py-3 text-center">
+                        <span class="px-2 py-0.5 rounded-full bg-[#FF5722]/15 text-[#FF5722] font-semibold text-[10px]">High Demand</span>
+                      </td>
+                    </tr>
+                    <!-- Item 3 -->
+                    <tr class="hover:bg-[#2A2A2A]/50 transition-colors">
+                      <td class="py-3 flex items-center gap-2.5 font-medium text-white">
+                        <span class="text-base">🍟</span>
+                        <span>Berlin Fries (Curry Sauce)</span>
+                      </td>
+                      <td class="py-3 text-[#9E9E9E]">Sides</td>
+                      <td class="py-3 text-right font-mono font-semibold text-white">92</td>
+                      <td class="py-3 text-right font-mono font-bold text-[#FF5722]">€322.00</td>
+                      <td class="py-3 text-right font-mono text-[#10B981]">81%</td>
+                      <td class="py-3 text-center">
+                        <span class="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981] font-semibold text-[10px]">Steady</span>
+                      </td>
+                    </tr>
+                    <!-- Item 4 -->
+                    <tr class="hover:bg-[#2A2A2A]/50 transition-colors">
+                      <td class="py-3 flex items-center gap-2.5 font-medium text-white">
+                        <span class="text-base">🥛</span>
+                        <span>Ayran (250ml)</span>
+                      </td>
+                      <td class="py-3 text-[#9E9E9E]">Drinks</td>
+                      <td class="py-3 text-right font-mono font-semibold text-white">65</td>
+                      <td class="py-3 text-right font-mono font-bold text-[#FF5722]">€130.00</td>
+                      <td class="py-3 text-right font-mono text-[#10B981]">78%</td>
+                      <td class="py-3 text-center">
+                        <span class="px-2 py-0.5 rounded-full bg-[#CCCCCC]/15 text-[#CCCCCC] font-semibold text-[10px]">Normal</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT SECTION (40% -> 5 Cols in 12-col grid) -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- Quick Inventory 86 / Out-of-Stock Toggles Card -->
+            <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333]">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-display font-bold text-base text-white">Quick Inventory (86 Toggles)</h3>
+                </div>
+                <span class="text-[11px] font-mono text-[#EF4444] bg-[#EF4444]/15 px-2 py-0.5 rounded font-bold uppercase">Live POS Sync</span>
+              </div>
+              <p class="text-xs text-[#9E9E9E] mb-4">Toggle items OFF to immediately 86 them on all Kiosks & Online Menu.</p>
+
+              <!-- Toggle List -->
+              <div class="space-y-3">
+                
+                <!-- Item 1: Beef Skewer -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-semibold text-white">Beef Skewer (Rotisserie A)</span>
+                      <span class="px-1.5 py-0.2 bg-[#10B981]/20 text-[#10B981] text-[10px] font-bold rounded">IN STOCK</span>
+                    </div>
+                    <p class="text-[11px] text-[#9E9E9E] mt-0.5 font-mono">14.2 kg remaining</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only switch-toggle">
+                    <div class="w-10 h-5 bg-[#3A3A3A] rounded-full switch-bg transition-colors"></div>
+                    <div class="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full switch-dot transition-transform shadow"></div>
+                  </label>
+                </div>
+
+                <!-- Item 2: Chicken Skewer -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-semibold text-white">Chicken Skewer (Rotisserie B)</span>
+                      <span class="px-1.5 py-0.2 bg-[#10B981]/20 text-[#10B981] text-[10px] font-bold rounded">IN STOCK</span>
+                    </div>
+                    <p class="text-[11px] text-[#9E9E9E] mt-0.5 font-mono">8.5 kg remaining</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only switch-toggle">
+                    <div class="w-10 h-5 bg-[#3A3A3A] rounded-full switch-bg transition-colors"></div>
+                    <div class="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full switch-dot transition-transform shadow"></div>
+                  </label>
+                </div>
+
+                <!-- Item 3: Falafel -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-semibold text-white">Falafel Mix</span>
+                      <span class="px-1.5 py-0.2 bg-[#10B981]/20 text-[#10B981] text-[10px] font-bold rounded">IN STOCK</span>
+                    </div>
+                    <p class="text-[11px] text-[#9E9E9E] mt-0.5 font-mono">45 portions remaining</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only switch-toggle">
+                    <div class="w-10 h-5 bg-[#3A3A3A] rounded-full switch-bg transition-colors"></div>
+                    <div class="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full switch-dot transition-transform shadow"></div>
+                  </label>
+                </div>
+
+                <!-- Item 4: Halloumi (LOW STOCK) -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#292215] border border-[#E5A93C]/40">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-semibold text-white">Halloumi Slices</span>
+                      <span class="px-1.5 py-0.2 bg-[#E5A93C]/20 text-[#E5A93C] text-[10px] font-bold rounded">LOW STOCK</span>
+                    </div>
+                    <p class="text-[11px] text-[#E5A93C] mt-0.5 font-mono font-medium">6 portions left · Alert Threshold 10</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only switch-toggle">
+                    <div class="w-10 h-5 bg-[#3A3A3A] rounded-full switch-bg transition-colors"></div>
+                    <div class="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full switch-dot transition-transform shadow"></div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Hardware & Peripheral Live Monitor Card -->
+            <div class="bg-[#242424] rounded-2xl p-5 border border-[#333333]">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-base text-white">Hardware & Peripheral Monitor</h3>
+                <span class="text-xs text-[#10B981] font-semibold flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                  All Systems Green
+                </span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                
+                <!-- Printer 1 -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#2A2A2A] flex items-center justify-center text-[#E5A93C]">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-white">Star Micronics Kitchen CloudPRNT</p>
+                      <p class="text-[11px] text-[#9E9E9E]">IP: 192.168.1.104 · Paper 85%</p>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-[#10B981]/20 text-[#10B981] font-bold text-[10px]">100% ONLINE</span>
+                </div>
+
+                <!-- Kiosk 1 -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#2A2A2A] flex items-center justify-center text-[#FF5722]">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-white">Kiosk Terminal 01 (Lobby Touch)</p>
+                      <p class="text-[11px] text-[#9E9E9E]">Verifone P400 POS Connected</p>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-[#10B981]/20 text-[#10B981] font-bold text-[10px]">100% ONLINE</span>
+                </div>
+
+                <!-- Kiosk 2 -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#1E1E1E] border border-[#2E2E2E]">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#2A2A2A] flex items-center justify-center text-[#FF5722]">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-white">Kiosk Terminal 02 (Lobby Express)</p>
+                      <p class="text-[11px] text-[#9E9E9E]">Verifone P400 POS Connected</p>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-[#10B981]/20 text-[#10B981] font-bold text-[10px]">100% ONLINE</span>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Chart.js Configuration Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('hourlySalesChart').getContext('2d');
+      
+      const gradientRevenue = ctx.createLinearGradient(0, 0, 0, 200);
+      gradientRevenue.addColorStop(0, '#FF5722');
+      gradientRevenue.addColorStop(1, 'rgba(255, 87, 34, 0.2)');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
+          datasets: [
+            {
+              type: 'bar',
+              label: 'Revenue (€)',
+              data: [120, 210, 480, 520, 390, 180, 220, 310, 490, 560, 380, 210, 95],
+              backgroundColor: gradientRevenue,
+              borderRadius: 6,
+              barPercentage: 0.6,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'Orders',
+              data: [9, 16, 38, 41, 30, 14, 17, 24, 39, 44, 29, 16, 7],
+              borderColor: '#E5A93C',
+              backgroundColor: '#E5A93C',
+              borderWidth: 2.5,
+              tension: 0.35,
+              pointBackgroundColor: '#E5A93C',
+              pointRadius: 3.5,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1E1E1E',
+              titleColor: '#FFFFFF',
+              bodyColor: '#CCCCCC',
+              borderColor: '#333333',
+              borderWidth: 1,
+              padding: 10,
+              displayColors: true
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#888888', font: { size: 10, family: 'JetBrains Mono' } }
+            },
+            y: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#888888', font: { size: 10, family: 'JetBrains Mono' }, callback: (val) => '€' + val }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#E5A93C', font: { size: 10, family: 'JetBrains Mono' } }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

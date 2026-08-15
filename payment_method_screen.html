@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY GERMAN DÖNER - Choose Payment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#FF5722',
+              'orange-hover': '#F4511E',
+              'orange-glow': 'rgba(255, 87, 34, 0.45)',
+              gold: '#E5A93C',
+              dark: '#1A1A1A',
+              card: '#2A2A2A',
+              surface: '#242424',
+              border: '#3A3A3A',
+              muted: '#9E9E9E',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'orange-glow': '0 0 25px rgba(255, 87, 34, 0.4), inset 0 0 10px rgba(255, 87, 34, 0.15)',
+            'btn-glow': '0 8px 30px rgba(255, 87, 34, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .payment-tile {
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .payment-tile:active {
+      transform: scale(0.97);
+    }
+
+    .payment-tile.selected {
+      background: #2A2A2A;
+      border: 2px solid #FF5722;
+      box-shadow: 0 0 25px rgba(255, 87, 34, 0.42), inset 0 0 12px rgba(255, 87, 34, 0.12);
+    }
+
+    .payment-tile:not(.selected) {
+      background: #2A2A2A;
+      border: 2px solid #3A3A3A;
+    }
+
+    .payment-tile:not(.selected):hover {
+      border-color: #555555;
+      background: #2F2F2F;
+    }
+
+    .active-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .payment-tile.selected .active-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Pulse animation for selected indicator */
+    @keyframes subtle-pulse {
+      0%, 100% {
+        box-shadow: 0 0 25px rgba(255, 87, 34, 0.42), inset 0 0 12px rgba(255, 87, 34, 0.12);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(255, 87, 34, 0.6), inset 0 0 16px rgba(255, 87, 34, 0.2);
+      }
+    }
+
+    .payment-tile.selected {
+      animation: subtle-pulse 3.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+  <!-- KIOSK PORTRAIT WRAPPER (440px max-width, 880px height standard) -->
+  <main class="w-full max-w-[440px] min-h-[860px] bg-[#1A1A1A] rounded-[36px] border border-[#2D2D2D] p-7 flex flex-col justify-between relative shadow-2xl overflow-hidden font-sans text-white">
+    
+    <!-- Top Ambient Background Glow -->
+    <div class="absolute top-[-50px] left-1/2 -translate-x-1/2 w-80 h-72 bg-[#FF5722]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- 1. HEADER SECTION -->
+    <header class="relative z-10 flex items-center justify-between pt-2 pb-4">
+      <button 
+        onclick="window.history.back()" 
+        class="w-12 h-12 rounded-full bg-[#2A2A2A] border border-[#3A3A3A] flex items-center justify-center text-white hover:bg-[#333333] active:scale-95 transition-all shadow-md"
+        aria-label="Go back to cart review"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      </button>
+
+      <h1 class="text-xl font-heading font-extrabold tracking-wide uppercase text-white">
+        CHOOSE PAYMENT
+      </h1>
+
+      <!-- Step Counter / Order Summary Badge -->
+      <div class="px-3 py-1.5 rounded-full bg-[#242424] border border-[#333333] text-xs font-mono text-[#9E9E9E] font-bold">
+        STEP 4/4
+      </div>
+    </header>
+
+    <!-- 2. TOTAL AMOUNT DISPLAY CARD -->
+    <section class="relative z-10 my-2">
+      <div class="w-full bg-[#242424] rounded-[24px] border border-[#333333] py-6 px-4 text-center shadow-lg">
+        <p class="text-xs font-heading font-bold uppercase tracking-widest text-[#9E9E9E] mb-1">
+          TOTAL AMOUNT
+        </p>
+        <div class="text-[52px] leading-tight font-heading font-extrabold text-[#FF5722] tracking-tight drop-shadow-[0_2px_12px_rgba(255,87,34,0.3)]">
+          €25.59
+        </div>
+        <div class="flex items-center justify-center gap-2 mt-1">
+          <span class="inline-block w-2 h-2 rounded-full bg-[#4CAF50]"></span>
+          <p class="text-xs text-[#9E9E9E] font-medium">
+            3 items • Includes 19% Cyprus VAT (€4.09)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PAYMENT METHOD 2x2 GRID -->
+    <section class="relative z-10 my-3 flex-1 flex flex-col justify-center">
+      <div class="grid grid-cols-2 gap-4">
+
+        <!-- TILE 1: CASH -->
+        <button 
+          id="tile-cash" 
+          onclick="selectPayment('cash')" 
+          class="payment-tile rounded-[20px] p-5 flex flex-col items-center justify-center min-h-[155px] text-center"
+        >
+          <!-- Active Check Indicator -->
+          <div class="active-badge w-6 h-6 rounded-full bg-[#FF5722] flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <!-- Banknote Icon -->
+          <div class="w-14 h-14 rounded-2xl bg-[#1F1F1F] flex items-center justify-center mb-3">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="6" width="20" height="12" rx="2" />
+              <circle cx="12" cy="12" r="3" />
+              <path d="M6 12h.01M18 12h.01" stroke-linecap="round" />
+            </svg>
+          </div>
+
+          <!-- Title -->
+          <span class="text-base font-heading font-extrabold uppercase text-white tracking-wide">
+            CASH
+          </span>
+          <span class="text-[11px] text-[#9E9E9E] font-medium mt-0.5">
+            Pay at Counter
+          </span>
+        </button>
+
+        <!-- TILE 2: CARD (SELECTED DEFAULT) -->
+        <button 
+          id="tile-card" 
+          onclick="selectPayment('card')" 
+          class="payment-tile selected rounded-[20px] p-5 flex flex-col items-center justify-center min-h-[155px] text-center"
+        >
+          <!-- Active Check Indicator -->
+          <div class="active-badge w-6 h-6 rounded-full bg-[#FF5722] flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <!-- Credit Card Icon -->
+          <div class="w-14 h-14 rounded-2xl bg-[#1F1F1F] flex items-center justify-center mb-3">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="5" width="20" height="14" rx="3" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+              <circle cx="7" cy="15" r="1.2" fill="currentColor" />
+              <circle cx="11" cy="15" r="1.2" fill="currentColor" />
+            </svg>
+          </div>
+
+          <!-- Title -->
+          <span class="text-base font-heading font-extrabold uppercase text-white tracking-wide">
+            CARD
+          </span>
+          <span class="text-[11px] text-[#FF8A65] font-semibold mt-0.5">
+            Credit / Debit
+          </span>
+        </button>
+
+        <!-- TILE 3: CONTACTLESS -->
+        <button 
+          id="tile-contactless" 
+          onclick="selectPayment('contactless')" 
+          class="payment-tile rounded-[20px] p-5 flex flex-col items-center justify-center min-h-[155px] text-center"
+        >
+          <!-- Active Check Indicator -->
+          <div class="active-badge w-6 h-6 rounded-full bg-[#FF5722] flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <!-- Contactless / Waves Icon -->
+          <div class="w-14 h-14 rounded-2xl bg-[#1F1F1F] flex items-center justify-center mb-3">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 16.5a6 6 0 010-9M12 19a10 10 0 000-14M15.5 21.5a14 14 0 000-19M5 14a2 2 0 010-4" />
+            </svg>
+          </div>
+
+          <!-- Title -->
+          <span class="text-base font-heading font-extrabold uppercase text-white tracking-wide">
+            CONTACTLESS
+          </span>
+          <span class="text-[11px] text-[#9E9E9E] font-medium mt-0.5">
+            Apple / Google Pay
+          </span>
+        </button>
+
+        <!-- TILE 4: QR CODE -->
+        <button 
+          id="tile-qr" 
+          onclick="selectPayment('qr')" 
+          class="payment-tile rounded-[20px] p-5 flex flex-col items-center justify-center min-h-[155px] text-center"
+        >
+          <!-- Active Check Indicator -->
+          <div class="active-badge w-6 h-6 rounded-full bg-[#FF5722] flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <!-- QR Code Icon -->
+          <div class="w-14 h-14 rounded-2xl bg-[#1F1F1F] flex items-center justify-center mb-3">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <circle cx="6.5" cy="6.5" r="1.5" fill="currentColor" />
+              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+              <circle cx="6.5" cy="17.5" r="1.5" fill="currentColor" />
+              <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 20h2v1h-2zM20 14v2h1v-2z" fill="currentColor" />
+            </svg>
+          </div>
+
+          <!-- Title -->
+          <span class="text-base font-heading font-extrabold uppercase text-white tracking-wide">
+            QR CODE
+          </span>
+          <span class="text-[11px] text-[#9E9E9E] font-medium mt-0.5">
+            PayPal / TWINT
+          </span>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- 4. BOTTOM ACTION & CONFIRMATION BUTTON -->
+    <footer class="relative z-10 pt-2 pb-2">
+      <!-- Full-Width Orange Button -->
+      <button 
+        id="confirm-btn" 
+        onclick="confirmPayment()" 
+        class="w-full bg-[#FF5722] hover:bg-[#F4511E] active:scale-[0.98] text-white font-heading font-extrabold text-lg py-5 px-6 rounded-2xl shadow-btn-glow flex items-center justify-center gap-3 transition-all duration-200 uppercase tracking-wider"
+      >
+        <span>CONFIRM PAYMENT</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </button>
+
+      <!-- Terminal Security / Cancel Info -->
+      <div class="mt-4 flex items-center justify-between text-xs text-[#757575] font-mono">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-[#4CAF50]" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+          </svg>
+          <span>TERMINAL ENCRYPTED</span>
+        </div>
+        <button onclick="window.history.back()" class="text-[#9E9E9E] hover:text-white underline">
+          Cancel & Edit
+        </button>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    let selectedMethod = 'card';
+
+    function selectPayment(method) {
+      selectedMethod = method;
+      const tiles = {
+        'cash': document.getElementById('tile-cash'),
+        'card': document.getElementById('tile-card'),
+        'contactless': document.getElementById('tile-contactless'),
+        'qr': document.getElementById('tile-qr'),
+      };
+
+      Object.keys(tiles).forEach(key => {
+        if (key === method) {
+          tiles[key].classList.add('selected');
+        } else {
+          tiles[key].classList.remove('selected');
+        }
+      });
+    }
+
+    function confirmPayment() {
+      const btn = document.getElementById('confirm-btn');
+      btn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>CONNECTING PINPAD...</span>
+      `;
+      btn.disabled = true;
+      setTimeout(() => {
+        alert('Payment initiated via ' + selectedMethod.toUpperCase() + ' for €25.59. Redirecting to confirmation...');
+        window.location.href = 'order_confirmation_screen.html';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

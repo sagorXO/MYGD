@@ -1,0 +1,429 @@
+// MY GERMAN DÖNER — Kiosk & POS Database Schema
+// SQLite embedded database for offline-resilient store operations (Module M4/M11)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------
+// 1. LOCATION & HARDWARE TERMINALS
+// ---------------------------------------------------------
+
+model Location {
+  id          String   @id @default(cuid())
+  slug        String   @unique // e.g. "EMBA", "PAPHOS", "LIMASSOL"
+  name        String   // e.g. "Emba Store"
+  nameDE      String?
+  nameGR      String?
+  address     String
+  city        String   @default("Paphos")
+  country     String   @default("CY")
+  currency    String   @default("EUR")
+  vatRate     Float    @default(0.19) // 19% Cyprus standard VAT
+  phone       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  terminals      Terminal[]
+  locationPrices LocationPrice[]
+  orders         Order[]
+  auditLogs      AuditLog[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model Terminal {
+  id              String       @id @default(cuid())
+  locationId      String
+  terminalCode    String       // e.g. "KIOSK-01", "POS-01"
+  terminalType    TerminalType @default(KIOSK)
+  ipAddress       String?
+  macAddress      String?
+  printerType     PrinterType  @default(EPSON_TM)
+  printerIp       String?
+  printerPort     Int          @default(9100)
+  autoCutReceipt  Boolean      @default(true)
+  kioskModeLocked Boolean      @default(true)
+  isActive        Boolean      @default(true)
+  lastHeartbeat   DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  location Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  orders   Order[]
+  auditLogs AuditLog[]
+
+  @@unique([locationId, terminalCode])
+  @@index([locationId])
+  @@index([isActive])
+}
+
+enum TerminalType {
+  KIOSK
+  POS_COUNTER
+  KITCHEN_DISPLAY
+  MANAGER_TABLET
+}
+
+enum PrinterType {
+  EPSON_TM
+  STAR_MICRONICS
+  SIMULATED_SCREEN
+}
+
+// ---------------------------------------------------------
+// 2. PRODUCT CATALOG & PRICING (M11 EMBEDDED)
+// ---------------------------------------------------------
+
+model Category {
+  id          String   @id @default(cuid())
+  slug        String   @unique // e.g. "doner-kebab", "boxes", "durum", "drinks"
+  name        String   // English
+  nameDE      String   // German
+  nameGR      String   // Greek
+  description String?
+  iconSvg     String?  // Icon key/identifier
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+
+  @@index([sortOrder])
+  @@index([isActive])
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  categoryId   String
+  sku          String   @unique // e.g. "MYGD-CL-DONER"
+  name         String   // English (e.g. "Classic Döner")
+  nameDE       String   // German (e.g. "Klassischer Döner")
+  nameGR       String   // Greek (e.g. "Κλασικό Ντονέρ")
+  description  String?
+  descriptionDE String?
+  descriptionGR String?
+  basePrice    Float    // Default EUR base price (e.g. 6.50)
+  imageUrl     String?
+  badge        String?  // "POPULAR", "NEW", "VEGGIE", "SPICY", "CHEF_CHOICE"
+  calories     Int?
+  allergens    String?  // JSON array: ["Gluten", "Dairy", "Sesame", "Mustard"]
+  isVeggie     Boolean  @default(false)
+  isSpicy      Boolean  @default(false)
+  isAvailable  Boolean  @default(true)
+  allowMealUpgrade Boolean @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category       Category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  modifierGroups ProductModifierGroup[]
+  locationPrices LocationPrice[]
+  orderItems     OrderItem[]
+
+  @@index([categoryId])
+  @@index([isAvailable])
+  @@index([sortOrder])
+}
+
+model LocationPrice {
+  id         String   @id @default(cuid())
+  locationId String
+  productId  String
+  price      Float    // Location-specific override price
+  isAvailable Boolean @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([locationId, productId])
+  @@index([locationId])
+  @@index([productId])
+}
+
+// ---------------------------------------------------------
+// 3. MODIFIERS & CUSTOMIZATION RULES
+// ---------------------------------------------------------
+
+model ModifierGroup {
+  id          String   @id @default(cuid())
+  slug        String   @unique // e.g. "meat-choice", "bread-choice", "sauces", "extras"
+  name        String   // English (e.g. "Choose Your Meat")
+  nameDE      String   // German (e.g. "Fleischauswahl")
+  nameGR      String   // Greek (e.g. "Επιλογή Κρέατος")
+  minSelected Int      @default(0) // 1 = required, 0 = optional
+  maxSelected Int      @default(1) // 1 = radio button, >1 = checkbox (e.g. up to 3 sauces)
+  isRequired  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modifiers Modifier[]
+  products  ProductModifierGroup[]
+
+  @@index([sortOrder])
+}
+
+model Modifier {
+  id              String   @id @default(cuid())
+  modifierGroupId String
+  slug            String   // e.g. "meat-chicken", "sauce-garlic"
+  name            String   // English (e.g. "Chicken")
+  nameDE          String   // German (e.g. "Hähnchen")
+  nameGR          String   // Greek (e.g. "Κοτόπουλο")
+  priceAdjustment Float    @default(0.00) // Extra charge (+0.50, +1.00, etc.)
+  isDefault       Boolean  @default(false)
+  isAvailable     Boolean  @default(true)
+  calories        Int?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  modifierGroup ModifierGroup       @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+  orderItemMods OrderItemModifier[]
+
+  @@unique([modifierGroupId, slug])
+  @@index([modifierGroupId])
+  @@index([isAvailable])
+}
+
+model ProductModifierGroup {
+  id              String   @id @default(cuid())
+  productId       String
+  modifierGroupId String
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, modifierGroupId])
+  @@index([productId])
+  @@index([modifierGroupId])
+}
+
+// ---------------------------------------------------------
+// 4. ORDERS, PAYMENTS & KITCHEN TICKETS
+// ---------------------------------------------------------
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique // e.g. "EMBA-20260815-1423-047"
+  dailySequence   Int           // Reset sequence or monotonic counter
+  locationId      String
+  terminalId      String
+  orderType       OrderType     @default(DINE_IN)
+  orderStatus     OrderStatus   @default(PENDING_PAYMENT)
+  paymentMethod   PaymentMethod @default(CARD)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentRef      String?       // Transaction ID, QR UUID, or Cash Receipt ref
+  
+  subtotal        Float         // Net without tax
+  vatRate         Float         @default(0.19)
+  vatAmount       Float         // 19% Cyprus VAT
+  totalAmount     Float         // Gross amount paid
+  
+  customerNote    String?
+  locale          String        @default("en") // "en", "de", "gr"
+  
+  createdAt       DateTime      @default(now())
+  paidAt          DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  cancellationReason String?
+
+  location       Location        @relation(fields: [locationId], references: [id])
+  terminal       Terminal        @relation(fields: [terminalId], references: [id])
+  items          OrderItem[]
+  kitchenTickets KitchenTicket[]
+  syncQueue      SyncQueue[]
+
+  @@index([locationId, orderStatus])
+  @@index([terminalId, createdAt])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+enum OrderType {
+  DINE_IN
+  TAKE_AWAY
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PREPARING
+  READY_FOR_PICKUP
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  NFC_WALLET
+  QR_CODE
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id              String   @id @default(cuid())
+  orderId         String
+  productId       String
+  productName     String   // Snapshot at time of order
+  productSku      String
+  basePrice       Float    // Unit price snapshot
+  quantity        Int      @default(1)
+  spiceLevel      Int      @default(1) // 1=Mild, 2=Medium, 3=Scharf, 4=Extra, 5=Hölle
+  isMealBundle    Boolean  @default(false)
+  mealDrinkName   String?
+  mealSideName    String?
+  mealPriceAddon  Float    @default(0.00)
+  itemNotes       String?
+  totalPrice      Float    // (basePrice + sum(mods) + mealAddon) * quantity
+  createdAt       DateTime @default(now())
+
+  order     Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product             @relation(fields: [productId], references: [id])
+  modifiers OrderItemModifier[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderItemModifier {
+  id              String   @id @default(cuid())
+  orderItemId     String
+  modifierId      String
+  groupName       String   // Snapshot (e.g. "Meat Choice")
+  modifierName    String   // Snapshot (e.g. "Chicken")
+  priceAdjustment Float    @default(0.00)
+  createdAt       DateTime @default(now())
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  modifier  Modifier  @relation(fields: [modifierId], references: [id])
+
+  @@index([orderItemId])
+  @@index([modifierId])
+}
+
+model KitchenTicket {
+  id            String       @id @default(cuid())
+  orderId       String
+  orderNumber   String       // Cached for fast receipt printer lookup
+  orderType     OrderType
+  ticketData    String       // Complete JSON ticket payload for KDS (Module M5)
+  ticketStatus  TicketStatus @default(QUEUED)
+  printedAt     DateTime?
+  printerError  String?
+  printAttempts Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketStatus])
+  @@index([orderId])
+  @@index([createdAt])
+}
+
+enum TicketStatus {
+  QUEUED
+  PRINTING
+  PRINTED
+  FAILED
+  DISPATCHED_TO_KDS
+}
+
+// ---------------------------------------------------------
+// 5. SECURITY, AUDIT LOGS & DISASTER RECOVERY SYNC
+// ---------------------------------------------------------
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  pinHash      String   // Bcrypt hashed 4-6 digit staff PIN
+  role         AdminRole @default(STORE_STAFF)
+  isActive     Boolean  @default(true)
+  failedAttempts Int    @default(0)
+  lockedUntil  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  auditLogs AuditLog[]
+
+  @@index([username])
+  @@index([isActive])
+}
+
+enum AdminRole {
+  STORE_STAFF
+  STORE_MANAGER
+  SYSTEM_ADMIN
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  locationId  String?
+  terminalId  String?
+  adminUserId String?
+  action      String   // e.g. "ADMIN_LOGIN", "PRICE_OVERRIDE", "OUT_OF_STOCK_TOGGLE", "REFUND_TRIGGERED"
+  details     String?  // JSON context
+  ipAddress   String?
+  severity    String   @default("INFO") // "INFO", "WARN", "CRITICAL"
+  createdAt   DateTime @default(now())
+
+  location  Location?  @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  terminal  Terminal?  @relation(fields: [terminalId], references: [id], onDelete: SetNull)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+model SyncQueue {
+  id         String     @id @default(cuid())
+  orderId    String?
+  entityType String     // "ORDER", "PRICE_UPDATE", "AUDIT_LOG"
+  payload    String     // JSON payload to push to HQ Control Center (Layer 3)
+  status     SyncStatus @default(PENDING)
+  retryCount Int        @default(0)
+  lastError  String?
+  syncedAt   DateTime?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  FAILED_RETRYING
+  PERMANENT_FAIL
+}

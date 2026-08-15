@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY GERMAN DÖNER — Order Status TV Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              charcoal: '#1A1A1A',
+              surface: '#242424',
+              surfaceLight: '#2C2C2C',
+              orange: '#FF5722',
+              orangeGlow: 'rgba(255, 87, 34, 0.4)',
+              amber: '#F59E0B',
+              amberGlow: 'rgba(245, 158, 11, 0.35)',
+              green: '#10B981',
+              greenGlow: 'rgba(16, 185, 129, 0.4)',
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'glow-orange': 'glowOrange 2s ease-in-out infinite alternate',
+            'glow-amber': 'glowAmber 2.5s ease-in-out infinite alternate',
+            'ticker': 'ticker 25s linear infinite',
+          },
+          keyframes: {
+            glowOrange: {
+              '0%': { boxShadow: '0 0 15px rgba(255, 87, 34, 0.25)', borderColor: '#FF5722' },
+              '100%': { boxShadow: '0 0 35px rgba(255, 87, 34, 0.65)', borderColor: '#FF7043' },
+            },
+            glowAmber: {
+              '0%': { boxShadow: '0 0 10px rgba(245, 158, 11, 0.2)' },
+              '100%': { boxShadow: '0 0 25px rgba(245, 158, 11, 0.5)' },
+            },
+            ticker: {
+              '0%': { transform: 'translateX(100%)' },
+              '100%': { transform: 'translateX(-100%)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #FFFFFF;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    .neon-border-orange {
+      border: 2px solid #FF5722;
+      box-shadow: 0 0 20px rgba(255, 87, 34, 0.35), inset 0 0 15px rgba(255, 87, 34, 0.15);
+    }
+    .neon-text-orange {
+      color: #FF5722;
+      text-shadow: 0 0 16px rgba(255, 87, 34, 0.6), 0 0 30px rgba(255, 87, 34, 0.3);
+    }
+    .neon-border-amber {
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .grid-bg-overlay {
+      background-image: radial-gradient(circle at 50% 50%, rgba(255, 87, 34, 0.03) 0%, transparent 80%);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between p-6 bg-brand-charcoal grid-bg-overlay font-sans">
+
+  <!-- ==================== HEADER BAR ==================== -->
+  <header class="w-full flex items-center justify-between px-8 py-4 bg-[#141414] rounded-2xl border border-[#2B2B2B] shadow-2xl">
+    <!-- Brand Logo Left -->
+    <div class="flex items-center space-x-4">
+      <div class="w-14 h-14 rounded-xl bg-gradient-to-tr from-[#E64A19] to-[#FF7043] flex items-center justify-center shadow-lg shadow-orange-900/40">
+        <!-- SVG Döner Spit / Flame Icon -->
+        <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C10.5 4 8.5 6.5 8.5 9.5C8.5 12 10.5 14 12 14C13.5 14 15.5 12 15.5 9.5C15.5 6.5 13.5 4 12 2ZM6.5 15C5 16.5 4 18.5 4 20.5C4 21.3 4.7 22 5.5 22H18.5C19.3 22 20 21.3 20 20.5C20 18.5 19 16.5 17.5 15C16 16.5 14 17.5 12 17.5C10 17.5 8 16.5 6.5 15Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs uppercase tracking-widest text-[#E5A93C] font-mono font-bold">The Original Berlin Kebab 🇩🇪</span>
+        </div>
+        <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
+          MY GERMAN <span class="text-brand-orange">DÖNER</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Center Title: NOW SERVING -->
+    <div class="flex items-center gap-4 bg-[#1F1F1F] px-8 py-3 rounded-full border border-[#333333]">
+      <span class="relative flex h-4 w-4">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-4 w-4 bg-brand-green"></span>
+      </span>
+      <div class="text-center">
+        <div class="text-xl lg:text-2xl font-black uppercase tracking-wider text-white">NOW SERVING</div>
+        <div class="text-[11px] font-mono uppercase tracking-widest text-gray-400">AKTUELLE BESTELLUNGEN</div>
+      </div>
+    </div>
+
+    <!-- Right: Live Clock & Location -->
+    <div class="flex items-center space-x-6 text-right">
+      <div>
+        <div id="liveClock" class="text-3xl lg:text-4xl font-mono font-extrabold tracking-wider text-white">
+          14:23:45
+        </div>
+        <div class="flex items-center justify-end space-x-1 text-xs font-mono uppercase tracking-widest text-[#E5A93C]">
+          <svg class="w-3.5 h-3.5 text-brand-orange inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>EMBA, CYPRUS</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN SPLIT CONTENT ==================== -->
+  <main class="flex-1 grid grid-cols-2 gap-8 my-5 min-h-0">
+    
+    <!-- LEFT COLUMN: PREPARING / IN ARBEIT (50%) -->
+    <section class="flex flex-col bg-[#181818] rounded-3xl p-6 border border-[#2B2B2B] shadow-2xl relative overflow-hidden">
+      <!-- Amber Header Banner -->
+      <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-black/20 rounded-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-black uppercase tracking-wider text-black">PREPARING / IN ARBEIT</h2>
+            <p class="text-xs font-bold text-black/80 tracking-wide">Orders being handcrafted in the kitchen</p>
+          </div>
+        </div>
+        <span class="bg-black/30 backdrop-blur-sm text-black font-mono font-extrabold px-3.5 py-1.5 rounded-xl text-sm border border-black/10">
+          6 IN QUEUE
+        </span>
+      </div>
+
+      <!-- Grid of Preparing Orders -->
+      <div class="flex-1 grid grid-cols-2 gap-4 auto-rows-fr">
+        <!-- Order Card 1 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>DÖNER KITCHEN</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~2 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-047
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Rotisserie Spit #1
+          </div>
+        </div>
+
+        <!-- Order Card 2 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>GRILL & TOAST</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~3 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-048
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Toast Station
+          </div>
+        </div>
+
+        <!-- Order Card 3 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>FRYER & SIDES</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~4 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-049
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Crispy Fries Line
+          </div>
+        </div>
+
+        <!-- Order Card 4 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>DÖNER BOX</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~4 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-050
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Sauce Station
+          </div>
+        </div>
+
+        <!-- Order Card 5 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>VEGGIE & FALAFEL</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~5 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-051
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Halloumi Grill
+          </div>
+        </div>
+
+        <!-- Order Card 6 -->
+        <div class="bg-brand-surface border border-[#3A3A3A] rounded-2xl p-5 flex flex-col justify-between items-center transition-all duration-300 hover:border-amber-500/50 shadow-md">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-gray-400">
+            <span>CUSTOM COMBO</span>
+            <span class="text-amber-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              ~5 min
+            </span>
+          </div>
+          <div class="text-4xl 2xl:text-5xl font-mono font-extrabold tracking-wider text-white py-2">
+            EMBA-052
+          </div>
+          <div class="w-full text-center text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+            Packaging Area
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: READY FOR PICKUP / ABHOLBEREIT (50%) -->
+    <section class="flex flex-col bg-[#181818] rounded-3xl p-6 border-2 border-brand-orange/40 shadow-2xl relative overflow-hidden bg-gradient-to-b from-brand-orange/5 to-transparent">
+      <!-- Signal Orange / Green Header Banner -->
+      <div class="bg-gradient-to-r from-brand-orange via-[#F4511E] to-[#E64A19] px-6 py-4 rounded-2xl shadow-xl shadow-orange-950/50 flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-black/25 rounded-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-black uppercase tracking-wider text-white">READY FOR PICKUP / ABHOLBEREIT</h2>
+            <p class="text-xs font-bold text-white/90 tracking-wide">Please proceed to the designated pickup counter</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono font-extrabold px-3.5 py-1.5 rounded-xl text-sm">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>3 READY</span>
+        </div>
+      </div>
+
+      <!-- Giant Ready Order Cards Stack -->
+      <div class="flex-1 flex flex-col justify-between gap-4">
+        
+        <!-- Ready Order 1 -->
+        <div class="flex-1 bg-[#1F1F1F] neon-border-orange animate-glow-orange rounded-2xl px-8 py-5 flex items-center justify-between relative overflow-hidden transition-all duration-300">
+          <div class="flex items-center space-x-6">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+              <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-5xl 2xl:text-6xl font-mono font-extrabold tracking-wider neon-text-orange">
+                EMBA-044
+              </div>
+              <div class="text-xs font-mono text-emerald-400 uppercase tracking-widest mt-1 flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                Freshly Packed · Ready Now
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-orange text-white font-extrabold text-lg shadow-lg shadow-orange-950/60 uppercase tracking-wide">
+              <span>Pickup Counter 1</span>
+            </div>
+            <div class="text-[11px] font-mono text-gray-400 mt-1">Main Counter Front</div>
+          </div>
+        </div>
+
+        <!-- Ready Order 2 -->
+        <div class="flex-1 bg-[#1F1F1F] neon-border-orange animate-glow-orange rounded-2xl px-8 py-5 flex items-center justify-between relative overflow-hidden transition-all duration-300">
+          <div class="flex items-center space-x-6">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+              <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-5xl 2xl:text-6xl font-mono font-extrabold tracking-wider neon-text-orange">
+                EMBA-045
+              </div>
+              <div class="text-xs font-mono text-emerald-400 uppercase tracking-widest mt-1 flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                Freshly Packed · Ready Now
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-orange text-white font-extrabold text-lg shadow-lg shadow-orange-950/60 uppercase tracking-wide">
+              <span>Pickup Counter 1</span>
+            </div>
+            <div class="text-[11px] font-mono text-gray-400 mt-1">Main Counter Front</div>
+          </div>
+        </div>
+
+        <!-- Ready Order 3 -->
+        <div class="flex-1 bg-[#1F1F1F] neon-border-orange animate-glow-orange rounded-2xl px-8 py-5 flex items-center justify-between relative overflow-hidden transition-all duration-300">
+          <div class="flex items-center space-x-6">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+              <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-5xl 2xl:text-6xl font-mono font-extrabold tracking-wider neon-text-orange">
+                EMBA-046
+              </div>
+              <div class="text-xs font-mono text-emerald-400 uppercase tracking-widest mt-1 flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                Freshly Packed · Ready Now
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-orange text-white font-extrabold text-lg shadow-lg shadow-orange-950/60 uppercase tracking-wide">
+              <span>Pickup Counter 1</span>
+            </div>
+            <div class="text-[11px] font-mono text-gray-400 mt-1">Main Counter Front</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== BOTTOM TICKER BAR ==================== -->
+  <footer class="w-full bg-[#141414] border border-[#2B2B2B] rounded-2xl py-3 px-6 overflow-hidden flex items-center shadow-xl">
+    <div class="flex items-center gap-2 bg-[#222222] px-4 py-1.5 rounded-xl mr-6 border border-[#333333] shrink-0">
+      <span class="text-brand-orange font-bold text-sm">🔔 NOTICE:</span>
+    </div>
+    <div class="overflow-hidden whitespace-nowrap relative flex-1">
+      <div class="inline-block animate-ticker text-sm lg:text-base font-medium text-gray-300 tracking-wide">
+        Please have your receipt order number ready · Guten Appetit! · Fresh Berlin Rotisserie & Authentic German Döner · 100% Certified Halal Meat & Fresh Cyprus Produce · Free Customer WiFi: <span class="text-[#E5A93C] font-mono font-bold">MYGD-Guest</span> · Thank you for dining with MY GERMAN DÖNER!
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Live Clock Update
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').innerText = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
