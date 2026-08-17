@@ -9,17 +9,12 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    env_file:
+      - .env.local
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=file:/app/prisma/data/kiosk_pos.db
-      - NEXT_PUBLIC_DEFAULT_LOCATION=EMBA
-      - NEXT_PUBLIC_DEFAULT_TERMINAL=KIOSK-01
-      - NEXT_PUBLIC_CYPRUS_VAT_RATE=0.19
-      - NEXT_PUBLIC_STORE_CURRENCY=EUR
       - PORT=3000
-    volumes:
-      # Persistent SQLite storage volume for offline crash recovery
-      - mygd-sqlite-data:/app/prisma/data
+      - HOSTNAME=0.0.0.0
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/menu || exit 1"]
       interval: 30s

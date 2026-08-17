@@ -1,6 +1,6 @@
 # ---------------------------------------------------------
-# MY GERMAN DÖNER — Multi-Stage Production Dockerfile
-# On-Premise Kiosk & POS Runtime (Module M4)
+# MY GERMAN DÖNER / HORIZON — Production Dockerfile
+# Optimized Multi-Stage Next.js 16 Standalone Container
 # ---------------------------------------------------------
 
 # Stage 1: Dependencies
@@ -17,9 +17,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client & Build Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+
+# Generate Prisma Client for PostgreSQL/Supabase & Compile Standalone Bundle
 RUN npx prisma generate
 RUN npm run build
 
@@ -32,25 +33,21 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-RUN apk add --no-cache openssl sqlite
+RUN apk add --no-cache openssl
 
-# Create non-root user
+# Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Create database persistence directory
-RUN mkdir -p /app/prisma/data && chown -R nextjs:nodejs /app/prisma/data
-
+# Copy static assets and standalone bundle
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
 EXPOSE 3000
 
-# Run migrations and start standalone server
-CMD ["sh", "-c", "npx prisma db push && node server.js"]
+# Start Next.js Standalone Production Server
+CMD ["node", "server.js"]
