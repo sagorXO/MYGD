@@ -12,6 +12,8 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
     "db:init": "prisma generate && prisma db push && tsx prisma/seed.ts",
+    "docker:start": "bash scripts/docker-run.sh",
+    "docker:stop": "docker compose down",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
