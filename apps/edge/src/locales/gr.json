@@ -1,0 +1,99 @@
+{
+  "brand": {
+    "name": "MY GERMAN DÖNER",
+    "tagline": "ΤΟ ΑΥΘΕΝΤΙΚΟ ΝΤΟΝΕΡ ΒΕΡΟΛΙΝΟΥ",
+    "est": "ΚΥΠΡΟΣ • ΕΤΟΣ 2026"
+  },
+  "attract": {
+    "tapToOrder": "ΠΑΤΗΣΤΕ ΓΙΑ ΠΑΡΑΓΓΕΛΙΑ",
+    "dineIn": "ΓΙΑ ΕΔΩ",
+    "takeAway": "ΓΙΑ ΤΟ ΣΠΙΤΙ",
+    "chooseLanguage": "Επιλογή Γλώσσας",
+    "touchToStart": "Αγγίξτε την οθόνη για να ξεκινήσετε την παραγγελία σας",
+    "contactless": "Ανέπαφα • Apple Pay • Google Pay • Μετρητά"
+  },
+  "menu": {
+    "allCategories": "Όλο το Μενού",
+    "popular": "ΔΗΜΟΦΙΛΕΣ",
+    "new": "ΝΕΟ",
+    "veggie": "ΧΟΡΤΟΦΑΓΙΚΟ",
+    "spicy": "ΚΑΥΤΕΡΟ",
+    "chefChoice": "ΕΠΙΛΟΓΗ ΣΕΦ",
+    "customize": "ΠΡΟΣΑΡΜΟΓΗ",
+    "viewCart": "ΠΡΟΒΟΛΗ ΚΑΛΑΘΙΟΥ",
+    "itemsInCart": "προϊόντα στο καλάθι",
+    "itemInCart": "προϊόν στο καλάθι",
+    "emptyCart": "Το καλάθι σας είναι άδειο",
+    "emptyPrompt": "Επιλέξτε το αγαπημένο σας Ντονέρ, Wrap, Bowl ή συνοδευτικά για να ξεκινήσετε."
+  },
+  "customization": {
+    "title": "Προσαρμογή Παραγγελίας",
+    "required": "ΑΠΑΡΑΙΤΗΤΟ",
+    "optional": "ΠΡΟΑΙΡΕΤΙΚΟ",
+    "meatChoice": "Επιλογή Κρέατος",
+    "breadChoice": "Επιλογή Ψωμιού",
+    "sauces": "Επιλογή Σάλτσας",
+    "saucesHint": "Επιλέξτε έως 3 σάλτσες",
+    "extras": "Έξτρα Υλικά & Συνοδευτικά",
+    "spiceLevel": "Επίπεδο Καυτερού",
+    "spiceMild": "Ήπιο",
+    "spiceMedium": "Μέτριο",
+    "spiceScharf": "Καυτερό (Scharf)",
+    "spiceExtra": "Πολύ Καυτερό",
+    "spiceHolle": "Κόλαση (Hölle)",
+    "makeItMeal": "Κάντε το Γεύμα (+€3.50)",
+    "mealDescription": "Περιλαμβάνει τραγανές τηγανητές πατάτες & αναψυκτικό 0.33L",
+    "selectDrink": "Επιλογή Αναψυκτικού",
+    "selectSide": "Επιλογή Συνοδευτικού",
+    "specialNotes": "Ειδικές οδηγίες ή αλλεργίες...",
+    "addToCart": "ΠΡΟΣΘΗΚΗ ΣΤΟ ΚΑΛΑΘΙ"
+  },
+  "cart": {
+    "yourOrder": "Η ΠΑΡΑΓΓΕΛΙΑ ΣΑΣ",
+    "addMoreItems": "+ Προσθήκη Περισσότερων",
+    "specialInstructions": "Οδηγίες κουζίνας (π.χ. χωρίς κρεμμύδι)",
+    "subtotal": "Μερικό σύνολο (χωρίς ΦΠΑ)",
+    "vat": "ΦΠΑ Κύπρου (19%)",
+    "total": "Τελικό Ποσό",
+    "proceedToPayment": "ΣΥΝΕΧΕΙΑ ΣΤΗΝ ΠΛΗΡΩΜΗ",
+    "clearCart": "Καθαρισμός Παραγγελίας",
+    "emptyPrompt": "Δεν έχετε προσθέσει προϊόντα. Ανακαλύψτε το αυθεντικό βερολινέζικο ντονέρ μας!"
+  },
+  "payment": {
+    "choosePayment": "ΕΠΙΛΟΓΗ ΤΡΟΠΟΥ ΠΛΗΡΩΜΗΣ",
+    "totalDue": "ΣΥΝΟΛΙΚΟ ΠΟΣΟ ΠΛΗΡΩΜΗΣ",
+    "cash": "ΜΕΤΡΗΤΑ",
+    "cashSubtitle": "Πληρωμή στο ταμείο",
+    "card": "ΚΑΡΤΑ",
+    "cardSubtitle": "Visa / Mastercard / Maestro",
+    "contactless": "ΑΝΕΠΑΦΑ",
+    "contactlessSubtitle": "Apple Pay / Google Pay / NFC",
+    "qrCode": "QR CODE",
+    "qrCodeSubtitle": "PayPal / Revolut / IRIS / Mobile",
+    "scanQrPrompt": "Σκανάρετε τον κωδικό QR με την εφαρμογή της τράπεζάς σας",
+    "confirmPayment": "ΕΠΙΒΕΒΑΙΩΣΗ ΠΛΗΡΩΜΗΣ",
+    "securing": "Σύνδεση με το τερματικό...",
+    "terminalSecure": "Κρυπτογραφημένο • Συμβατό με PCI-DSS • Τοπικό Τερματικό"
+  },
+  "confirmation": {
+    "orderConfirmed": "Η ΠΑΡΑΓΓΕΛΙΑ ΕΠΙΒΕΒΑΙΩΘΗΚΕ!",
+    "thankYou": "Σας ευχαριστούμε που παραγγείλατε από το MY GERMAN DÖNER!",
+    "orderNumber": "ΑΡΙΘΜΟΣ ΠΑΡΑΓΓΕΛΙΑΣ",
+    "estimatedWait": "Εκτιμώμενος χρόνος: ~8-10 λεπτά",
+    "receiptPrinting": "Εκτύπωση απόδειξης...",
+    "receiptReprint": "Επανεκτύπωση",
+    "newOrderIn": "Νέα παραγγελία σε",
+    "startNewOrder": "ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ",
+    "takePhotoPrompt": "Παρακαλούμε βγάλτε φωτογραφία τον αριθμό παραγγελίας σας"
+  },
+  "common": {
+    "back": "Πίσω",
+    "cancel": "Άκυρο",
+    "save": "Αποθήκευση",
+    "edit": "Επεξεργασία",
+    "delete": "Διαγραφή",
+    "close": "Κλείσιμο",
+    "loading": "Φόρτωση...",
+    "error": "Παρουσιάστηκε σφάλμα. Παρακαλούμε καλέστε το προσωπικό."
+  }
+}

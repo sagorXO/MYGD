@@ -15,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -25,6 +25,18 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@mygd/types": [
+        "./packages/types/src/index.ts"
+      ],
+      "@mygd/db": [
+        "./packages/db/src/index.ts"
+      ],
+      "@mygd/ui": [
+        "./packages/ui/src/index.ts"
+      ],
+      "@mygd/printing": [
+        "./packages/printing/src/index.ts"
       ]
     }
   },

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY GERMAN DÖNER — Connected Operations System | Executive Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0D0D0F;
+      --bg-surface: #17171A;
+      --bg-surface-elevated: #222227;
+      --border-subtle: #2C2C33;
+      --border-focus: #444450;
+      --neon-magenta: #E50D7E;
+      --neon-magenta-glow: rgba(229, 13, 126, 0.35);
+      --neon-cyan: #00FCED;
+      --neon-cyan-glow: rgba(0, 252, 237, 0.25);
+      --neon-gold: #E5A93C;
+      --neon-green: #4CAF50;
+      --text-primary: #FFFFFF;
+      --text-secondary: #A0A0AB;
+      --text-tertiary: #686875;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px 20px 40px;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Glow behind stage */
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(229, 13, 126, 0.08) 0%, rgba(0, 252, 237, 0.04) 50%, transparent 70%);
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Top Executive Navigation Bar */
+    .executive-header {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      z-index: 10;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-logo span.accent {
+      color: var(--neon-magenta);
+    }
+
+    .badge-pill {
+      background: rgba(0, 252, 237, 0.08);
+      border: 1px solid rgba(0, 252, 237, 0.4);
+      color: var(--neon-cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      user-select: none;
+    }
+
+    .btn-action:hover {
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 16px var(--neon-magenta-glow);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-1px);
+    }
+
+    .btn-action.active {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 252, 237, 0.1);
+      color: var(--neon-cyan);
+    }
+
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, var(--neon-magenta), #c00a68);
+      border: 1px solid var(--neon-magenta);
+      color: #fff;
+    }
+
+    .btn-primary-gradient:hover {
+      box-shadow: 0 0 20px rgba(229, 13, 126, 0.6);
+      transform: translateY(-1px);
+    }
+
+    /* Main Presentation Stage & Layout */
+    .deck-wrapper {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      gap: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stage-container {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 16:9 Cinema Viewport */
+    .slide-viewport {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .slide-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      transform: scale(0.99);
+    }
+
+    .slide-image.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Bottom Status HUD */
+    .stage-hud {
+      padding: 16px 24px;
+      background: #141417;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slide-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slide-tag {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-cyan);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .slide-title-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .playback-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: var(--transition-smooth);
+    }
+
+    .control-btn:hover:not(:disabled) {
+      border-color: var(--neon-magenta);
+      color: var(--neon-magenta);
+      background: rgba(229, 13, 126, 0.1);
+      box-shadow: 0 0 12px var(--neon-magenta-glow);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    /* Speaker Notes Slide-out Sidebar */
+    .speaker-notes-panel {
+      width: 380px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      transition: var(--transition-smooth);
+      overflow: hidden;
+    }
+
+    .speaker-notes-panel.hidden {
+      display: none;
+    }
+
+    .notes-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface-elevated);
+    }
+
+    .notes-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--neon-gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: #111113;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .notes-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(1240px * 9 / 16);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .notes-section {
+      background: #121215;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .notes-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--neon-cyan);
+      margin-bottom: 8px;
+    }
+
+    .notes-script-text {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #E2E2E8;
+    }
+
+    .bullet-point {
+      margin-top: 6px;
+      padding-left: 14px;
+      position: relative;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .bullet-point::before {
+      content: "•";
+      color: var(--neon-magenta);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    /* Thumbnail Carousel Strip */
+    .thumbnail-strip {
+      width: 100%;
+      max-width: 1240px;
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+      z-index: 10;
+    }
+
+    .thumb-card {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-subtle);
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: var(--transition-smooth);
+      background: #000;
+      position: relative;
+    }
+
+    .thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumb-card:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      border-color: var(--border-focus);
+    }
+
+    .thumb-card.active {
+      opacity: 1;
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 14px var(--neon-magenta-glow);
+    }
+
+    .thumb-num {
+      position: absolute;
+      bottom: 3px;
+      right: 4px;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Keyboard Shortcuts Legend */
+    .shortcuts-footer {
+      width: 100%;
+      max-width: 1240px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      border-top: 1px solid #1c1c22;
+      padding-top: 16px;
+    }
+
+    .key-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #17171c;
+      border: 1px solid #282830;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <!-- Top Executive Header -->
+  <header class="executive-header">
+    <div class="brand-group">
+      <div class="brand-logo">
+        MY GERMAN <span class="accent">DÖNER</span>
+      </div>
+      <span class="badge-pill">Connected Operations Control System</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-action" id="toggleNotesBtn" onclick="toggleSpeakerNotes()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Speaker Script (S)
+      </button>
+
+      <button class="btn-action" onclick="toggleFullscreen()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+        Fullscreen (F)
+      </button>
+
+      <a href="./Documents/MY_GERMAN_DONER_Executive_Pitch_Deck.pdf" download class="btn-action btn-primary-gradient">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download PDF Deck
+      </a>
+    </div>
+  </header>
+
+  <!-- Presentation Deck & Speaker Workspace -->
+  <main class="deck-wrapper">
+    <div class="stage-container" id="stageContainer">
+      <!-- 16:9 Viewport -->
+      <div class="slide-viewport" id="viewport">
+        <img src="./assets/slides/slide_01_status_quo.jpg" class="slide-image active" alt="Slide 1: Status Quo vs Future">
+        <img src="./assets/slides/slide_02_architecture.jpg" class="slide-image" alt="Slide 2: 3-Layer Architecture">
+        <img src="./assets/slides/slide_03_building_blocks.jpg" class="slide-image" alt="Slide 3: 11 Building Blocks">
+        <img src="./assets/slides/slide_04_real_world_scenarios.jpg" class="slide-image" alt="Slide 4: Real-World Scenarios">
+        <img src="./assets/slides/slide_05_kiosk_customizer.jpg" class="slide-image" alt="Slide 5: Brand & Kiosk Customizer">
+        <img src="./assets/slides/slide_06_kitchen_kds.jpg" class="slide-image" alt="Slide 6: Multi-Station Kitchen KDS">
+        <img src="./assets/slides/slide_07_hardware_stack.jpg" class="slide-image" alt="Slide 7: In-Store Hardware Stack">
+        <img src="./assets/slides/slide_08_financial_roi.jpg" class="slide-image" alt="Slide 8: Financial ROI & Cost Savings">
+        <img src="./assets/slides/slide_09_risk_mitigation.jpg" class="slide-image" alt="Slide 9: Enterprise Risk Mitigation">
+        <img src="./assets/slides/slide_10_strategic_roadmap.jpg" class="slide-image" alt="Slide 10: Strategic Roadmap">
+        <img src="./assets/slides/slide_11_gap_coverage.jpg" class="slide-image" alt="Slide 11: Comprehensive Coverage of Sections 4-9">
+      </div>
+
+      <!-- Stage Bottom Control HUD -->
+      <div class="stage-hud">
+        <div class="slide-meta">
+          <div class="slide-tag" id="slideTag">SLIDE 01 / 11 • EXECUTIVE BRIEFING</div>
+          <div class="slide-title-text" id="slideTitle">1. Status Quo vs. The Modern Unified Control System</div>
+        </div>
+
+        <div class="playback-controls">
+          <button class="control-btn" id="prevBtn" onclick="prevSlide()" disabled title="Previous Slide (Left Arrow)">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="control-btn" id="nextBtn" onclick="nextSlide()" title="Next Slide (Right Arrow or Spacebar)">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Presenter Script Panel -->
+    <aside class="speaker-notes-panel" id="speakerNotesPanel">
+      <div class="notes-header">
+        <div class="notes-title">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          Executive Script
+        </div>
+        <div class="timer-badge" id="meetingTimer">00:00</div>
+      </div>
+
+      <div class="notes-body" id="notesContent">
+        <!-- Injected via JavaScript -->
+      </div>
+    </aside>
+  </main>
+
+  <!-- Bottom Interactive Slide Thumbnail Strip -->
+  <nav class="thumbnail-strip" id="thumbsContainer">
+    <!-- Generated dynamically -->
+  </nav>
+
+  <!-- Keyboard Shortcuts Bar -->
+  <footer class="shortcuts-footer">
+    <div>Target Audience: <strong>Rico & Oli (Founders)</strong> • <strong>Markus (Project Lead)</strong></div>
+    <div style="display: flex; gap: 16px;">
+      <span><span class="key-hint">←</span> <span class="key-hint">→</span> Navigate</span>
+      <span><span class="key-hint">Space</span> Advance</span>
+      <span><span class="key-hint">F</span> Fullscreen</span>
+      <span><span class="key-hint">S</span> Script Panel</span>
+    </div>
+  </footer>
+
+  <script>
+    const deckData = [
+      {
+        num: 1,
+        tag: "SLIDE 01 / 11 • PROBLEM & DIAGNOSIS",
+        title: "1. Status Quo vs. The Modern Unified Control System",
+        objective: "Establish empathy by naming the 12 disconnected tools causing chaos today.",
+        script: "Rico, Oli, Markus — you have built the best döner in Cyprus, but behind the counter, operations are held together by shouted orders, late WhatsApp supplier messages, ConnectTeam fees, and a Windows 2000 till. We are replacing all 12 tools with ONE unified engine.",
+        points: [
+          "Eliminates 21:00 WhatsApp bread panic after the bakery is closed",
+          "Single source of truth: change a price once, it updates everywhere",
+          "Solves the 'Blind Owner' problem when off-site"
+        ]
+      },
+      {
+        num: 2,
+        tag: "SLIDE 02 / 11 • SYSTEM ARCHITECTURE",
+        title: "2. The 3-Layer Architectural Fortress (Offline-First)",
+        objective: "Prove absolute reliability and explain the in-store local edge hub.",
+        script: "Generic cloud software fails restaurants when the internet drops. We designed an unbreakable 3-layer architecture. Layer 2 is an In-Store Edge Mini-PC. If the internet cuts out on Friday night, the till, card reader, receipt printer, and kitchen screens keep operating 100% offline.",
+        points: [
+          "Layer 3: Cloud HQ for live mobile dashboard and menu management",
+          "Layer 2: Local SQLite WAL engine inside the store for zero downtime",
+          "Layer 1: Touch POS, kiosks, KDS line displays, and TV boards"
+        ]
+      },
+      {
+        num: 3,
+        tag: "SLIDE 03 / 11 • MODULAR BLUEPRINT",
+        title: "3. The 11 Modular Building Blocks (Phased Value)",
+        objective: "Demonstrate structured execution across 8 distinct value-delivering phases.",
+        script: "We do not expect you to swallow the whole elephant at once. We scoped 11 clear modules across 8 phases. Each module delivers standalone value before the next is built. Phase 1 (Digital Checklists & HACCP logs) is live in your store in Week 3.",
+        points: [
+          "M1 Checklists & M11 Master DB first to build operational discipline",
+          "M9 Mobile HUD live in Week 7 so owners see live revenue anywhere",
+          "M4 Offline POS & M5 Kitchen KDS deployed in Phase 7"
+        ]
+      },
+      {
+        num: 4,
+        tag: "SLIDE 04 / 11 • OPERATIONAL IMPACT",
+        title: "4. Real-World Scenarios Solved",
+        objective: "Show direct solutions to the exact situations described in the 6 voice memos.",
+        script: "Here is how this changes your daily life: At 15:30, predictive stock deduction alerts the bakery automatically so you never run out of bread. When you are off-site, you pull out your phone and see real-time revenue, ticket times, and fridge temps. And when Limassol opens, you sync prices in one click.",
+        points: [
+          "15:30 Predictive Bakery Alert stops stock-outs permanently",
+          "Live Owner HUD provides instant peace of mind",
+          "Multi-location synchronization from Day 1 (Emba + Limassol)"
+        ]
+      },
+      {
+        num: 5,
+        tag: "SLIDE 05 / 11 • GUEST EXPERIENCE & BRAND",
+        title: "5. Brand Identity & Self-Service Kiosk Customizer",
+        objective: "Showcase the official 'BITE THE HYPE' kiosk UI and upsell engine.",
+        script: "Your kiosk is a high-speed sales machine. We designed a 3-step meat customizer (150g, 100g, 75g), our signature 5-Flame Spice Meter up to Hölle Extreme, and 1-tap Meal Combo upsells (+€3.50) that lift Average Order Value by 18% to 24%.",
+        points: [
+          "Electric Magenta (#E50D7E) & Dark Charcoal high-contrast design",
+          "Döner Club promo code redemption ('BITETHEHYPE', 'MYGD20')",
+          "Paperless QR e-receipts sent directly to smartphones"
+        ]
+      },
+      {
+        num: 6,
+        tag: "SLIDE 06 / 11 • KITCHEN SPEED & KDS",
+        title: "6. Multi-Station Kitchen Display System (KDS)",
+        objective: "Address previous KDS friction and show station-based line routing.",
+        script: "Previous KDS attempts failed because tickets were dumped onto one screen. Our KDS routes orders to specialized stations: Grill, Assembly, and Fryer. Cooks claim tickets with one tap so no order is ever double-made, and color-coded timers keep ticket times under 4 minutes.",
+        points: [
+          "Station filters: Grill (meat), Assembly (sauces/salad), Fryer (sides)",
+          "Cook claim locking prevents prep duplication",
+          "Audio chime on pickup TV board when expediter marks ready"
+        ]
+      },
+      {
+        num: 7,
+        tag: "SLIDE 07 / 11 • COMMERCIAL HARDWARE",
+        title: "7. In-Store Hardware & Infrastructure Stack",
+        objective: "Present a transparent, cost-effective hardware bill of materials.",
+        script: "We use open, commercial-grade hardware with zero proprietary lock-in. An in-store mini PC, 10.5-inch iPad or Android till stands, Epson thermal printers, heavy-duty cash drawers, and 4K TV media players. Total hardware cost is roughly €2,800 to €3,400 per location.",
+        points: [
+          "Zero hardware rental fees — one-time purchase owned by you",
+          "Standard Epson/Star ESC/POS printer protocols",
+          "Rugged wall mounts for staff hygiene and checklist tablets"
+        ]
+      },
+      {
+        num: 8,
+        tag: "SLIDE 08 / 11 • FINANCIAL JUSTIFICATION",
+        title: "8. Financial ROI & Monthly Value Creation",
+        objective: "Prove that the system pays for itself in under 4 months.",
+        script: "This system is a profit center, not a cost. You save €450/mo on cancelled software tools, recover €1,850/mo by stopping stock-outs and waste, gain €2,100/mo in kiosk combo upsells, and unlock €1,800/mo in peak rush speed. That is over €6,000 in monthly net value per store.",
+        points: [
+          "+€6,000+ total monthly value created per store",
+          "Eliminates ConnectTeam, Canva, and legacy POS subscriptions",
+          "System completely amortizes its development in under 4 months"
+        ]
+      },
+      {
+        num: 9,
+        tag: "SLIDE 09 / 11 • RISK & COMPLIANCE",
+        title: "9. Enterprise Risk Analysis & Defenses",
+        objective: "Neutralize all client fears regarding tech failure, staff resistance, and taxes.",
+        script: "We engineered defenses for every risk you raised: Internet outages are solved by our local edge engine. Staff training friction is solved by McDonald's-style photo build sheets. And Cyprus tax compliance is fully covered by automated 19% VAT fiscal receipts.",
+        points: [
+          "100% offline failover mode for internet dropouts",
+          "Visual photo build sheets (M8) get new staff productive in 5 mins",
+          "Built-in Cyprus 19% VAT engine with 1-click accountant exports"
+        ]
+      },
+      {
+        num: 10,
+        tag: "SLIDE 10 / 11 • ROADMAP & KICKOFF",
+        title: "10. Strategic System Roadmap & Immediate Next Steps",
+        objective: "Close the meeting with clear kickoff deliverables and immediate action.",
+        script: "We are ready to start. In Week 3, we deploy Phase 1 (Digital Checklists & HACCP Logbook) to Emba. All we need to kick off is your existing checklist notes, supplier list, and master meat weights. Let's build the operational backbone to scale MY GERMAN DÖNER.",
+        points: [
+          "First usable software value delivered in Week 3",
+          "Clear, transparent milestone payments tied to completed deliverables",
+          "Kickoff action: Approve Milestone 1 SOW & provide SOP notes"
+        ]
+      },
+      {
+        num: 11,
+        tag: "SLIDE 11 / 11 • COMPREHENSIVE READINESS",
+        title: "11. Full Coverage of Missing Sections 4–9 & Operational Gaps",
+        objective: "Explicitly assure Rico, Oli, and Markus that every missing or uncaptured topic from the brief is solved and ready to implement.",
+        script: "Your initial brief noted that Sections 4 through 9 were missing from the photos. We did not leave those as question marks. We mapped and engineered complete solutions for all six areas: Timeline, Hardware BOM, Cost ROI, Decision frameworks for Cyprus VAT & Drive-through, Risk Defenses, and Next Steps. We are 100% ready to execute the complete vision from Day 1.",
+        points: [
+          "Section 4 Timeline & Section 5 Hardware BOM fully detailed",
+          "Section 6 Cost ROI & Section 7 Decisions (19% VAT / ANPR drive-thru) engineered",
+          "Section 8 Risk Shield & Section 9 Next Steps ready for immediate deployment"
+        ]
+      }
+    ];
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-image');
+    const totalSlides = slides.length;
+    const thumbsContainer = document.getElementById('thumbsContainer');
+    const notesContent = document.getElementById('notesContent');
+
+    // Build Thumbnail Navigation
+    slides.forEach((slide, idx) => {
+      const thumb = document.createElement('div');
+      thumb.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
+      thumb.innerHTML = `
+        <img src="${slide.src}" alt="Slide ${idx + 1}">
+        <span class="thumb-num">${idx + 1}</span>
+      `;
+      thumb.onclick = () => goToSlide(idx);
+      thumbsContainer.appendChild(thumb);
+    });
+
+    function updatePresentation() {
+      const currentData = deckData[currentSlide];
+
+      // Update slide active state
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === currentSlide));
+      document.querySelectorAll('.thumb-card').forEach((t, idx) => t.classList.toggle('active', idx === currentSlide));
+
+      // Update HUD metadata
+      document.getElementById('slideTag').innerText = currentData.tag;
+      document.getElementById('slideTitle').innerText = currentData.title;
+
+      // Update Buttons
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+      // Update Speaker Notes Panel
+      notesContent.innerHTML = `
+        <div class="notes-section">
+          <div class="notes-section-title">Strategic Goal</div>
+          <div class="notes-script-text" style="color: var(--neon-cyan);">${currentData.objective}</div>
+        </div>
+
+        <div class="notes-section">
+          <div class="notes-section-title">Speaking Script (Say This)</div>
+          <div class="notes-script-text">"${currentData.script}"</div>
+        </div>
+
+        <div class="notes-section">
+          <div class="notes-section-title">Key Talking Points</div>
+          ${currentData.points.map(p => `<div class="bullet-point">${p}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updatePresentation();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updatePresentation();
+      }
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      updatePresentation();
+    }
+
+    function toggleSpeakerNotes() {
+      const panel = document.getElementById('speakerNotesPanel');
+      const btn = document.getElementById('toggleNotesBtn');
+      panel.classList.toggle('hidden');
+      btn.classList.toggle('active', !panel.classList.contains('hidden'));
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => alert(err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 's' || e.key === 'S') {
+        toggleSpeakerNotes();
+      } else if (e.key === 'Home') {
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        goToSlide(totalSlides - 1);
+      }
+    });
+
+    // Meeting Timer
+    let seconds = 0;
+    setInterval(() => {
+      seconds++;
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      document.getElementById('meetingTimer').innerText = `${mins}:${secs}`;
+    }, 1000);
+
+    // Initial render
+    updatePresentation();
+  </script>
+</body>
+</html>

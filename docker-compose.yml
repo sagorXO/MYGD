@@ -1,18 +1,18 @@
 services:
-  kiosk-terminal:
+  # 1. MYGD Edge In-Store Node (Kiosk, POS, KDS, Display, Staff, Boards, SQLite/Postgres)
+  mygd-edge:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: mygd-kiosk-app
+    container_name: mygd-edge-terminal
     restart: always
     ports:
-      - "3005:3000"
-    env_file:
-      - .env.local
+      - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+      - DATABASE_URL=postgresql://postgres.edsttfdxvyllsolijpjq:mygd_secret@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/menu || exit 1"]
       interval: 30s
@@ -20,6 +20,34 @@ services:
       retries: 3
       start_period: 15s
 
+  # 2. MYGD Cloud HQ Analytics Portal (Multi-Store Oversight, M2 Reorders, M9 VAT Audit)
+  mygd-hq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mygd-hq-analytics
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOSTNAME=0.0.0.0
+
+  # 3. Local In-Store PostgreSQL (Fallback / Layer 2 buffer)
+  postgres-local:
+    image: postgres:16-alpine
+    container_name: mygd-postgres-edge
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=mygd_admin
+      - POSTGRES_PASSWORD=mygd_secure_edge_pwd
+      - POSTGRES_DB=mygd_edge_db
+    volumes:
+      - mygd-edge-pgdata:/var/lib/postgresql/data
+
 volumes:
-  mygd-sqlite-data:
-    name: mygd-kiosk-sqlite-storage
+  mygd-edge-pgdata:
+    name: mygd-edge-pgdata-vol

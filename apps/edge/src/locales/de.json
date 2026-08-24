@@ -1,0 +1,99 @@
+{
+  "brand": {
+    "name": "MY GERMAN DÖNER",
+    "tagline": "DER ECHTE BERLINER DÖNER",
+    "est": "ZYPERN • SEIT 2026"
+  },
+  "attract": {
+    "tapToOrder": "BESTELLUNG STARTEN",
+    "dineIn": "HIER ESSEN",
+    "takeAway": "ZUM MITNEHMEN",
+    "chooseLanguage": "Sprache wählen",
+    "touchToStart": "Berühren Sie den Bildschirm, um die Bestellung zu starten",
+    "contactless": "Kontaktlos • Apple Pay • Google Pay • Barzahlung"
+  },
+  "menu": {
+    "allCategories": "Gesamte Karte",
+    "popular": "BELIEBT",
+    "new": "NEU",
+    "veggie": "VEGGIE",
+    "spicy": "SCHARF",
+    "chefChoice": "EMPFEHLUNG",
+    "customize": "ANPASSEN",
+    "viewCart": "WARENKORB ANZEIGEN",
+    "itemsInCart": "Artikel im Warenkorb",
+    "itemInCart": "Artikel im Warenkorb",
+    "emptyCart": "Ihr Warenkorb ist leer",
+    "emptyPrompt": "Wähle deine Lieblings-Döner, Wraps, Bowls oder Beilagen aus, um zu starten."
+  },
+  "customization": {
+    "title": "Bestellung anpassen",
+    "required": "ERFORDERLICH",
+    "optional": "OPTIONAL",
+    "meatChoice": "Fleischauswahl",
+    "breadChoice": "Brotauswahl",
+    "sauces": "Saucenauswahl",
+    "saucesHint": "Wähle bis zu 3 Saucen",
+    "extras": "Extras & Toppings",
+    "spiceLevel": "Schärfegrad",
+    "spiceMild": "Mild",
+    "spiceMedium": "Medium",
+    "spiceScharf": "Scharf",
+    "spiceExtra": "Extra Scharf",
+    "spiceHolle": "Hölle (Feurig)",
+    "makeItMeal": "Als Menü bestellen (+€3.50)",
+    "mealDescription": "Inklusive knuspriger Pommes & 0.33L Erfrischungsgetränk",
+    "selectDrink": "Getränk wählen",
+    "selectSide": "Beilage wählen",
+    "specialNotes": "Besondere Wünsche oder Allergiehinweise...",
+    "addToCart": "IN DEN WARENKORB"
+  },
+  "cart": {
+    "yourOrder": "DEINE BESTELLUNG",
+    "addMoreItems": "+ Weitere Artikel hinzufügen",
+    "specialInstructions": "Besondere Küchenanweisungen (z. B. ohne Zwiebeln)",
+    "subtotal": "Zwischensumme (ohne MwSt.)",
+    "vat": "Zypern MwSt. (19%)",
+    "total": "Gesamtbetrag",
+    "proceedToPayment": "ZUR ZAHLUNG",
+    "clearCart": "Bestellung leeren",
+    "emptyPrompt": "Noch keine Artikel hinzugefügt. Entdecke unsere Berliner Döner-Spezialitäten!"
+  },
+  "payment": {
+    "choosePayment": "ZAHLUNGSMETHODE WÄHLEN",
+    "totalDue": "ZU ZAHLENDER BETRAG",
+    "cash": "BARGELD",
+    "cashSubtitle": "An der Kasse / Barautomat zahlen",
+    "card": "KARTE",
+    "cardSubtitle": "Visa / Mastercard / Maestro / Girocard",
+    "contactless": "KONTAKTLOS",
+    "contactlessSubtitle": "Apple Pay / Google Pay / NFC",
+    "qrCode": "QR-CODE",
+    "qrCodeSubtitle": "PayPal / Revolut / TWINT / Krypto",
+    "scanQrPrompt": "Scannen Sie diesen QR-Code mit Ihrer Banking- oder Zahlungs-App",
+    "confirmPayment": "ZAHLUNG BESTÄTIGEN",
+    "securing": "Verbindung zum Terminal...",
+    "terminalSecure": "Verschlüsselt • PCI-DSS Konform • Lokales Terminal"
+  },
+  "confirmation": {
+    "orderConfirmed": "BESTELLUNG BESTÄTIGT!",
+    "thankYou": "Vielen Dank für Ihre Bestellung bei MY GERMAN DÖNER!",
+    "orderNumber": "IHRE BESTELLNUMMER",
+    "estimatedWait": "Geschätzte Wartezeit: ~8-10 Minuten",
+    "receiptPrinting": "Beleg wird gedruckt...",
+    "receiptReprint": "Beleg erneut drucken",
+    "newOrderIn": "Neue Bestellung in",
+    "startNewOrder": "NEUE BESTELLUNG",
+    "takePhotoPrompt": "Bitte fotografieren Sie Ihre Bestellnummer mit dem Smartphone"
+  },
+  "common": {
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "close": "Schließen",
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten. Bitte wenden Sie sich an das Personal."
+  }
+}
