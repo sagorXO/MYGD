@@ -37,8 +37,10 @@ model Location {
   auditLogs       AuditLog[]
   inventoryItems  InventoryItem[]
   checklistLogs   ChecklistLog[]
+  haccpLogs       HaccpLog[]
   shiftSchedules  ShiftSchedule[]
   timeLogs        TimeLog[]
+  staffShifts     StaffShift[]
   supplierOrders  SupplierOrder[]
 
   @@index([slug])
@@ -125,19 +127,21 @@ model Product {
   badge            String?  // "POPULAR", "NEW", "VEGGIE", "SPICY", "CHEF_CHOICE"
   calories         Int?
   allergens        String?  // JSON array: ["Gluten", "Dairy", "Sesame"]
-  isVeggie         Boolean  @default(false)
-  isSpicy          Boolean  @default(false)
-  isAvailable      Boolean  @default(true)
-  allowMealUpgrade Boolean  @default(true)
-  sortOrder        Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  vatCategory      VatCategory @default(FOOD_BEV)
+  isVeggie         Boolean     @default(false)
+  isSpicy          Boolean     @default(false)
+  isAvailable      Boolean     @default(true)
+  allowMealUpgrade Boolean     @default(true)
+  sortOrder        Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   category       Category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   modifierGroups ProductModifierGroup[]
   locationPrices LocationPrice[]
   orderItems     OrderItem[]
   recipes        Recipe[]
+  recipeBoms     RecipeBOM[]
   buildSheets    RecipeStep[]
 
   @@index([categoryId])
@@ -240,6 +244,7 @@ model Ingredient {
 
   supplier          Supplier?          @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   recipeIngredients RecipeIngredient[]
+  recipeBoms        RecipeBOM[]
   inventoryItems    InventoryItem[]
 
   @@index([sku])
@@ -273,6 +278,22 @@ model RecipeIngredient {
 
   @@unique([recipeId, ingredientId])
   @@index([recipeId])
+  @@index([ingredientId])
+}
+
+model RecipeBOM {
+  id           String   @id @default(cuid())
+  productId    String
+  ingredientId String
+  amountGrams  Float    // Gram-level portion weight (e.g. 150.0g spit meat)
+  isOptional   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ingredientId])
+  @@index([productId])
   @@index([ingredientId])
 }
 
@@ -342,9 +363,11 @@ model SupplierOrder {
   supplierId    String
   orderNumber   String      @unique // e.g. "SUP-EMBA-20260820-001"
   status        String      @default("PENDING") // PENDING, SENT_WHATSAPP, CONFIRMED, DELIVERED
-  totalEUR      Float       @default(0.0)
-  itemsJson     String      // JSON snapshot of ordered quantities and SKUs
-  dispatchedAt  DateTime?
+  totalEUR         Float       @default(0.0)
+  itemsJson        String      // JSON snapshot of ordered quantities and SKUs
+  pinApprovalToken String?     // Token generated when >€250 approval is required
+  approvedByPin    String?     // 4-digit PIN of owner (Rico / Oliver)
+  dispatchedAt     DateTime?
   expectedDelivery DateTime?
   createdAt     DateTime    @default(now())
 
@@ -383,6 +406,23 @@ model ChecklistLog {
   @@index([locationId, createdAt])
 }
 
+model HaccpLog {
+  id               String   @id @default(cuid())
+  locationId       String
+  equipmentName    String   // "Walk-in Fridge 1", "Deep Freezer", "Rotisserie Spit"
+  targetType       String   // "CHILLED" (0-5°C), "FROZEN" (-18 to -22°C), "HOT_HOLDING" (>=63°C)
+  temperature      Float    // Recorded temperature in Celsius
+  isCompliant      Boolean  // True if within statutory limits
+  correctiveAction String?  // Mandatory explanation if in Danger Zone (5°C - 63°C)
+  loggedBy         String   // Staff name or PIN
+  createdAt        DateTime @default(now())
+
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@index([locationId, createdAt])
+  @@index([isCompliant])
+}
+
 // ---------------------------------------------------------
 // 8. M7: SHIFT SCHEDULING & PIN TIMECLOCK
 // ---------------------------------------------------------
@@ -413,6 +453,26 @@ model TimeLog {
   clockOut    DateTime?
   totalMinutes Int?
   isApproved  Boolean   @default(false)
+
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@index([locationId, staffId])
+  @@index([clockIn])
+}
+
+model StaffShift {
+  id           String    @id @default(cuid())
+  locationId   String
+  staffId      String
+  staffName    String
+  role         String    // "CASHIER", "GRILL_MASTER", "ASSEMBLER", "MANAGER"
+  pin          String?   // 4-digit PIN used for timeclock
+  clockIn      DateTime  @default(now())
+  clockOut     DateTime?
+  totalMinutes Int?
+  isApproved   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   location Location @relation(fields: [locationId], references: [id])
 
@@ -469,9 +529,11 @@ enum OrderType {
 }
 
 enum OrderStatus {
+  PENDING
   PENDING_PAYMENT
   PAID
   PREPARING
+  READY
   READY_FOR_PICKUP
   COMPLETED
   CANCELLED
@@ -500,9 +562,10 @@ model OrderItem {
   productName    String
   productSku     String
   basePrice      Float
-  quantity       Int      @default(1)
-  spiceLevel     Int      @default(1)
-  isMealBundle   Boolean  @default(false)
+  quantity       Int         @default(1)
+  spiceLevel     Int         @default(1)
+  vatCategory    VatCategory @default(FOOD_BEV)
+  isMealBundle   Boolean     @default(false)
   mealDrinkName  String?
   mealSideName   String?
   mealPriceAddon Float    @default(0.00)
@@ -558,6 +621,11 @@ model KitchenTicket {
 
 enum TicketStatus {
   QUEUED
+  IN_PREPARATION
+  READY
+  COMPLETED
+  VOIDED
+  CANCELLED
   PRINTING
   PRINTED
   FAILED
@@ -652,3 +720,10 @@ enum SyncStatus {
   FAILED_RETRYING
   PERMANENT_FAIL
 }
+
+enum VatCategory {
+  FOOD_BEV
+  ALCOHOL
+  ZERO
+}
+

@@ -322,7 +322,7 @@ export const StoreManagerAdminDashboard: React.FC<StoreManagerAdminDashboardProp
               {/* KPI 1: Gross Sales */}
               <div className="bg-[#242424] rounded-2xl p-5 border-2 border-[#FF5722] relative overflow-hidden shadow-lg shadow-[#FF5722]/10">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Today's Gross Sales</span>
+                  <span className="text-xs font-semibold tracking-wider text-[#9E9E9E] uppercase">Today&apos;s Gross Sales</span>
                   <span className="px-2 py-0.5 rounded-md bg-[#10B981]/20 text-[#10B981] text-xs font-bold flex items-center gap-0.5">
                     <TrendingUp className="w-3 h-3" />
                     +14%

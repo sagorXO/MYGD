@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
 import { generateUniqueOrderNumber } from "@/lib/orderNumber";
+import { eventBroker } from "@/lib/events";
+import { getCashDrawerCommand } from "@/lib/order-engine";
 import QRCode from "qrcode";
 
 export const dynamic = "force-dynamic";
@@ -341,6 +343,27 @@ export async function POST(request: Request) {
       return order;
     });
 
+    // 7. Publish Real-Time Events across store channels (<15ms)
+    eventBroker.publish("kds", {
+      type: "ORDER_CREATED",
+      orderId: createdOrder.id,
+      orderNumber: createdOrder.orderNumber,
+      orderType: createdOrder.orderType,
+      itemsCount: validatedItemsData.length,
+      timestamp: createdOrder.createdAt.toISOString(),
+    });
+
+    eventBroker.publish("display", {
+      type: "ORDER_CREATED",
+      orderNumber: createdOrder.orderNumber,
+      shortNumber: String(createdOrder.dailySequence).padStart(3, "0"),
+      status: "PREPARING",
+    });
+
+    // 8. Generate Cash Drawer Solenoid Kick Command for Hardware POS
+    const drawerCmd = getCashDrawerCommand(createdOrder.paymentMethod);
+    const cashDrawerPulse = drawerCmd ? Array.from(drawerCmd) : null;
+
     return NextResponse.json({
       success: true,
       orderId: createdOrder.id,
@@ -354,6 +377,7 @@ export async function POST(request: Request) {
       paymentMethod: createdOrder.paymentMethod,
       status: createdOrder.orderStatus,
       paymentStatus: createdOrder.paymentStatus,
+      cashDrawerPulse,
       qrDataUrl,
       createdAt: createdOrder.createdAt.toISOString(),
     });

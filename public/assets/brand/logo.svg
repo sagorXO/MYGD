@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <rect width="400" height="120" rx="16" fill="#1F1F21"/>
+  <circle cx="60" cy="60" r="38" fill="#E50D7E"/>
+  <path d="M45 42 L65 42 Q78 42 78 52 Q78 60 65 60 L53 60 L53 78 L45 78 Z" fill="#FFFFFF"/>
+  <path d="M53 48 L63 48 Q70 48 70 54 Q70 60 63 60 L53 60 Z" fill="#E50D7E"/>
+  <text x="115" y="55" fill="#FFFFFF" font-family="Oswald, sans-serif" font-size="28" font-weight="900" letter-spacing="2">MY GERMAN DÖNER</text>
+  <text x="115" y="80" fill="#00FCED" font-family="Figtree, sans-serif" font-size="14" font-weight="700" letter-spacing="3">BITE THE HYPE · CYPRUS</text>
+</svg>
