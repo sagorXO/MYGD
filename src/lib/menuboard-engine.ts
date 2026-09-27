@@ -33,6 +33,7 @@ export interface MenuBoardScreenConfig {
   layoutType: LayoutPresetType | string;
   heroLayout?: boolean;
   activeDaypart?: string;
+  boardImageUrl?: string;
   items: MenuBoardItem[];
   isOnline?: boolean;
   updatedAt?: string | Date;
@@ -51,6 +52,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     layoutType: "PROMO_HERO",
     heroLayout: true,
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-1-doener-wraps-bigs-bowls.jpg",
     items: [
       {
         id: "prod-hero-1",
@@ -74,6 +76,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "SANDWICHES",
     layoutType: "PRICE_MATRIX",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-2-burgers-pizzas-doezza.jpg",
     items: [
       {
         id: "prod-doner-1",
@@ -135,6 +138,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "ROLLED DÜRÜM",
     layoutType: "PRICE_MATRIX",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-3-loaded-fries-nuggets-wings-meatballs.jpg",
     items: [
       {
         id: "prod-durum-1",
@@ -183,6 +187,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "BOXES & BOWLS",
     layoutType: "SPLIT_COMBO",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-4-drinks-beers-smoothies-coffee.jpg",
     items: [
       {
         id: "prod-box-1",
@@ -231,6 +236,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "ICONS & MEALS",
     layoutType: "SPLIT_COMBO",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-5-sides-fries-kids-meal.jpg",
     items: [
       {
         id: "prod-currywurst-1",

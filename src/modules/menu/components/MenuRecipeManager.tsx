@@ -21,7 +21,9 @@ import {
   Sparkles,
   AlertCircle,
   CheckCircle2,
+  Image as ImageIcon,
 } from "lucide-react";
+import { generateVectorPlaceholder } from "@/lib/menu-assets";
 
 interface Supplier {
   id: string;
@@ -470,11 +472,34 @@ export const MenuRecipeManager: React.FC = () => {
         {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className={`bg-[#1F1F21] border rounded-2xl p-4 flex flex-col justify-between gap-4 transition-all shadow-xl ${
+            className={`bg-[#1F1F21] border rounded-2xl p-4 flex flex-col justify-between gap-4 transition-all shadow-xl overflow-hidden ${
               !product.isAvailable ? "border-red-900/60 opacity-75" : "border-[#3A3A3E] hover:border-zinc-500"
             }`}
           >
             <div>
+              {/* Product Food Photo Banner */}
+              <div className="relative h-36 -mx-4 -mt-4 mb-3 overflow-hidden bg-zinc-900 border-b border-[#2B2B2E]">
+                <img
+                  src={product.imageUrl || generateVectorPlaceholder(product.name, "MYGD MENU")}
+                  alt={product.name}
+                  className={`w-full h-full object-cover transition-transform duration-300 hover:scale-105 ${
+                    !product.isAvailable ? "grayscale" : ""
+                  }`}
+                  onError={(e) => {
+                    e.currentTarget.src = generateVectorPlaceholder(product.name, "MYGD MENU");
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F21] via-transparent to-transparent" />
+                {product.badge && (
+                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-lg bg-[#E50D7E] text-white font-mono text-[9px] font-black uppercase tracking-wider shadow">
+                    {product.badge}
+                  </span>
+                )}
+                <div className="absolute bottom-2 right-2.5 px-2.5 py-0.5 rounded-lg bg-black/80 backdrop-blur text-[#00FCED] font-mono font-black text-sm border border-white/10">
+                  {formatEuro(product.basePrice)}
+                </div>
+              </div>
+
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -944,6 +969,21 @@ export const MenuRecipeManager: React.FC = () => {
                     placeholder="https://images.unsplash.com/..."
                     className="w-full px-3 py-2 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl text-white focus:outline-none focus:border-[#E50D7E]"
                   />
+                  {formData.imageUrl && (
+                    <div className="mt-2 h-24 w-full rounded-xl overflow-hidden bg-black border border-[#3A3A3E] relative">
+                      <img
+                        src={formData.imageUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = generateVectorPlaceholder("Invalid Image", "PREVIEW");
+                        }}
+                      />
+                      <span className="absolute bottom-1 right-2 text-[9px] bg-black/70 px-1.5 py-0.5 rounded text-zinc-300 font-mono">
+                        Live Preview
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 

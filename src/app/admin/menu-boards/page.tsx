@@ -21,7 +21,9 @@ import {
   Sun,
   Moon,
   Zap,
+  ExternalLink,
 } from "lucide-react";
+import Link from "next/link";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 import {
   MenuBoardScreenConfig,
@@ -29,6 +31,7 @@ import {
   CANONICAL_SCREEN_CONFIGS,
   DaypartType,
 } from "@/lib/menuboard-engine";
+import { generateVectorPlaceholder } from "@/lib/menu-assets";
 
 export default function MobileOwnerMenuBoardsCMS() {
   const [configs, setConfigs] = useState<Record<number, MenuBoardScreenConfig>>(CANONICAL_SCREEN_CONFIGS);
@@ -234,8 +237,9 @@ export default function MobileOwnerMenuBoardsCMS() {
         </div>
 
         {/* 4 Physical Screen Select Tabs */}
-        <div className="mt-3 grid grid-cols-4 gap-1.5 font-mono text-xs">
-          {[1, 2, 3, 4].map((num) => {
+        {/* 5 Physical Screen Select Tabs */}
+        <div className="mt-3 grid grid-cols-5 gap-1.5 font-mono text-xs">
+          {[1, 2, 3, 4, 5].map((num) => {
             const isSelected = selectedScreenNum === num;
             return (
               <button
@@ -260,6 +264,43 @@ export default function MobileOwnerMenuBoardsCMS() {
 
       {/* Main Content Area */}
       <main className="px-4 py-4 max-w-xl mx-auto space-y-4">
+        {/* Official 4K Menu Board Preview */}
+        <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono text-[#00FCED] uppercase tracking-wider font-bold">
+              Official Graphic Signage Preview
+            </span>
+            <Link
+              href="/boards"
+              target="_blank"
+              className="text-[10px] font-mono text-[#E5A93C] hover:underline flex items-center gap-1"
+            >
+              <span>Open 4K Player</span>
+              <ExternalLink size={10} />
+            </Link>
+          </div>
+          <div className="h-44 w-full rounded-xl overflow-hidden bg-black border border-[#2B2B2E] relative flex items-center justify-center">
+            <img
+              src={`/assets/boards/board-${
+                selectedScreenNum === 1
+                  ? "1-doener-wraps-bigs-bowls"
+                  : selectedScreenNum === 2
+                  ? "2-burgers-pizzas-doezza"
+                  : selectedScreenNum === 3
+                  ? "3-loaded-fries-nuggets-wings-meatballs"
+                  : selectedScreenNum === 4
+                  ? "4-drinks-beers-smoothies-coffee"
+                  : "5-sides-fries-kids-meal"
+              }.jpg`}
+              alt={`Screen ${selectedScreenNum} Board`}
+              className="h-full w-full object-contain"
+              onError={(e) => {
+                e.currentTarget.src = generateVectorPlaceholder(`Screen ${selectedScreenNum}`, "MYGD 4K BOARD");
+              }}
+            />
+          </div>
+        </div>
+
         {/* Active Screen Info & Daypart Controls */}
         <div className="bg-[#2B2B2E] border border-[#3A3A3E] rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -323,19 +364,16 @@ export default function MobileOwnerMenuBoardsCMS() {
                 {!isEditing ? (
                   <div className="p-3.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className={`w-12 h-12 rounded-xl object-cover shrink-0 ${
-                            item.isSoldOut ? "grayscale" : ""
-                          }`}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-500 font-bold shrink-0">
-                          GD
-                        </div>
-                      )}
+                      <img
+                        src={item.imageUrl || generateVectorPlaceholder(item.name, "MYGD MENU")}
+                        alt={item.name}
+                        className={`w-12 h-12 rounded-xl object-cover shrink-0 border border-[#3A3A3E] ${
+                          item.isSoldOut ? "grayscale" : ""
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = generateVectorPlaceholder(item.name, "MYGD MENU");
+                        }}
+                      />
 
                       <div className="truncate">
                         <div className="flex items-center gap-1.5">

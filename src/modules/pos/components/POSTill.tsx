@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
+import { generateVectorPlaceholder } from "@/lib/menu-assets";
 
 export const POSTill: React.FC = () => {
   const [locationSlug, setLocationSlug] = useState<"EMBA" | "LIMASSOL">("EMBA");
@@ -312,32 +313,45 @@ export const POSTill: React.FC = () => {
                 whileTap={{ scale: 0.96 }}
                 onClick={() => handleSelectProduct(product)}
                 disabled={!product.isAvailable}
-                className={`border rounded-2xl p-3 flex flex-col justify-between text-left transition-all relative overflow-hidden group shadow ${
+                className={`border rounded-2xl p-2.5 flex flex-col justify-between text-left transition-all relative overflow-hidden group shadow ${
                   product.isAvailable
                     ? "bg-[#2B2B2E] hover:bg-[#343438] border-[#3A3A3E]"
                     : "bg-[#1F1F21] border-red-900/50 opacity-60 cursor-not-allowed"
                 }`}
               >
                 <div>
-                  <div className="flex items-start justify-between gap-1">
-                    <span className="font-display font-black text-xs text-white group-hover:text-[#E50D7E] transition-colors leading-tight">
-                      {product.name}
-                    </span>
+                  <div className="relative h-20 -mx-2.5 -mt-2.5 mb-2 rounded-t-xl overflow-hidden bg-black">
+                    <img
+                      src={product.imageUrl || generateVectorPlaceholder(product.name, "MYGD POS")}
+                      alt={product.name}
+                      className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                        !product.isAvailable ? "grayscale" : ""
+                      }`}
+                      onError={(e) => {
+                        e.currentTarget.src = generateVectorPlaceholder(product.name, "MYGD POS");
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#2B2B2E] via-transparent to-transparent" />
                     {product.badge && (
-                      <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-[#1F1F21] text-[#E5A93C] font-bold border border-[#3A3A3E]">
+                      <span className="absolute top-1.5 left-1.5 text-[8px] font-mono px-1.5 py-0.5 rounded bg-[#1F1F21]/90 text-[#E5A93C] font-bold border border-[#3A3A3E]">
                         {product.badge}
                       </span>
                     )}
                   </div>
+                  <div className="flex items-start justify-between gap-1">
+                    <span className="font-display font-black text-xs text-white group-hover:text-[#E50D7E] transition-colors leading-tight line-clamp-1">
+                      {product.name}
+                    </span>
+                  </div>
                   {product.description && (
-                    <span className="text-[10px] text-zinc-400 line-clamp-2 mt-1">
+                    <span className="text-[10px] text-zinc-400 line-clamp-1 mt-0.5">
                       {product.description}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#3A3A3E]">
-                  <span className="font-mono font-black text-sm text-[#E50D7E]">
+                <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-[#3A3A3E]">
+                  <span className="font-mono font-black text-xs text-[#E50D7E]">
                     {formatEuro(product.basePrice)}
                   </span>
                   {product.isAvailable ? (

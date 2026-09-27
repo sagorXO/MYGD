@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SignageDaypartSchema = z.enum(["AUTO", "LUNCH", "DINNER", "LATE_NIGHT"]);
+export const SignageDaypartSchema = z.enum(["AUTO", "LUNCH", "DINNER", "LATE_NIGHT", "MORNING"]);
 export type SignageDaypart = z.infer<typeof SignageDaypartSchema>;
 
 export const SignageItemSchema = z.object({
@@ -11,7 +11,8 @@ export const SignageItemSchema = z.object({
   description: z.string().optional(),
   priceEUR: z.number().positive(),
   largePriceEUR: z.number().optional(),
-  badge: z.enum(["TOP_SELLER", "SPICY_KICK", "CHEF_CHOICE", "VEGGIE", "NEW"]).optional(),
+  badge: z.string().optional(),
+  imageUrl: z.string().optional(),
   isAvailable: z.boolean().default(true),
   modifiers: z.array(z.string()).optional(),
   calories: z.number().optional(),
@@ -24,6 +25,7 @@ export const SignageScreenConfigSchema = z.object({
   subtitle: z.string().optional(),
   layoutType: z.enum(["PROMO_HERO", "PRICE_MATRIX", "SPLIT_COMBO", "DRINKS_SIDES"]),
   activeDaypart: SignageDaypartSchema.default("AUTO"),
+  boardImageUrl: z.string().optional(),
   items: z.array(SignageItemSchema),
   bannerMessage: z.string().optional(),
   updatedAt: z.string(),
