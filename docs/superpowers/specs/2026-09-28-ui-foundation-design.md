@@ -122,7 +122,8 @@ match (new primary `#E50C7E`, light theme, principles above).
 (dark theme uses borders + lighter surfaces instead of heavy shadows); motion `--dur-fast 120ms`,
 `--dur-base 200ms`, `--dur-slow 320ms`, `--ease-out` → all `0ms` under reduced motion.
 
-**Surface density** — `data-surface` on `<html>`, set by each route's layout:
+**Surface density** — `data-surface` (and `data-theme`) on a `SurfaceRoot` wrapper element rendered
+by each route's layout (App Router nested layouts cannot set attributes on `<html>`):
 
 | Surface | Base font | Min touch target | Text selection |
 |---|---|---|---|
