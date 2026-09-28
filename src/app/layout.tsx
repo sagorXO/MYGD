@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ClickToComponent } from "@/components/ClickToComponent";
+import { fontVariables } from "@/ui/fonts";
 
 export const metadata: Metadata = {
   title: "MY GERMAN DÖNER — Self-Service Kiosk",
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark bg-[#1A1A1A] text-white">
+    <html lang="en" data-theme="dark" className={`dark ${fontVariables} bg-[#1A1A1A] text-white`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
