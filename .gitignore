@@ -40,3 +40,6 @@ prisma/data/*.db-journal
 prisma/data/*.db-wal
 prisma/data/*.db-shm
 *.db
+
+# Superpowers plan workspaces (local scratch)
+.superpowers/
