@@ -134,7 +134,19 @@ export function IndexTable<Row>({
                   <tr
                     key={k}
                     onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    className={cn("border-t border-border-subtle", onRowClick && "cursor-pointer hover:bg-surface-hover", isSelected && "bg-accent-subtle")}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.target !== e.currentTarget) return;
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              onRowClick(row);
+                            }
+                          }
+                        : undefined
+                    }
+                    className={cn("border-t border-border-subtle", onRowClick && "cursor-pointer hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus", isSelected && "bg-accent-subtle")}
                   >
                     {selectable && (
                       <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>

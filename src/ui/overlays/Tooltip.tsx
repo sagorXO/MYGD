@@ -19,7 +19,10 @@ export function Tooltip({ content, children }: TooltipProps) {
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
       onKeyDown={(e) => {
-        if (e.key === "Escape") setOpen(false);
+        if (e.key === "Escape" && open) {
+          e.preventDefault();
+          setOpen(false);
+        }
       }}
     >
       {cloneElement(children, { "aria-describedby": id })}

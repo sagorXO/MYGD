@@ -71,7 +71,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className={cn("animate-in pointer-events-auto flex items-start gap-3 rounded-md border-l-4 bg-surface-raised px-4 py-3 text-sm text-text shadow-3", TONE[t.tone])}
           >
             <p className="flex-1">{t.message}</p>
-            <button type="button" aria-label="Dismiss notification" onClick={() => dismiss(t.id)} className="text-text-subtle hover:text-text">
+            <button
+              type="button"
+              aria-label="Dismiss notification"
+              onClick={() => dismiss(t.id)}
+              className="-my-2 -mr-2 flex min-h-hit min-w-hit items-center justify-center rounded-sm text-text-subtle hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
               <X aria-hidden width={16} height={16} />
             </button>
           </div>

@@ -35,7 +35,7 @@ export function Banner({ tone = "info", title, children, action, onDismiss, clas
           type="button"
           aria-label="Dismiss"
           onClick={onDismiss}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="flex h-8 min-h-hit w-8 min-w-hit shrink-0 items-center justify-center rounded-sm hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <X aria-hidden width={16} height={16} />
         </button>

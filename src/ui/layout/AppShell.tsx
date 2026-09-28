@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { Logo } from "@/ui/display/Logo";
 import { ThemeToggle } from "@/ui/theme/ThemeToggle";
 import type { Surface } from "@/ui/theme/theme";
+import { MobileNav } from "./MobileNav";
 
 export interface NavItem {
   href: string;
@@ -30,6 +31,27 @@ export function AppShell({ surface, nav = [], topBarSlot, user, fullBleed = fals
       </main>
     );
   }
+  const navList = nav.length > 0 ? (
+    <ul className="space-y-0.5">
+      {nav.map(({ href, label, icon: Glyph, active }) => (
+        <li key={href}>
+          <Link
+            href={href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "flex h-9 min-h-hit items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-fast",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+              active ? "bg-accent-subtle text-accent-text" : "text-text-secondary hover:bg-surface-hover hover:text-text",
+            )}
+          >
+            <Glyph aria-hidden width={18} height={18} strokeWidth={1.5} />
+            {label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
   return (
     <div className="flex min-h-screen flex-col">
       <a
@@ -40,6 +62,7 @@ export function AppShell({ surface, nav = [], topBarSlot, user, fullBleed = fals
       </a>
       {/* Brand moment: the top bar is logo-black in both themes (spec §4.1, principle 7). */}
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 bg-[var(--brand-black)] px-4 text-[var(--mygd-gray-0)]">
+        {navList && <MobileNav>{navList}</MobileNav>}
         <Logo size={36} />
         <span className="font-display text-lg uppercase tracking-wide">My German Doener</span>
         <div className="ml-auto flex items-center gap-3">
@@ -51,24 +74,7 @@ export function AppShell({ surface, nav = [], topBarSlot, user, fullBleed = fals
       <div className="flex flex-1">
         {nav.length > 0 && (
           <nav aria-label="Main" className="hidden w-60 shrink-0 border-r border-border bg-surface p-3 md:block">
-            <ul className="space-y-0.5">
-              {nav.map(({ href, label, icon: Glyph, active }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-fast",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                      active ? "bg-accent-subtle text-accent-text" : "text-text-secondary hover:bg-surface-hover hover:text-text",
-                    )}
-                  >
-                    <Glyph aria-hidden width={18} height={18} strokeWidth={1.5} />
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {navList}
           </nav>
         )}
         <main id="main" className="min-w-0 flex-1">

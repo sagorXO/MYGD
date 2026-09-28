@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
+import { lockScroll, popDialog, pushDialog, shouldHandleKey, unlockScroll } from "./dialogStack";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -12,15 +13,17 @@ export function useDialog(open: boolean, onClose: () => void): RefObject<HTMLDiv
 
   useEffect(() => {
     if (!open) return;
+    const id = Symbol("dialog");
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const { overflow } = document.body.style;
-    document.body.style.overflow = "hidden";
+    pushDialog(id);
+    lockScroll(document.body.style);
     const first = panel.current?.querySelector<HTMLElement>(FOCUSABLE);
     (first ?? panel.current)?.focus();
 
     const onKey = (e: KeyboardEvent) => {
+      if (!shouldHandleKey(e, id)) return;
       if (e.key === "Escape") {
-        e.stopPropagation();
+        e.preventDefault();
         onCloseRef.current();
         return;
       }
@@ -43,7 +46,8 @@ export function useDialog(open: boolean, onClose: () => void): RefObject<HTMLDiv
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = overflow;
+      popDialog(id);
+      unlockScroll(document.body.style);
       previous?.focus();
     };
   }, [open]);

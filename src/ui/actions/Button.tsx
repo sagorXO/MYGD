@@ -25,7 +25,7 @@ const ICON_SIZE: Record<ButtonSize, number> = { sm: 16, md: 16, lg: 20, xl: 24 }
 
 export function buttonClasses({ variant, size, fullWidth = false }: { variant: ButtonVariant; size: ButtonSize; fullWidth?: boolean }) {
   return cn(
-    "relative inline-flex select-none items-center justify-center whitespace-nowrap transition-colors duration-fast ease-out",
+    "relative inline-flex min-h-hit select-none items-center justify-center whitespace-nowrap transition-colors duration-fast ease-out",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
     "disabled:cursor-not-allowed disabled:opacity-50 active:translate-y-px",
     VARIANT[variant],

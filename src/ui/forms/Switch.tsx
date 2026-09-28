@@ -13,7 +13,7 @@ interface SwitchProps {
 
 export function Switch({ id, label, checked, onChange, disabled = false, className }: SwitchProps) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex min-h-hit items-center gap-3", className)}>
       <button
         id={id}
         type="button"

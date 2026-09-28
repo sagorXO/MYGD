@@ -63,6 +63,7 @@ function Showcase() {
   const [storeOpen, setStoreOpen] = useState(true);
   const [modal, setModal] = useState(false);
   const [sheet, setSheet] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortState>({ columnId: "id", direction: "asc" });
   const [loadingTable, setLoadingTable] = useState(false);
@@ -248,7 +249,33 @@ function Showcase() {
           </>
         }
       >
-        <TextField id="m-name" label="Name" defaultValue="Classic Döner" />
+        <div className="space-y-3">
+          <TextField id="m-name" label="Name" defaultValue="Classic Döner" />
+          <div className="flex items-center gap-2">
+            <Menu label="Item actions" items={[{ id: "dup", label: "Duplicate", onSelect: () => {} }]} />
+            <Button variant="critical" onClick={() => setConfirm(true)}>
+              Delete…
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        open={confirm}
+        onClose={() => setConfirm(false)}
+        title="Delete item?"
+        size="sm"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setConfirm(false)}>
+              Keep
+            </Button>
+            <Button variant="critical" onClick={() => setConfirm(false)}>
+              Delete
+            </Button>
+          </>
+        }
+      >
+        This cannot be undone.
       </Modal>
       <Sheet open={sheet} side="right" onClose={() => setSheet(false)} title="Cart">
         <EmptyState icon={Bell} title="Your cart is empty" />

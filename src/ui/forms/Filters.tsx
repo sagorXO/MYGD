@@ -19,7 +19,7 @@ export function Filters({ chips, onRemove, onClearAll, className }: FiltersProps
             type="button"
             aria-label={`Remove filter ${chip.label}`}
             onClick={() => onRemove(chip.key)}
-            className="flex h-5 w-5 items-center justify-center rounded-pill text-text-subtle hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="flex h-5 min-h-hit w-5 min-w-hit items-center justify-center rounded-pill text-text-subtle hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <X aria-hidden width={12} height={12} />
           </button>

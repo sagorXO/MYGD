@@ -38,7 +38,12 @@ export function Menu({ label, items, trigger = "icon" }: MenuProps) {
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const nodes = Array.from(root.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
     const i = nodes.indexOf(document.activeElement as HTMLElement);
-    if (e.key === "Escape") setOpen(false);
+    if (e.key === "Escape" && open) {
+      e.preventDefault();
+      setOpen(false);
+      root.current?.querySelector<HTMLElement>('[aria-haspopup="menu"]')?.focus();
+      return;
+    }
     if (e.key === "ArrowDown" && nodes.length) {
       e.preventDefault();
       nodes[(i + 1) % nodes.length].focus();
