@@ -14,51 +14,32 @@ MY GERMAN DÖNER combines Berlin streetwear culture, industrial graphite texture
 
 ---
 
-## 2. Color System & OKLCH Token Architecture
+## 2. Color System (v2 — 2026-09-28)
 
-The color system is defined in modern **OKLCH color space** for perceptual uniformity across high-gamut 4K displays and sunlight-readable kiosk screens.
+**Source of truth:** `src/ui/tokens.css`. This section documents it; if they disagree, the code wins.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           CORE COLOR PALETTE                                │
-├─────────────────────────┬─────────────────────────┬─────────────────────────┤
-│ Dark Graphite (Canvas)  │ Card Surface            │ Border & Dividers       │
-│ oklch(0.18 0.005 285)   │ oklch(0.24 0.005 285)   │ oklch(0.30 0.008 285)   │
-│ HEX: #1F1F21            │ HEX: #2B2B2E            │ HEX: #3A3A3E            │
-├─────────────────────────┼─────────────────────────┼─────────────────────────┤
-│ Electric Neon Magenta   │ Electric Neon Cyan      │ Döner Gold              │
-│ oklch(0.60 0.28 350)    │ oklch(0.88 0.16 200)    │ oklch(0.75 0.18 75)     │
-│ HEX: #E50D7E (Primary)  │ HEX: #00FCED (Badges)   │ HEX: #E5A93C (Popular)  │
-├─────────────────────────┼─────────────────────────┼─────────────────────────┤
-│ Success / Veggie Green  │ Hazard / Hot Red        │ Pure White Text         │
-│ oklch(0.65 0.18 145)    │ oklch(0.58 0.22 25)     │ oklch(0.98 0.000 0)     │
-│ HEX: #4CAF50            │ HEX: #E53935            │ HEX: #FFFFFF            │
-└─────────────────────────┴─────────────────────────┴─────────────────────────┘
-```
+- **Primary:** `#E50C7E` — MYGD magenta from the official badge logo. Primary buttons, selection,
+  focus ring. White labels on magenta are bold (contrast 4.48:1). Accent *text* uses `#B8095F`
+  on light and `#F170B0` on dark (≥ 5.9:1).
+- **Brand black:** `#000000` — logo, app top bar, brand headers (same in both themes).
+- **Status:** success (green), warning (amber — replaces the old orange `#FF5722`), danger (red),
+  info (cyan — formerly the brand cyan `#00FCED`), highlight (gold — bestsellers).
 
-### CSS Variables & Semantic Mapping
-```css
-:root {
-  /* Surface Tokens */
-  --mygd-canvas: oklch(0.18 0.005 285);      /* #1F1F21 */
-  --mygd-surface: oklch(0.24 0.005 285);     /* #2B2B2E */
-  --mygd-surface-elevated: oklch(0.28 0.006 285); /* #353539 */
-  --mygd-border: oklch(0.30 0.008 285);      /* #3A3A3E */
-  --mygd-border-subtle: oklch(0.25 0.006 285); /* #2E2E32 */
+### Light theme
+Canvas `#F4F4F5`, cards `#FFFFFF`, text `#18181B`, secondary `#52525B`, subtle `#65656D`,
+borders `#D4D4D8`, input borders `#8A8A93`.
 
-  /* Brand Accents */
-  --mygd-magenta: oklch(0.60 0.28 350);      /* #E50D7E - Primary CTA, active states */
-  --mygd-cyan: oklch(0.88 0.16 200);         /* #00FCED - Combos, Secondary pills */
-  --mygd-gold: oklch(0.75 0.18 75);          /* #E5A93C - Bestsellers, VIP */
-  --mygd-green: oklch(0.65 0.18 145);        /* #4CAF50 - Vegetarian, Success */
-  --mygd-red: oklch(0.58 0.22 25);           /* #E53935 - Spiciness, Critical HACCP */
+### Dark theme
+Canvas `#0B0B0C`, cards `#18181B`, text `#FAFAFA`, secondary `#A1A1AA`, subtle `#8A8A93`,
+borders `#333338`, input borders `#6B6B73`.
 
-  /* Neutral Typography */
-  --mygd-text-primary: oklch(0.98 0.000 0);  /* #FFFFFF */
-  --mygd-text-secondary: oklch(0.72 0.010 285); /* #A1A1AA */
-  --mygd-text-muted: oklch(0.52 0.010 285);  /* #71717A */
-}
-```
+### Design language
+Shopify-admin-grade calm — cards on a quiet canvas, one accent per view, page-header anatomy,
+scannable index tables, small line icons — expressed in MYGD's own identity. No Shopify assets,
+code or icons (their licence forbids look-alike stand-alone apps). Icons: `lucide-react`,
+1.5 stroke, 16/20/24 px.
+
+The previous muted grey `#71717A` failed WCAG AA on cards (2.92:1) and is retired.
 
 ---
 

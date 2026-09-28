@@ -43,3 +43,4 @@ prisma/data/*.db-shm
 
 # Superpowers plan workspaces (local scratch)
 .superpowers/
+artifacts/
