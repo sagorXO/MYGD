@@ -24,4 +24,5 @@ test("dark mode is driven by data-theme and modules are scanned", () => {
   assert.deepEqual(config.darkMode, ["selector", '[data-theme="dark"]']);
   assert.ok(config.content.some((g) => g.includes("src/modules")));
   assert.ok(config.content.some((g) => g.includes("src/ui")));
+  assert.ok(config.content.some((g) => g.includes("src/features")));
 });
