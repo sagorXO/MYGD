@@ -44,3 +44,7 @@ prisma/data/*.db-shm
 # Superpowers plan workspaces (local scratch)
 .superpowers/
 artifacts/
+
+# legacy store data — raw originals and working copies, may contain GDPR personal data; never commit
+/import/
+/.import-work/
