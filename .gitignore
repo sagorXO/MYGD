@@ -47,6 +47,7 @@ artifacts/
 # legacy store data — raw originals and working copies, may contain GDPR personal data; never commit
 /import/
 /.import-work/
+/Old Data/
 
 # md-linker plugin cache (generated)
 /.md-linker/
