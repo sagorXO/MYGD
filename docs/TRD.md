@@ -145,7 +145,7 @@ None in the product. (Schedule C §5 provides an AI tooling allowance for the co
    - `npm ci && npm run db:generate && npm run build`.
    - Run `.next/standalone/server.js` as a Windows service (NSSM) `[Sch-C §1]`.
 2. **Migrations:** `prisma migrate deploy` from Phase 2 onwards (no more `db push`).
-3. **Cloud:** build the Docker image from the `Dockerfile` and run it on the VPS with its own `DATABASE_URL`.
+3. **Cloud:** build the Docker image from the `Dockerfile` and run it on the VPS with its own `DATABASE_URL`. *Verified 2026-10-03 (Colima, Docker 29): the image builds and starts; `/` → 200; `/dev/ui` → 404; no `.env*`, `import/` or `Documents/` in the image.*
 4. **Backups:** nightly `pg_dump` from the store DB to a second location (VPS or external disk); weekly restore test; restore steps documented in Phase 6 `[OPS]`.
 5. **Staging:** a staging environment for UAT before every milestone `[SOW §3]`.
 
