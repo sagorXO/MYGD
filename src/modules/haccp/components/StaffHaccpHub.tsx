@@ -48,6 +48,8 @@ export const StaffHaccpHub: React.FC = () => {
       return;
     }
     try {
+      // TODO(phase-0.5): BROKEN — /api/staff does not exist (404). Real routes: /api/staff/timeclock (GET/POST).
+      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
       const res = await fetch("/api/staff", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,6 +79,8 @@ export const StaffHaccpHub: React.FC = () => {
       return;
     }
     try {
+      // TODO(phase-0.5): BROKEN — /api/staff does not exist (404). Real routes: /api/staff/timeclock (GET/POST).
+      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
       const res = await fetch("/api/staff", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,6 +118,8 @@ export const StaffHaccpHub: React.FC = () => {
     }
 
     try {
+      // TODO(phase-0.5): BROKEN — /api/checklists does not exist (404). Real routes: /api/checklists/log (GET/POST), /api/checklists/template (GET).
+      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
       const res = await fetch("/api/checklists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

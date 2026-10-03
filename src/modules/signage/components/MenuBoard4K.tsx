@@ -26,6 +26,8 @@ import { generateVectorPlaceholder } from "@/lib/menu-assets";
 
 export const MenuBoard4K: React.FC = () => {
   const [selectedScreenNumber, setSelectedScreenNumber] = useState<number>(1);
+  // TODO(phase-6): /boards renders the hard-coded CANONICAL_4K_SCREENS and never fetches.
+  // Load from GET /api/menuboards instead (route exists, DB-backed); keep SSE for live updates.
   const [configs, setConfigs] = useState<Record<number, SignageScreenConfig>>(CANONICAL_4K_SCREENS);
   const [viewMode, setViewMode] = useState<"GRAPHIC" | "GRID">("GRAPHIC");
   const [isAutoCycle, setIsAutoCycle] = useState<boolean>(false);

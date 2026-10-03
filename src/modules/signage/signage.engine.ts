@@ -1,6 +1,10 @@
 // MY GERMAN DÖNER — 4K Dynamic Menu Board Engine
 import { SignageScreenConfig } from "./signage.schema";
 
+// TODO(phase-6): HARD-CODED MOCK DATA — these products and prices are not read from the database.
+// Prices here can drift from Product.basePrice. Replace with the DB-backed GET /api/menuboards
+// (MenuBoardConfig) and derive sold-out from Product/Modifier.isAvailable (see docs/open-questions.md Q-DM-7, Q-UI-1).
+// Kept on purpose: the /boards screen is still needed.
 export const CANONICAL_4K_SCREENS: Record<number, SignageScreenConfig> = {
   1: {
     screenNumber: 1,
