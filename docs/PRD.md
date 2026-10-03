@@ -285,7 +285,7 @@ Each phase ends with a test suite run, a type check, a production build, and a s
 | 0 | Audit (read-only) | ✅ done (`docs/audit-phase0.md`) |
 | 0-c | Cleanup: Shopify, legacy code, media, docs | ✅ done and merged into `feat/ui-kiosk` (2026-10-03) |
 | 0.5 | Security floor: sessions + roles, login lockout fix, hashed PINs | ✅ done and merged into `feat/ui-kiosk` (2026-10-03) |
-| 1 | Legacy import (products, modifiers, prices, BOM, external-ID map) | blocked: `import/` empty `[Q-DATA-1]` |
+| 1 | Legacy import (products, modifiers, prices, BOM, external-ID map) | 🟡 importer built and live-tested (`npm run import:gladius`); 145 of 181 products blocked on the 5% VAT question (Q-VAT-4) and missing prices (Q-OLD-2) |
 | 2 | Data model: orderSource, externalOrderId, statuses, Payment, Invoice/credit note, VAT config, audit log, decimals, migrations | needs your approval of the TRD schema |
 | 3 | DM Soft kiosk webhook (M12) | waiting for the DM Soft payload `[Q-DM-2]` |
 | 4 | Till (M4) | — |

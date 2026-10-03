@@ -57,3 +57,13 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 - **Q-WEB-1 (OPEN)** When does the redesigned homepage (`/dev/preview/home`) replace the current `/`?
 - **Q-BRD-1 (OPEN)** Menu-board daypart times (the signed SOW says "automated dayparting" without times).
 - **Q-PO-1 (OPEN)** Pre-order: ETA formula (not in the signed SOW), online payment provider, and drive-through car detection method (client to provide, per the brief).
+
+## Legacy data (added 2026-10-03)
+- **Q-VAT-4 (OPEN, blocking import)** The old Gladius till charged **5% VAT** on 216 of 256 active items (≈ 91% of sales lines). The signed MSA says 9% food / 19% alcohol. Which rate is correct per item type (take-away vs eat-in, food vs drinks)? The importer blocks the 5% items until `vatRateToCategory["5"]` is set in `.import-work/gladius-decisions.json`.
+- **Q-OLD-2 (OPEN)** 68 active items have no price (info lines, free extras, price typed at the till). For each: give a price override, or skip it? (Full list in the import report.)
+- **Q-OLD-3 (OPEN)** Is store `BERLIN` / ID `1010` the Emba shop?
+- **Q-OLD-4 (OPEN)** The old till's `.ini` files hold live-looking credentials (SQL Server, FTP stock export, JCCPay). If the old till or the JCCPay account is still active, the client should rotate them.
+- **Q-DATA-3 (ANSWERED 2026-10-03)** No ClamAV install needed: nothing from `Old Data` was executed; the backup was read only by SQL Server in an isolated container.
+- **Q-DATA-4 (ANSWERED 2026-10-03)** Customers, loyalty, online orders and employees are not imported.
+- **Q-DATA-5 (PARTLY ANSWERED 2026-10-03)** Sales history is kept (the `.bak` files) and will be imported after Phase 2 adds the read-only history table. How many months: open.
+- **Q-HW-1 (PARTLY ANSWERED 2026-10-03)** The old receipt printers use the **SEWOO "Elite"** driver (ESC/POS). Exact models and connections still needed.

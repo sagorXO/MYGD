@@ -87,3 +87,54 @@ A `.bak` file can only be read by SQL Server. This Mac is Apple Silicon (arm64),
 - **Q-DATA-4 (existing):** Confirm customers, loyalty, online orders and employees are **not** imported.
 - **Q-DATA-5 (existing):** Sales history: how many months, if any?
 - **Q-OLD-4:** The `.ini` files hold live-looking credentials (till DB, FTP, JCCPay). Is the old till still running? If so, the client should change those passwords.
+
+## 7. Results (2026-10-03, after your approval)
+
+Option A was approved (SQL Server 2022 Developer edition in Docker; Microsoft's licence accepted by Sagar).
+
+- **Restore:**
+  - Ran in a separate Colima profile `mssql` (Apple Virtualization + Rosetta); your `default` profile was untouched.
+  - The newest backup, `BERLIN-24092026-100936.bak` (made by SQL Server 2014 Express, store ID `1010`), restored cleanly.
+  - The container and the restored database (which includes customer and staff data) were **deleted** after export, and the admin password file was removed.
+  - The `.bak` files stay in `Old Data/` for the Phase 2 sales history.
+- **Exported:** a catalogue-only snapshot to `.import-work/gladius-2026-09-24/`: 11 JSON files, git-ignored, mode 600. No customer, employee or sales rows. One derived table (`last_charged_price`) holds only item numbers, prices and dates.
+- **Database contents:**
+
+  | Table | Rows |
+  |---|---|
+  | `Inventory` | 458 (256 active, 75 modifiers) |
+  | `Departments` | 29 |
+  | `GroupModifiers` | 202 (21 groups) |
+  | `Invoice_Totals` | 20,048 (24 Oct 2025 → 23 Sep 2026) |
+  | `Invoice_Itemized` | 203,652 |
+  | `Customer` | 2,156 (not exported) |
+
+  `Modifiers`, `Vendors` and `Assembly` are empty, so there are no suppliers or kit recipes to import.
+
+### ⚠ VAT: the old till charged 5% on almost everything
+
+| Gladius rate | Active items | Sales lines in the last 12 months |
+|---|---|---|
+| **5%** | **216** | **184,460 (≈ 91%)** |
+| 9% | 29 | 18,843 |
+| 19% | 11 | 349 |
+
+The signed MSA §3.4 specifies 9% food / 19% alcohol and has no 5% category. **This needs the accountant before go-live.** The importer blocks every 5% item until `vatRateToCategory["5"]` is set (open question Q-VAT-4).
+
+### Prices
+- `Inventory.Price` is the menu price. On the last sale of each item it matched for 81 of 172 items; `Retail_Price` matched for only 8.
+- 68 active items have no price: info lines, free sauces/extras, and price-typed items. They are blocked until you add a price override or skip them.
+
+### Importer dry run (decisions template: 0/9/19 per the MSA, 5% left open)
+
+| | Count |
+|---|---|
+| Importable now | 36 products in 4 categories, plus 21 modifier groups / 202 modifiers |
+| Blocked: VAT 5% only | 77 |
+| Blocked: no price only | 4 |
+| Blocked: both | 64 |
+| Inactive (reported, not imported) | 202 |
+
+**Live-tested on a throwaway Postgres:** `--apply` is refused while items are blocked; `--allow-blocked` created the 36 decided products; a second run changed nothing.
+
+**Kitchen routing evidence (Q-HW-3):** items go to the printers `kitchen`, `PREPARATION` and `CHECKS` (order slips), and to a `Kitchen` group 1 or 2. The full table is in the import report.
