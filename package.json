@@ -14,8 +14,8 @@
     "test": "tsx --tsconfig tsconfig.test.json --test tests/*.test.mjs",
     "test:all": "tsx --tsconfig tsconfig.test.json --test tests/*.test.mjs",
     "ui:smoke": "node scripts/ui-gallery-smoke.mjs",
-    "db:generate": "turbo run db:generate",
-    "db:push": "turbo run db:push",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
     "db:seed": "turbo run db:seed",
     "docker:start": "bash scripts/docker-run.sh",
     "docker:stop": "docker compose down"
