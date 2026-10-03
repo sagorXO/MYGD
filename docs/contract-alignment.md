@@ -59,7 +59,12 @@ The MSA has no change-control clause, so any departure from SOW Rev 3.1 should b
 | System 1: public site + `/order` pre-order (Month 8) | `/`, `/order`, `features/home` | 🟡 Partial | `/order` static; new home only at `/dev/preview/home`. |
 | Admin authentication (implied by "Owner Portal") | — | ❌ Missing | No session; the only login UI (`AdminModal`) was never mounted. |
 
-## 5. Cleanup manifest (needs your approval: deletion was blocked by the permission classifier)
+## 5. Cleanup manifest (✅ executed 2026-10-03 on branch `cleanup/fresh-start`)
+
+> **Executed** after Sagar's approval: commits `74aaebb`, `99a5177`, `ede4cda`, `94bc63e`, `74a5b56`, `4ffccc9`, `2d9d421` (tag `pre-cleanup-2026-10` = state before). Deviations from the list below:
+> - `MYGD_PRD.md`, `07_Hardware…` and `08_Staff…SOP` were **also** removed at Sagar's instruction. They are replaced by `docs/PRD.md` and `docs/TRD.md`.
+> - `05_Commercial_Invoice_Milestone_0.md` was **kept** (it is issued invoice MGD-INV-2026-001).
+> - The untracked old SQLite DB, `artifacts/`, `supabase/.temp` and `.superpowers/` were deleted after a check confirmed nothing used them (not recoverable from git).
 
 Everything below is tracked in git and recoverable from tag `backup/pre-cleanup-phase0`. Evidence comes from an import graph of all 36 Next.js entry points plus a reference search (`git grep`) across `src`, `tests`, `scripts` and configs.
 
@@ -89,7 +94,7 @@ Everything below is tracked in git and recoverable from tag `backup/pre-cleanup-
 - `Documents/01_…MSA.md`, `02_…SOW.md`, `03_…Payment_Schedule.md`, `04_…Tooling.md`: drafts that contradict the signed `.docx` and contain bank details.
 - `Documents/00_CLIENT_PRESENTATION_PACKAGE_INDEX.md` and `06_Executive_Pitch_Deck_Companion.md`: pre-signing sales collateral.
 - Generator scripts `scripts/build_docx_contracts.py`, `scripts/build_invoice_pdf.js`: produced the signed docs; they contain bank details and the Shopify scope.
-- **Keep:** the four final `.docx`; `Invoice 001_PAID.docx`; `MGD_INV_AI_tools.docx`; `MYGD_PRD.md` (the SOW §3 makes "Master PRD Rev 3.3" the UAT reference); `07_Hardware…`; `08_Staff…SOP`; `Requirements/…Brief EN.pdf`.
+- **Keep:** the four final `.docx`; `Invoice 001_PAID.docx`; `MGD_INV_AI_tools.docx`; `Requirements/…Brief EN.pdf`. *(The original list also kept `MYGD_PRD.md`, `07_Hardware…` and `08_Staff…SOP`; they were later removed, see the note above.)*
 
 ### F. Repo hygiene
 - `gemini.md`: stale agent constitution (24 Aug architecture).

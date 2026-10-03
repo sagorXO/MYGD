@@ -11,12 +11,12 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 
 ## Security / scope
 - **Q-SEC-1 (OPEN)** Approve a small "Phase 0.5 security floor" before Phase 1? It covers server-side sessions plus role guards on admin/staff routes, disabling the Shopify webhook, the login lockout fix, and hashed timeclock PINs.
-- **Q-SEC-2 (OPEN)** Delete all Shopify code (`src/lib/shopify*.ts`, `api/webhooks/shopify`, its test, catalog references)? Yes / keep disabled.
+- **Q-SEC-2 (ANSWERED 2026-10-03)** Delete all Shopify code (`src/lib/shopify*.ts`, `api/webhooks/shopify`, its test, catalog references)? Yes / keep disabled. **→ all Shopify code removed (commit c83abc2); the generator scripts went in 99a5177.**
 - **Q-SEC-3 (OPEN)** Staff auth model: per-person PIN on shared devices (till/KDS/iPads), plus a longer password for admin? Session length per device type?
-- **Q-ARCH-1 (OPEN)** Confirm that `apps/*`, `packages/*` and root `components/` are dead and may be removed in a separate cleanup commit.
+- **Q-ARCH-1 (ANSWERED 2026-10-03)** Confirm that `apps/*`, `packages/*` and root `components/` are dead and may be removed in a separate cleanup commit. **→ apps/* and packages/* archived on branch archive/apps-packages (191abfb); root components/ removed (74a5b56).**
 
 ## Tax / invoicing (waiting for the accountant — I will not guess)
-- **Q-VAT-1 (OPEN)** VAT rates and categories for: food eaten in, takeaway food, soft drinks, alcohol, packaging/deposit. The code currently contradicts itself (9%/19% split in `tax.ts` vs a flat 19% in the POS and order routes).
+- **Q-VAT-1 (PARTLY ANSWERED 2026-10-03)** VAT rates and categories for: food eaten in, takeaway food, soft drinks, alcohol, packaging/deposit. The code currently contradicts itself (9%/19% split in `tax.ts` vs a flat 19% in the POS and order routes). **→ the signed MSA §3.4 fixes 9% (food, dine-in, takeaway, non-alcoholic drinks) and 19% (alcohol). Accountant still to confirm, plus packaging/deposit.**
 - **Q-VAT-2 (OPEN)** Are menu prices gross (VAT-inclusive)? Assumed yes.
 - **Q-VAT-3 (OPEN)** Rounding rule: VAT per line or per invoice per rate?
 - **Q-INV-1 (OPEN)** Mandatory receipt/invoice fields in Cyprus (company name, VAT reg. no., TIC, address, invoice number format, date/time, per-rate breakdown, payment method). Is a fiscal device or e-invoicing registration required?
@@ -24,7 +24,7 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 - **Q-INV-3 (OPEN)** Simplified receipt for every sale plus a full invoice on request (business customer with a VAT number), or one document type?
 
 ## DM Soft / kiosk
-- **Q-DM-1 (OPEN)** `~/Downloads/MYGD-KioskPOS-Integration-Spec-v1.0.md` is our draft proposing a pull model (kiosk polls `/menu` and `/availability`). The brief says DM Soft pushes orders to our webhook. Which is agreed? Was that draft sent to DM Soft?
+- **Q-DM-1 (ANSWERED 2026-10-03)** `~/Downloads/MYGD-KioskPOS-Integration-Spec-v1.0.md` is our draft proposing a pull model (kiosk polls `/menu` and `/availability`). The brief says DM Soft pushes orders to our webhook. Which is agreed? Was that draft sent to DM Soft? **→ DM Soft supplies the touch-screen kiosk and a bridge connection portal that sends orders to MYGD (push). The ~/Downloads pull-model draft is superseded. Payload and auth: Q-DM-2.**
 - **Q-DM-2 (OPEN)** DM Soft payload format, auth method (HMAC signature vs shared-secret header), retry behaviour, and their item IDs.
 - **Q-DM-3 (OPEN)** How do the menu and prices get onto the kiosk: maintained in DM Soft's back office, or pushed from MYGD? (This decides who owns prices.)
 - **Q-DM-4 (OPEN)** Does the customer-facing order number come from the kiosk or from MYGD? Which number is shown on `/display`?
@@ -39,10 +39,21 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 - **Q-HW-5 (OPEN)** Kitchen monitor resolution and the iPad models (for touch-target and column sizing).
 
 ## Brand / UI
-- **Q-UI-1 (OPEN)** 4 vs 7 menu boards. The schema allows 1–7.
+- **Q-UI-1 (ANSWERED 2026-10-03)** 4 vs 7 menu boards. The schema allows 1–7. **→ the signed SOW specifies 4 screens (/boards?screen=1..4).**
 - **Q-UI-2 (OPEN)** Official brand hex codes. The current primary `#E50C7E` was calibrated by us; confirm it with the brand owner.
-- **Q-UI-3 (OPEN)** Customer languages after English (Greek, German, Russian?). `de`/`gr` locale files exist.
+- **Q-UI-3 (PARTLY ANSWERED 2026-10-03)** Customer languages after English (Greek, German, Russian?). `de`/`gr` locale files exist. **→ the signed SOW requires EN/DE/GR. More languages: open.**
 
 ## Data model
 - **Q-DM-7 (OPEN)** Two sold-out flags exist (`Product.isAvailable` and `MenuBoardConfig.itemsJson[].isSoldOut`). OK to make `Product`/`Modifier` availability the single source and derive the boards from it?
 - **Q-DM-8 (OPEN)** Duplicate models: `Recipe`+`RecipeIngredient` vs `RecipeBOM`, and `TimeLog` vs `StaffShift`. Which ones are kept?
+
+
+## Contract, schedule and infrastructure (added 2026-10-03)
+- **Q-CON-1 (OPEN)** Client written confirmation (addendum or email) of the contract variances in `docs/contract-alignment.md` §3, mainly V1 (Shopify Register 2 → DM Soft kiosk) and V2 (database/offline model).
+- **Q-CON-2 (OPEN)** The final `03. Payment Schedule.docx` SEPA block looks like a placeholder (IBAN ending …1234 5678, "Revolut Bank UAB / Bank of Cyprus"). Which account does the client pay into?
+- **Q-SCHED-1 (OPEN)** Contract Stage 1 (M1 checklists + M2 supplier ordering, ≈ due 24 Sep) is not delivered, and the engineering plan builds kiosk, till and kitchen first. Agree the order with the client.
+- **Q-DB-1 (OPEN)** New database: engine and hosting. Proposed: PostgreSQL 16 on the store PC + PostgreSQL on the VPS, outbox sync (`docs/TRD.md`). Who provides and pays for the VPS?
+- **Q-CRED-1 (OPEN)** Old Supabase connection strings with passwords remain in git history (pre-cleanup `.env.example`, `docker-compose.yml`). Rotate them or confirm the projects are deleted.
+- **Q-WEB-1 (OPEN)** When does the redesigned homepage (`/dev/preview/home`) replace the current `/`?
+- **Q-BRD-1 (OPEN)** Menu-board daypart times (the signed SOW says "automated dayparting" without times).
+- **Q-PO-1 (OPEN)** Pre-order: ETA formula (not in the signed SOW), online payment provider, and drive-through car detection method (client to provide, per the brief).

@@ -4,13 +4,14 @@
 > **Brand Identity:** MY GERMAN DÖNER  
 > **Slogans:** `"BITE THE HYPE"`, `"THE FIRST REAL GERMAN DOENER IN CYPRUS"`  
 > **Official Website:** [mygermandoener.com](https://mygermandoener.com/)  
+> **Self-order kiosk:** supplied by DM Soft (not built here).  
 > **Aesthetic Archetype:** Berlin Industrial Neo-Brutalism & High-Contrast Fast-Casual  
 
 ---
 
 ## 1. Brand Core & Aesthetic Philosophy
 
-MY GERMAN DÖNER combines Berlin streetwear culture, industrial graphite textures, and electric neon accents. The visual hierarchy is engineered for high ambient light visibility on outdoor kiosks and overhead menu boards while maintaining rapid sub-second comprehension for touchscreen ordering.
+MY GERMAN DÖNER combines Berlin streetwear culture, industrial graphite textures, and electric neon accents. The visual hierarchy is engineered for high ambient light visibility on overhead menu boards and in-store screens while maintaining rapid sub-second comprehension on touchscreens.
 
 ---
 
@@ -34,9 +35,9 @@ Canvas `#0B0B0C`, cards `#18181B`, text `#FAFAFA`, secondary `#A1A1AA`, subtle `
 borders `#333338`, input borders `#6B6B73`.
 
 ### Design language
-Shopify-admin-grade calm — cards on a quiet canvas, one accent per view, page-header anatomy,
-scannable index tables, small line icons — expressed in MYGD's own identity. No Shopify assets,
-code or icons (their licence forbids look-alike stand-alone apps). Icons: `lucide-react`,
+Calm admin-dashboard language — cards on a quiet canvas, one accent per view, page-header anatomy,
+scannable index tables, small line icons — expressed in MYGD's own identity. No third-party admin-kit assets
+(e.g. Shopify Polaris — its licence forbids use in stand-alone apps). Icons: `lucide-react`,
 1.5 stroke, 16/20/24 px.
 
 The previous muted grey `#71717A` failed WCAG AA on cards (2.92:1) and is retired.
@@ -72,9 +73,9 @@ The previous muted grey `#71717A` failed WCAG AA on cards (2.92:1) and is retire
 
 ## 4. Touch Targets & Ergonomic Guidelines
 
-All touch-facing surfaces (Kiosks, POS, Staff Tablets) adhere strictly to fast-casual ergonomics:
+All touch-facing surfaces (POS, KDS, Staff Tablets) adhere strictly to fast-casual ergonomics:
 - **Minimum Tap Target:** `48px × 48px` (WCAG 2.1 AAA Standard).
-- **Primary CTAs (Kiosk "ADD TO ORDER", POS "PAY CASH"):** `64px – 80px` height with `whileTap={{ scale: 0.96 }}` spring animation.
+- **Primary CTAs (POS "PAY CASH", KDS "BUMP"):** `64px – 80px` height with `whileTap={{ scale: 0.96 }}` spring animation.
 - **Modifier Option Tiles:** Minimum `56px` height with prominent radio/checkbox indicator and visual border morph on selection.
 - **Spacing Grid:** Multiples of 8px (`8px`, `16px`, `24px`, `32px`, `48px`, `64px`).
 
@@ -113,12 +114,12 @@ Kitchen display tickets use dynamic urgency coloring to eliminate kitchen lag:
 
 | Route | Persona | Form Factor & Aspect Ratio | Viewport Width × Height |
 |:---|:---|:---:|:---:|
-| `/` | Guest Self-Order | Portrait Touch Kiosk (9:16) | `1080 × 1920` |
+| `/` | Public website | Responsive (phone → desktop) | `390 × 844` → `1440 × 900+` |
 | `/pos` | Counter Cashier | Landscape Tablet (4:3 / 16:10) | `1024 × 768` |
 | `/kds` | Line Cook / Assembler | Landscape HD Monitor (16:9) | `1920 × 1080` |
 | `/display` | Waiting Area Guest | Overhead 4K Display (16:9) | `1920 × 1080` |
 | `/staff` | Crew & Slicers | Wall Station Tablet (16:10) | `1024 × 768` / `1280 × 800` |
-| `/boards` | Overhead Menu (1–7) | Array Commercial TVs (16:9) | `1920 × 1080` (per screen) |
+| `/boards?screen=1..4` | Overhead Menu (4 screens, SOW) | 4K Commercial TVs (16:9) | `3840 × 2160` (per screen) |
 | `/order` | Mobile Pre-Order | Smartphone Browser (9:19.5) | `390 × 844` |
 | `/admin` | Store Manager / HQ | Desktop / Widescreen Laptop | `1440 × 900+` |
 
