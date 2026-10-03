@@ -49,5 +49,8 @@ artifacts/
 /.import-work/
 /Old Data/
 
+# raw brand/photo source library (26 GB) — originals live outside git; optimised copies go in public/assets
+/images/
+
 # md-linker plugin cache (generated)
 /.md-linker/
