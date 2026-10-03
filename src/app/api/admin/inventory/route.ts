@@ -3,12 +3,16 @@
 // PATCH: Updates ingredient stock level and automatically triggers availability recomputation
 
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole } from "@/lib/auth/guard";
 import { prisma } from "@/lib/prisma";
 import { recomputeLocationAvailability } from "@/lib/inventory-engine";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
     const url = new URL(req.url);
     const locationSlug = url.searchParams.get("location") || "EMBA";
@@ -81,6 +85,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await req.json();
     const { inventoryItemId, newStock, locationId } = body;
