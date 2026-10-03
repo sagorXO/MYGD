@@ -4,14 +4,16 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import {
-  authenticateStaffPIN,
-  calculateShiftDuration,
-  CANONICAL_STAFF_ROSTER,
-} from "@/lib/timeclock-engine";
+import bcrypt from "bcryptjs";
+import { calculateShiftDuration } from "@/lib/timeclock-engine";
+import { verifyStaffPin } from "@/lib/auth/staff-pin";
+import { createRateLimiter } from "@/lib/auth/rate-limit";
 import { eventBroker } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
+
+// Brute-force brake for the shared wall tablet: 10 PIN attempts per minute per client.
+const pinLimiter = createRateLimiter({ limit: 10, windowMs: 60_000 });
 
 export async function GET(req: NextRequest) {
   try {
@@ -136,20 +138,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. PIN Authentication against canonical roster
-    const authResult = authenticateStaffPIN(pin, CANONICAL_STAFF_ROSTER);
-    if (!authResult.isValid || !authResult.staff) {
+    // 1. Identify the staff member by PIN against bcrypt hashes on AdminUser (no plaintext PINs).
+    const clientKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+    const rate = pinLimiter.check(clientKey);
+    if (!rate.allowed) {
       return NextResponse.json(
-        {
-          success: false,
-          error: authResult.error || "Authentication failed: Unrecognized or deactivated staff PIN.",
-        },
-        { status: 401 }
+        { success: false, error: "Too many PIN attempts. Try again shortly." },
+        { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
       );
     }
 
-    const staff = authResult.staff;
-    const targetLocationSlug = (locationSlug || staff.locationSlug || "EMBA").toUpperCase();
+    const users = await prisma.adminUser.findMany({
+      where: { isActive: true },
+      select: { id: true, username: true, role: true, pinHash: true, isActive: true },
+    });
+    const pinResult = await verifyStaffPin(pin, users, (p, h) => bcrypt.compare(p, h));
+    if (!pinResult.ok) {
+      const error =
+        pinResult.reason === "INVALID_INPUT"
+          ? "Enter your 4–8 digit PIN."
+          : pinResult.reason === "AMBIGUOUS"
+            ? "This PIN is shared by more than one person. Ask a manager to reset it."
+            : "PIN not recognised.";
+      return NextResponse.json({ success: false, error }, { status: pinResult.reason === "INVALID_INPUT" ? 400 : 401 });
+    }
+
+    const staff = { id: pinResult.user.id, name: pinResult.user.username, role: pinResult.user.role };
+    const targetLocationSlug = String(locationSlug || "EMBA").toUpperCase();
 
     // 2. Resolve Location
     let location = await prisma.location.findUnique({
