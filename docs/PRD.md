@@ -209,7 +209,7 @@ Each module lists: purpose, requirements (numbered, testable), contract stage, c
 ### Platform requirements (all modules)
 | # | Requirement |
 |---|---|
-| P.1 | **Authenticated staff and owner routes** with roles (staff, manager, owner/admin), sessions and least privilege `[OPS]`. Currently missing entirely (critical, `audit-phase0` finding 2). |
+| P.1 | **Authenticated staff and owner routes** with roles (staff, manager, owner/admin), sessions and least privilege `[OPS]`. **Built in Phase 0.5:** signed 12 h session cookie, deny-by-default middleware (`src/lib/auth/policy.ts`), role checks in admin/till handlers, `/login`. |
 | P.2 | **Audit log** for price changes, refunds and voids `[OPS]`. |
 | P.3 | Live updates over SSE to all screens, with reconnect and refetch. |
 | P.4 | Money stored as exact decimals (not floats). |
@@ -284,7 +284,7 @@ Each phase ends with a test suite run, a type check, a production build, and a s
 |---|---|---|
 | 0 | Audit (read-only) | ✅ done (`docs/audit-phase0.md`) |
 | 0-c | Cleanup: Shopify, legacy code, media, docs | ✅ done and merged into `feat/ui-kiosk` (2026-10-03) |
-| 0.5 | Security floor: sessions + roles, login lockout fix, hashed PINs | approved with this PRD (2026-10-03); next phase to build |
+| 0.5 | Security floor: sessions + roles, login lockout fix, hashed PINs | ✅ built on `feat/phase-0.5-auth` (2026-10-03), awaiting merge |
 | 1 | Legacy import (products, modifiers, prices, BOM, external-ID map) | blocked: `import/` empty `[Q-DATA-1]` |
 | 2 | Data model: orderSource, externalOrderId, statuses, Payment, Invoice/credit note, VAT config, audit log, decimals, migrations | needs your approval of the TRD schema |
 | 3 | DM Soft kiosk webhook (M12) | waiting for the DM Soft payload `[Q-DM-2]` |

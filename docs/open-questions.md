@@ -12,7 +12,7 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 ## Security / scope
 - **Q-SEC-1 (ANSWERED 2026-10-03)** Approve a small "Phase 0.5 security floor" before Phase 1? It covers server-side sessions plus role guards on admin/staff routes, disabling the Shopify webhook, the login lockout fix, and hashed timeclock PINs. **→ approved as Phase 0.5 in the approved PRD v1.0.**
 - **Q-SEC-2 (ANSWERED 2026-10-03)** Delete all Shopify code (`src/lib/shopify*.ts`, `api/webhooks/shopify`, its test, catalog references)? Yes / keep disabled. **→ all Shopify code removed (commit c83abc2); the generator scripts went in 99a5177.**
-- **Q-SEC-3 (OPEN)** Staff auth model: per-person PIN on shared devices (till/KDS/iPads), plus a longer password for admin? Session length per device type?
+- **Q-SEC-3 (PARTLY ANSWERED 2026-10-03)** Staff auth model: per-person PIN on shared devices (till/KDS/iPads), plus a longer password for admin? Session length per device type? **→ built: per-person username + PIN, 12 h sessions for every device. Still open: different session lengths per device, and a longer password for owners.**
 - **Q-ARCH-1 (ANSWERED 2026-10-03)** Confirm that `apps/*`, `packages/*` and root `components/` are dead and may be removed in a separate cleanup commit. **→ apps/* and packages/* archived on branch archive/apps-packages (191abfb); root components/ removed (74a5b56).**
 
 ## Tax / invoicing (waiting for the accountant — I will not guess)

@@ -51,7 +51,7 @@
 | Realtime | Server-Sent Events, in-process broker (`src/lib/events.ts`) | Single Node process per store. Add event IDs and refetch-on-reconnect |
 | Printing | ESC/POS over raw TCP 9100 (`src/modules/printer/*`) | **PROPOSED:** `PrinterDriver` interface + persistent `PrintJob` queue |
 | UI | Tailwind 3.4 + in-house kit `src/ui/` (~45 components), `lucide-react`, `framer-motion` | Design tokens in `src/ui/tokens.css` |
-| Auth | **None today.** **PROPOSED:** server-side sessions (HTTP-only cookie, signed with `SESSION_SECRET`), PIN for shared devices, roles | P.1 in the PRD |
+| Auth | **Phase 0.5:** HMAC-signed HTTP-only cookie `mygd_session` (12 h, `SESSION_SECRET` ≥ 32 chars, fails closed); middleware enforces the route→role table in `src/lib/auth/policy.ts` (deny by default); username + 4–8 digit PIN; per-user lockout 5 failures / 5 min; failed-attempt limiter per client; timeclock PINs = bcrypt hashes on `AdminUser`; accounts via `npm run user:create` | Stateless: a session can't be revoked early except by rotating `SESSION_SECRET` (DB sessions possible with Phase 2) |
 | Password/PIN hashing | `bcryptjs` (already a dependency) | Also for timeclock PINs |
 | Tests | `node:test` via `tsx` (`npm test`, 168 tests); Playwright for UI smoke (`npm run ui:smoke`) | No route or DB tests yet: add them from Phase 2 |
 | Container | Dockerfile (node:20-alpine, multi-stage, `npm ci`) | See Deployment |
@@ -107,7 +107,7 @@ Current routes (`src/app/api/*`). All of them are **unauthenticated** today.
 | `/api/menuboards` | GET, PATCH | `/admin/menu-boards` | `/boards` should use it (TODO) |
 | `/api/terminal/print` | POST | KDS reprint | Uses `src/modules/printer` |
 | `/api/admin/{menu,recipes,inventory,inventory/restock,inventory/recompute,reports}` | various | `/admin` | `recompute` has no caller |
-| `/api/admin/login` | POST | **none** | Checks the PIN but issues no session; replace in Phase 0.5 |
+| `/api/auth/login`, `/api/auth/logout`, `/api/auth/me` | POST, POST, GET | `/login`, screens | Phase 0.5. Replaced `/api/admin/login` (it issued no session) |
 | `/api/checklists/{log,template}`, `/api/staff/{timeclock,build-sheets}` | various | **none** | Backends for `/staff`; the screen calls the wrong paths (TODO marked) |
 
 **PROPOSED** additions:

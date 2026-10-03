@@ -24,6 +24,8 @@
 | 12 | **Plaintext staff PINs** are compared in `src/lib/timeclock-engine.ts:455` (`member.pin === trimmedPin`; `StaffShift.pin` is a plain string). Also, `docker-compose.yml` has an inline `POSTGRES_PASSWORD`. Both were already flagged on 2026-09-28 and are not yet fixed. | Medium |
 | 13 | **Login lockout bug.** Failed PIN attempts always increment `users[0]`, so one user gets locked out while brute force continues freely against the others. | Medium |
 
+> **Update 2026-10-03 (Phase 0.5, branch `feat/phase-0.5-auth`):** finding 2 (no auth), finding 12 (plaintext staff PINs in source; the compose file was already deleted) and finding 13 (lockout hit `users[0]`) are fixed. Finding 3 (Shopify) was fixed in the cleanup.
+
 **Healthy:** `npm test` → **175/175 pass**; `npx tsc --noEmit` → **0 errors**. No test touches a database or an API route (all are pure-function or render tests), so the green suite says nothing about persistence or routes.
 
 ---
