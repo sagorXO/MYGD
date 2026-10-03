@@ -13,7 +13,8 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit",
-    "user:create": "tsx scripts/create-user.ts"
+    "user:create": "tsx scripts/create-user.ts",
+    "import:gladius": "tsx scripts/import-gladius.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
