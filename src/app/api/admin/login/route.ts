@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    await initializeDatabasePragmas();
 
     const body = await request.json().catch(() => ({}));
     const { pin } = body;

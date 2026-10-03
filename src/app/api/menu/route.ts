@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { CANONICAL_CATALOG_CATEGORIES } from "@/lib/catalog-data";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,6 @@ export async function GET(request: Request) {
   const locationSlug = (searchParams.get("location") || "EMBA").toUpperCase();
 
   try {
-    await initializeDatabasePragmas();
 
     // Find location
     const location = await prisma.location.findUnique({

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 // GET all products and modifiers for Admin Management
 export async function GET() {
   try {
-    await initializeDatabasePragmas();
 
     const categories = await prisma.category.findMany({
       orderBy: { sortOrder: "asc" },
@@ -61,7 +60,6 @@ export async function GET() {
 // PATCH to toggle availability or update price
 export async function PATCH(request: Request) {
   try {
-    await initializeDatabasePragmas();
 
     const body = await request.json();
     const { targetType, targetId, isAvailable, basePrice, locationId, overridePrice } = body;
@@ -148,7 +146,6 @@ export async function PATCH(request: Request) {
 // POST to create a new product
 export async function POST(request: Request) {
   try {
-    await initializeDatabasePragmas();
     const body = await request.json();
     const {
       categoryId,
@@ -225,7 +222,6 @@ export async function POST(request: Request) {
 // PUT to edit an existing product
 export async function PUT(request: Request) {
   try {
-    await initializeDatabasePragmas();
     const body = await request.json();
     const {
       id,
@@ -291,7 +287,6 @@ export async function PUT(request: Request) {
 // DELETE to remove an item from menu
 export async function DELETE(request: Request) {
   try {
-    await initializeDatabasePragmas();
     const url = new URL(request.url);
     let productId = url.searchParams.get("id");
 
