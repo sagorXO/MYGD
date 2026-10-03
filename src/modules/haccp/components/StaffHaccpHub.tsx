@@ -35,7 +35,7 @@ export const StaffHaccpHub: React.FC = () => {
 
   // Timeclock PIN Press
   const handlePinDigit = (digit: string) => {
-    if (pin.length < 4) {
+    if (pin.length < 8) {
       setPin((prev) => prev + digit);
     }
   };
@@ -43,27 +43,20 @@ export const StaffHaccpHub: React.FC = () => {
   const handleClearPin = () => setPin("");
 
   const handleClockIn = async () => {
-    if (pin.length !== 4) {
-      alert("Please enter a 4-digit PIN.");
+    if (pin.length < 4) {
+      alert("Please enter your PIN (4–8 digits).");
       return;
     }
     try {
-      // TODO(phase-0.5): BROKEN — /api/staff does not exist (404). Real routes: /api/staff/timeclock (GET/POST).
-      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
-      const res = await fetch("/api/staff", {
+      // The PIN identifies the staff member (bcrypt-checked on the server).
+      const res = await fetch("/api/staff/timeclock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          locationSlug,
-          staffId,
-          pin,
-          action: "CLOCK_IN",
-          role: "CASHIER",
-        }),
+        body: JSON.stringify({ locationSlug, pin, action: "IN" }),
       });
       const data = await res.json();
       if (data.success) {
-        setClockMessage(`✅ Successfully Clocked In as ${staffId}`);
+        setClockMessage(`✅ Clocked in: ${data.staff?.name ?? "staff member"}`);
         setPin("");
       } else {
         alert(data.error || "Clock-in failed.");
@@ -74,26 +67,19 @@ export const StaffHaccpHub: React.FC = () => {
   };
 
   const handleClockOut = async () => {
-    if (pin.length !== 4) {
-      alert("Please enter a 4-digit PIN.");
+    if (pin.length < 4) {
+      alert("Please enter your PIN (4–8 digits).");
       return;
     }
     try {
-      // TODO(phase-0.5): BROKEN — /api/staff does not exist (404). Real routes: /api/staff/timeclock (GET/POST).
-      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
-      const res = await fetch("/api/staff", {
+      const res = await fetch("/api/staff/timeclock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          locationSlug,
-          staffId,
-          pin,
-          action: "CLOCK_OUT",
-        }),
+        body: JSON.stringify({ locationSlug, pin, action: "OUT" }),
       });
       const data = await res.json();
       if (data.success) {
-        setClockMessage(`👋 Successfully Clocked Out (${data.totalMinutes} mins logged)`);
+        setClockMessage(`👋 Clocked out: ${data.staff?.name ?? "staff member"} (${data.timeLog?.totalMinutes ?? 0} min)`);
         setPin("");
       } else {
         alert(data.error || "Clock-out failed.");
@@ -118,8 +104,9 @@ export const StaffHaccpHub: React.FC = () => {
     }
 
     try {
-      // TODO(phase-0.5): BROKEN — /api/checklists does not exist (404). Real routes: /api/checklists/log (GET/POST), /api/checklists/template (GET).
-      // Needs an authenticated staff API before this screen works; see docs/audit-phase0.md finding 10.
+      // TODO(M1, contract Stage 1): BROKEN — /api/checklists does not exist (404), and no route saves
+      // HACCP temperature readings yet (HACCPService.logTemperature has no route). Build it in M1;
+      // see docs/PRD.md M1.3. loggedBy is a free-text name until then.
       const res = await fetch("/api/checklists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -156,7 +143,7 @@ export const StaffHaccpHub: React.FC = () => {
             </h2>
           </div>
           <p className="text-xs text-zinc-400 mt-0.5">
-            EU Regulation (EC) 852/2004 temperature compliance • 4-digit PIN timeclock
+            EU Regulation (EC) 852/2004 temperature compliance • PIN timeclock
           </p>
         </div>
 
@@ -187,7 +174,7 @@ export const StaffHaccpHub: React.FC = () => {
           {/* PIN Pad */}
           <div className="bg-[#1F1F21] border-2 border-[#3A3A3E] rounded-3xl p-6 shadow-2xl flex flex-col items-center">
             <h3 className="font-display font-black text-lg uppercase mb-2">Staff 4-Digit PIN Punch</h3>
-            <p className="text-xs text-zinc-400 mb-4">Select your profile and punch your 4-digit secret PIN</p>
+            <p className="text-xs text-zinc-400 mb-4">Enter your personal PIN — it identifies you</p>
 
             <select
               value={staffId}
@@ -202,7 +189,7 @@ export const StaffHaccpHub: React.FC = () => {
 
             {/* PIN Display Dots */}
             <div className="flex items-center gap-3 mb-5">
-              {[0, 1, 2, 3].map((idx) => (
+              {Array.from({ length: Math.max(4, pin.length) }, (_, idx) => idx).map((idx) => (
                 <div
                   key={idx}
                   className={`w-4 h-4 rounded-full border-2 transition-all ${

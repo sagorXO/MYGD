@@ -83,34 +83,27 @@ async function main() {
     });
   }
 
-  // 3. Admin Users (Bcrypt Hashed 4-digit PINs)
-  const pin9999 = await bcrypt.hash("9999", 10);
-  const pin1234 = await bcrypt.hash("1234", 10);
-  const pin1111 = await bcrypt.hash("1111", 10);
-
-  await prisma.adminUser.upsert({
-    where: { username: "manager_rico" },
-    update: { pinHash: pin9999 },
-    create: { username: "manager_rico", pinHash: pin9999, role: "SYSTEM_ADMIN" },
-  });
-
-  await prisma.adminUser.upsert({
-    where: { username: "owner_oli" },
-    update: { pinHash: pin9999 },
-    create: { username: "owner_oli", pinHash: pin9999, role: "SYSTEM_ADMIN" },
-  });
-
-  await prisma.adminUser.upsert({
-    where: { username: "lead_markus" },
-    update: { pinHash: pin1111 },
-    create: { username: "lead_markus", pinHash: pin1111, role: "STORE_MANAGER" },
-  });
-
-  await prisma.adminUser.upsert({
-    where: { username: "staff_emba" },
-    update: { pinHash: pin1234 },
-    create: { username: "staff_emba", pinHash: pin1234, role: "STORE_STAFF" },
-  });
+  // 3. Demo accounts — development only.
+  // [ADR] Context: these PINs are public (they were in source and docs), and the old
+  // upserts reset real PINs on every re-run. Decision: never create them in
+  // production and never overwrite an existing account. Consequence: real accounts
+  // are created with `npm run user:create` (private PINs, bcrypt cost 12).
+  if (process.env.NODE_ENV === "production") {
+    console.log("Skipping demo accounts in production — use npm run user:create.");
+  } else {
+    const demoAccounts = [
+      { username: "demo_owner", pin: "9999", role: "SYSTEM_ADMIN" as const },
+      { username: "demo_manager", pin: "1111", role: "STORE_MANAGER" as const },
+      { username: "demo_staff", pin: "1234", role: "STORE_STAFF" as const },
+    ];
+    for (const account of demoAccounts) {
+      await prisma.adminUser.upsert({
+        where: { username: account.username },
+        update: {},
+        create: { username: account.username, pinHash: await bcrypt.hash(account.pin, 10), role: account.role },
+      });
+    }
+  }
 
   // 4. Suppliers (Dedicated Vendor Hub with verified Cyprus contacts)
   const suppliersData = [
