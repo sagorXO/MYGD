@@ -54,7 +54,8 @@
 | Auth | **None today.** **PROPOSED:** server-side sessions (HTTP-only cookie, signed with `SESSION_SECRET`), PIN for shared devices, roles | P.1 in the PRD |
 | Password/PIN hashing | `bcryptjs` (already a dependency) | Also for timeclock PINs |
 | Tests | `node:test` via `tsx` (`npm test`, 168 tests); Playwright for UI smoke (`npm run ui:smoke`) | No route or DB tests yet: add them from Phase 2 |
-| Container | Dockerfile (node:20-alpine, multi-stage, `npm ci`) | Image build not yet verified |
+| Container | Dockerfile (node:20-alpine, multi-stage, `npm ci`) | See Deployment |
+| Images | Plain `<img>` on 7 screens (10 `@next/next/no-img-element` lint warnings) | **Deliberately deferred:** the sources are remote stock photos, and Next's optimiser would fetch them through the store server, which breaks offline. Switch to `next/image` with local files when Phase 1 imports the client's photography (Sch-C §6) |
 
 ## 🗄️ Database Schema
 

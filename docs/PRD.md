@@ -1,6 +1,6 @@
 # MY GERMAN DÖNER (MYGD) — Master Product Requirements Document
 
-- **Status:** Draft 1.0 for Sagar's approval
+- **Status:** ✅ **Approved v1.0** by Md. Saied Sagar, 2026-10-03. Changes from here on need a new version and re-approval. Contract variances (⚠) still need the client's written confirmation (Q-CON-1).
 - **Date:** 2026-10-03
 - **Owner:** Md. Saied Sagar (Contractor, sole engineer)
 - **Client:** MY GERMAN DÖNER TRADING LTD — Rico & Oliver (owners), Markus (project lead)
@@ -283,8 +283,8 @@ Each phase ends with a test suite run, a type check, a production build, and a s
 | Phase | Content | Status |
 |---|---|---|
 | 0 | Audit (read-only) | ✅ done (`docs/audit-phase0.md`) |
-| 0-c | Cleanup: Shopify, legacy code, media, docs | ✅ done on `cleanup/fresh-start`, awaiting merge |
-| 0.5 *(proposed)* | Security floor: sessions + roles, login lockout fix, hashed PINs | awaiting approval `[Q-SEC-1]` |
+| 0-c | Cleanup: Shopify, legacy code, media, docs | ✅ done and merged into `feat/ui-kiosk` (2026-10-03) |
+| 0.5 | Security floor: sessions + roles, login lockout fix, hashed PINs | approved with this PRD (2026-10-03); next phase to build |
 | 1 | Legacy import (products, modifiers, prices, BOM, external-ID map) | blocked: `import/` empty `[Q-DATA-1]` |
 | 2 | Data model: orderSource, externalOrderId, statuses, Payment, Invoice/credit note, VAT config, audit log, decimals, migrations | needs your approval of the TRD schema |
 | 3 | DM Soft kiosk webhook (M12) | waiting for the DM Soft payload `[Q-DM-2]` |
