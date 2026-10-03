@@ -1,5 +1,5 @@
 // MY GERMAN DÖNER — Master Catalog Data & Asset Intelligence Vault
-// Source of truth matching https://mygermandoener.com/ (Shopify ID: 96390807899)
+// Content mirrors the public website https://mygermandoener.com/
 // Provides 100% offline resilience and high-res imagery for Public Web, POS, Kiosks & 4K Signage.
 
 export interface MasterCatalogProduct {

@@ -21,7 +21,7 @@ interface OrderRow {
 
 const ORDERS: OrderRow[] = [
   { id: "EMBA-0412", customer: "Walk-in", status: "Open", total: 14.5 },
-  { id: "EMBA-0413", customer: "Shopify order 1042", status: "Ready", total: 22 },
+  { id: "EMBA-0413", customer: "Kiosk order 1042", status: "Ready", total: 22 },
   { id: "EMBA-0414", customer: "Walk-in", status: "Done", total: 7.9 },
 ];
 
@@ -193,7 +193,7 @@ function Showcase() {
           <Banner tone="warning" title="Low stock: lamb" action={<Button size="sm" variant="secondary">Reorder</Button>}>
             2.4 kg left — below par level.
           </Banner>
-          <Banner tone="info" title="New Shopify order" onDismiss={() => {}} />
+          <Banner tone="info" title="New kiosk order" onDismiss={() => {}} />
           <Card>
             <CardHeader title="Today" />
             <div className="grid grid-cols-2 gap-4">
