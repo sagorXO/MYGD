@@ -3,13 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authenticate, type LoginRepository } from "@/lib/auth/login";
-import { createRateLimiter } from "@/lib/auth/rate-limit";
+import { createFailureLimiter } from "@/lib/auth/rate-limit";
 import { createSessionToken, readSessionSecret, SESSION_COOKIE, SESSION_TTL_SECONDS } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
-// 5 attempts per minute per client address (TRD §Security).
-const limiter = createRateLimiter({ limit: 5, windowMs: 60_000 });
+// At most 5 FAILED attempts per minute per client address (TRD §Security).
+const limiter = createFailureLimiter({ limit: 5, windowMs: 60_000 });
 
 const repo: LoginRepository = {
   async findUserByUsername(username) {
@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
   }
 
   const ip = clientKey(req);
-  const rate = limiter.check(ip);
-  if (!rate.allowed) {
+  const rate = limiter.isBlocked(ip);
+  if (rate.blocked) {
     return NextResponse.json(
       { success: false, error: "Too many attempts. Try again shortly." },
       { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
   const result = await authenticate(body, { repo, comparePin: (pin, hash) => bcrypt.compare(pin, hash), now: () => new Date() });
 
   if (!result.ok) {
+    limiter.recordFailure(ip);
     if (result.reason === "INVALID_INPUT") {
       return NextResponse.json({ success: false, error: "Enter your username and a 4–8 digit PIN." }, { status: 400 });
     }

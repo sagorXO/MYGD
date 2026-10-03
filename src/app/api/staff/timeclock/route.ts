@@ -7,13 +7,13 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { calculateShiftDuration } from "@/lib/timeclock-engine";
 import { verifyStaffPin } from "@/lib/auth/staff-pin";
-import { createRateLimiter } from "@/lib/auth/rate-limit";
+import { createFailureLimiter } from "@/lib/auth/rate-limit";
 import { eventBroker } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
 
-// Brute-force brake for the shared wall tablet: 10 PIN attempts per minute per client.
-const pinLimiter = createRateLimiter({ limit: 10, windowMs: 60_000 });
+// Brute-force brake for the shared wall tablet: at most 10 FAILED PINs per minute per client.
+const pinLimiter = createFailureLimiter({ limit: 10, windowMs: 60_000 });
 
 export async function GET(req: NextRequest) {
   try {
@@ -140,8 +140,8 @@ export async function POST(req: NextRequest) {
 
     // 1. Identify the staff member by PIN against bcrypt hashes on AdminUser (no plaintext PINs).
     const clientKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-    const rate = pinLimiter.check(clientKey);
-    if (!rate.allowed) {
+    const rate = pinLimiter.isBlocked(clientKey);
+    if (rate.blocked) {
       return NextResponse.json(
         { success: false, error: "Too many PIN attempts. Try again shortly." },
         { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
@@ -154,6 +154,7 @@ export async function POST(req: NextRequest) {
     });
     const pinResult = await verifyStaffPin(pin, users, (p, h) => bcrypt.compare(p, h));
     if (!pinResult.ok) {
+      pinLimiter.recordFailure(clientKey);
       const error =
         pinResult.reason === "INVALID_INPUT"
           ? "Enter your 4–8 digit PIN."

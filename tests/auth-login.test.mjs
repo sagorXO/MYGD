@@ -97,16 +97,26 @@ test("auth/login: malformed input is rejected before any lookup", async () => {
   assert.equal(repo.rows.get("anna").failedAttempts, 0);
 });
 
-test("auth/rate-limit: allows N per window per key, then blocks with retry-after", async () => {
-  const { createRateLimiter } = await loadLimiter();
-  const rl = createRateLimiter({ limit: 5, windowMs: 60_000 });
+test("auth/rate-limit: blocks a key after N failures in the window, with retry-after", async () => {
+  const { createFailureLimiter } = await loadLimiter();
+  const rl = createFailureLimiter({ limit: 5, windowMs: 60_000 });
   const t0 = NOW.getTime();
-  for (let i = 0; i < 5; i++) assert.equal(rl.check("10.0.0.1", t0 + i).allowed, true);
-  const blocked = rl.check("10.0.0.1", t0 + 10);
-  assert.equal(blocked.allowed, false);
+  for (let i = 0; i < 5; i++) {
+    assert.equal(rl.isBlocked("10.0.0.1", t0 + i).blocked, false);
+    rl.recordFailure("10.0.0.1", t0 + i);
+  }
+  const blocked = rl.isBlocked("10.0.0.1", t0 + 10);
+  assert.equal(blocked.blocked, true);
   assert.ok(blocked.retryAfterSec >= 1 && blocked.retryAfterSec <= 60);
-  assert.equal(rl.check("10.0.0.2", t0 + 10).allowed, true, "keys are independent");
-  assert.equal(rl.check("10.0.0.1", t0 + 60_001).allowed, true, "window resets");
+  assert.equal(rl.isBlocked("10.0.0.2", t0 + 10).blocked, false, "keys are independent");
+  assert.equal(rl.isBlocked("10.0.0.1", t0 + 60_001).blocked, false, "window resets");
+});
+
+test("auth/rate-limit: successful attempts are never counted (shift-change logins on one LAN)", async () => {
+  const { createFailureLimiter } = await loadLimiter();
+  const rl = createFailureLimiter({ limit: 5, windowMs: 60_000 });
+  const t0 = NOW.getTime();
+  for (let i = 0; i < 50; i++) assert.equal(rl.isBlocked("local", t0 + i).blocked, false);
 });
 
 test("auth/staff-pin: timeclock PIN matches the one active user with that hashed PIN", async () => {
