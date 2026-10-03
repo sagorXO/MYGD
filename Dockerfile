@@ -1,6 +1,6 @@
 # ---------------------------------------------------------
-# MY GERMAN DÖNER / HORIZON — Production Dockerfile
-# Optimized Multi-Stage Next.js 16 Standalone Container
+# MY GERMAN DÖNER (MYGD) — Production Dockerfile
+# Multi-stage Next.js 15 standalone container
 # ---------------------------------------------------------
 
 # Stage 1: Dependencies
@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -20,7 +20,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Generate Prisma Client for PostgreSQL/Supabase & Compile Standalone Bundle
+# Generate the Prisma client (PostgreSQL) and compile the standalone bundle
 RUN npx prisma generate
 RUN npm run build
 

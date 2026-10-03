@@ -34,14 +34,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma sqlite database files (preserve backup directory, ignore live WAL)
-prisma/data/*.db
-prisma/data/*.db-journal
-prisma/data/*.db-wal
-prisma/data/*.db-shm
+# local database files (never commit)
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
 
-# Superpowers plan workspaces (local scratch)
+# local tool scratch and UI screenshot output
 .superpowers/
 artifacts/
 
