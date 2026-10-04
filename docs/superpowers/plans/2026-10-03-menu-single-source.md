@@ -1,171 +1,183 @@
-# MYGD Menu Single Source of Truth — Implementation Plan
+# MYGD Menu Single Source of Truth — Implementation Plan (v2)
 
-> **Status:** PLAN ONLY, 2026-10-03, awaiting Sagar's approval. No code has been written for it.
+> **Status:** PLAN ONLY, v2 2026-10-04 (v1 2026-10-03). Updated with Sagar's decisions; awaiting "go". No code written.
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Steps use checkboxes.
 
-**Goal:** Every menu item, price, VAT category, modifier/upgrade price, product image and menu-board layout lives **only in the database**. The till, menu boards, public site and `/order` all read it through the API. No menu content stays in source files (Sagar's rule: *"don't hardcode anything"*; PRD M11 *"single source of truth"*).
+**Goal:** Every menu item, price, VAT category, modifier/upgrade price, product image and menu-board layout lives **only in the database**. The till, menu boards, public site and `/order` all read it through the API. No menu content stays in source files, and none is baked into images shown on screens. (Sagar: *"don't hardcode anything"*; PRD M11.)
 
-**Why now (verified 2026-10-03):** the same menu is typed in several places, and the screens read different ones:
+## Sagar's decisions (2026-10-04) and how the plan applies them
 
-| Hard-coded copy | Size | Who reads it |
-|---|---|---|
-| `src/lib/catalog-data.ts` | 63 products with prices (uncommitted edits by another person) | **`/api/menu` as a silent fallback when the DB query fails**, so the till can sell at prices that aren't in the DB |
-| `src/modules/signage/signage.engine.ts` (`CANONICAL_4K_SCREENS`) | 44 items with prices | `/boards` directly (no API call) |
-| `src/lib/menuboard-engine.ts` (`CANONICAL_SCREEN_CONFIGS`) | screen layouts + items | `/api/menuboards`, which writes them into `MenuBoardConfig.itemsJson`, **copying names and prices** |
-| `src/app/order/page.tsx` | 10 products with prices | `/order` directly |
-| `src/modules/pos/components/ModifierModal.tsx` | "Make it a menu" €3.00 / €3.50 / €4.50 | the till |
-| `src/lib/menu-assets.ts` (`MENU_ASSET_REGISTRY`) | SKU → image path | till, boards, admin |
-| `prisma/seed.ts` | 103 products | dev seed |
+| # | Decision | Applied as | Correction / caveat raised |
+|---|---|---|---|
+| D1 | The menu is **data**; import it, then **delete the JSON file**. | The data file lives in `.import-work/menu/` (git-ignored, never committed). After a verified `--apply`, the importer writes a **DB export** (`.import-work/exports/menu-<timestamp>.json`) and then deletes the source JSON (Task 4). | Without the export, the DB would be the only copy (no backup until Phase 6), and staging, a new DB and Limassol could not be loaded. The export keeps the "no hand-maintained file" rule and gives a way back. |
+| D2 | **Prices = the menu images** (`Menu/1–4.jpeg`, `drinks.jpeg`, `drinks 2.jpeg`, `sauce.jpeg`). | The data file is transcribed **from the images**, not copied from the other person's code. Their code is used only for a cross-check; every difference is listed (Task 1). | One price to confirm: onion rings 6 pcs **€1.95** (vs mozzarella sticks 6 pcs €5.90). |
+| D3 | **VAT 5% for all items.** | Products keep **two VAT categories**: `FOOD_BEV` (food, soft drinks, coffee) and `ALCOHOL` (draft/bottled beer, wine). Both carry 5% until told otherwise; the rate is set per category, never per product. | ⚠ The menu sells **beer and wine**. The signed MSA §3.4 says 19% for alcohol, and the old till charged 19% on 11 items (likely those). Get the accountant's confirmation in writing; if alcohol is 19%, it's one change. Recorded as Q-VAT-4. |
+| D4 | **The new menu with the new prices** is the live catalogue. | The Gladius catalogue is **not** applied to the live DB. Its importer stays only for mapping old sales history (Phase 2). | — |
+| D5 | **Keep the photos and docs for now**; clean up before production. | Product photos (`public/assets/menu/…`) are referenced by `Product.imageUrl`. `images/` (26 GB), `Menu/`, `Old Data/`, `Documents/` and `docs/` are already excluded from Docker builds; the final production clean-up is a separate task later. | — |
+| D6 | **4 menu boards** (2026-10-03). | Screens 1–4 = the four **portrait** food boards (`Menu/1–4.jpeg`). | ⚠ The menu art has **7 images**. Drinks (2× landscape) and sauces have no screen. Decision needed: **(a)** split or rotate drinks/sauces onto the 4 screens, or **(b)** add screens (contract change + hardware). Board content is also **rendered from the DB**: the posters are design references only, because images with baked-in prices can't update or show sold-out. |
 
-The till reads `/api/menu` (the DB), but `/boards` and `/order` read the hard-coded copies, so a customer can see one price and be charged another.
+## What the menu images contain (inventory for Task 1)
 
-**Architecture after this plan:**
+| Image | Content |
+|---|---|
+| `1.jpeg` (portrait) | Pizzas (5); tacos (4 × €3.50, plus "4 tacos €11.90"); **promo "second pizza 20% off"**; **Coming soon:** Doezza (4) and Burgers (4) with prices |
+| `2.jpeg` (portrait) | Döner buns (4), wraps (4), Big's (4), bowls (4, fries or rice); sauce picker (11 sauces) |
+| `3.jpeg` (portrait) | **"Make it a menu"** Regular/Medium/Large +€3.00/3.50/4.50 (fries or rice + 0.4 L drink); loaded fries (4 × €7.90 incl. 1 sauce); meatballs, mozzarella sticks, onion rings (6/12/20 pcs); salads (3) |
+| `4.jpeg` (portrait) | **Kids meal €5.00** (choose main: kids döner / 4 nuggets / 4 meatballs + small fries + drink choice + Kinder Riegel); chicken nuggets and wings (6/12/20 pcs with 1/2/3 sauces); crunchy and sweet-potato fries (Regular/Large/XL) |
+| `drinks.jpeg`, `drinks 2.jpeg` (landscape) | Draft beer (0.5 L / 0.3 L), bottled beer (7), wine (2), postmix soft drinks (6), cans (5), coffee (4) |
+| `sauce.jpeg` | Sauces |
 
-```
-menu import file (data, not code) ──npm run import:menu──▶ PostgreSQL ◀── /admin edits (audit-logged)
-                                                               │
-              /api/menu ── /api/menuboards (SKU refs → live price) ── SSE price/sold-out events
-                 │                 │
-            /pos, /, /order     /boards?screen=1..4
-```
+**How each kind of entry is modelled (current schema, no change):**
 
-## Decisions needed before Task 1
-
-| # | Question | Recommendation |
-|---|---|---|
-| D1 | Where does the **new menu** (the one the other person typed from the posters) enter the system? | A versioned data file `data/menu/menu-2026-10.json`, loaded **only** by `npm run import:menu` and never imported by app code. After that, `/admin` is where prices change. |
-| D2 | Who confirms the new menu's **prices**? The 63 items match none of the old till's product names, so I can't verify them against sales. | Rico/Oliver sign off the price list before `--apply`. |
-| D3 | **VAT** for the new menu items | Same rule as Q-VAT-4: items stay blocked until the accountant decides the 5% vs 9% question. |
-| D4 | **Old till catalogue vs new menu**: which one goes live? | The new menu is the live catalogue. The Gladius import is kept as a reference and for sales-history mapping (SKUs `GLD-*`, not shown on screens). |
-| D5 | **Product photos** in `public/assets/menu/` (~10 MB, added by the other person) | Keep them as files; the DB stores each product's `imageUrl`. The 26 GB `images/` library stays outside git (done: `5c3aaf9`). |
+| Menu element | Modelled as |
+|---|---|
+| Single item at one price | `Product` |
+| Sizes / piece counts (6/12/20, Regular/Large/XL, 0.3/0.5 L) | One `Product` per size (own SKU and price) |
+| "Incl. 1/2/3 sauces" | `ModifierGroup` "Sauce" with `maxSelected` = included count, options at €0 |
+| Make it a menu | `ModifierGroup` "Make it a menu" (Regular/Medium/Large, priced) + "Side" (fries/rice) + "Drink 0.4 L"; linked to products with `allowMealUpgrade` |
+| Kids meal €5.00 | `Product` + required groups "Main" (3 options) and "Drink" (3 options) |
+| 4 tacos €11.90 | Its own `Product` (fixed price) |
+| **Second pizza 20% off** | **Not importable:** needs a promotions model (Phase 2 schema). Kept in the data file as `promotions[]`, reported, not applied |
+| **Coming soon** (Doezza, Burgers) | Kept in the data file with `status: "coming_soon"`; **not imported** (reported) until you launch them. `isAvailable` means "sold out", not "not launched" |
 
 ## Global constraints
 
 - **No menu literals in source:**
-  - Banned outside `tests/`, `data/` and the importer: product names with prices, price numbers, VAT rates, board item lists and SKU→image maps.
-  - A guard test (Task 9) enforces it.
-- **4 menu boards** (signed SOW; Sagar 2026-10-03). Valid screens are 1–4; anything else is rejected. The schema comment "1 to 7" is left for the Phase 2 schema pass.
-- **No schema change in this plan.** Everything fits the current schema:
-  - `Product.imageUrl`, `Product.badge`, `Product.allowMealUpgrade`.
-  - `ModifierGroup`/`Modifier` for meal upgrades.
-  - `MenuBoardConfig.itemsJson` holding **SKU references only**.
-- **No silent fallbacks:** if the DB is unreachable, the API returns 503 and the screens show their error state. They never invent a menu.
-- **Prices are rounded to cents.** Price changes and sold-out toggles are audit-logged (PRD P.2).
-- **Don't break the other person's assets:** their images are kept; their hard-coded data is migrated into the import file, then deleted from the code.
+  - Banned outside `tests/` and the importer: product names with prices, price numbers, VAT rates, board item lists and SKU→image maps.
+  - The menu data file itself is never committed and never imported by app code.
+  - Guard test in Task 10.
+- **Screens 1–4 only.** Anything else is rejected. The "1 to 7" schema comment is fixed in the Phase 2 schema pass.
+- **No schema change in this plan:**
+  - Promotions and the VAT-rate table belong to Phase 2.
+  - The VAT **rate** stays out of product data: products carry a category only.
+  - `src/lib/tax.ts` still hard-codes 9%/19%. It is not used for receipts yet; Phase 2 replaces it with the `VatRate` table (5%/5% per D3).
+- **No silent fallbacks:** if the DB is down, the API returns 503 and screens show an error state.
+- **Prices are rounded to cents.** Price changes and sold-out toggles are audit-logged.
+- **Other person's work:**
+  - Their photos are kept.
+  - Their hard-coded data is used only as a cross-check, then deleted from the code (Task 10).
+  - **Tell them before Task 1**, because their uncommitted files will change underneath them.
 - **TDD for every task.** Each task ends with `npm test`, `npm run typecheck` and `npm run build` passing, then a commit.
 
 ## Review focus
 
-1. **Price shown = price charged:**
-   - `/boards`, `/order`, the public site and `/pos` must show the same price for the same SKU.
-   - Pinned by an API-level test (Task 6) and a guard test (Task 9).
-2. **DB down:**
-   - `/api/menu` and `/api/menuboards` return 503 with an error code instead of the old hard-coded catalogue.
-   - Screens show an error state, not stale prices. (Task 2)
-3. **Board item referencing a deleted or unavailable SKU:** it is shown as sold out or hidden, never with a stale price. (Task 5)
-4. **Meal upgrade:** the price comes only from the DB modifier group; a product with `allowMealUpgrade = false` offers no upgrade. (Task 7)
-5. **Screen number outside 1–4:** 400 on PATCH; `/boards?screen=5` shows "screen not configured". (Task 5)
+1. **Price shown = price charged:** `/boards`, `/order`, `/` and `/pos` show the same price for the same SKU (Tasks 7 and 10).
+2. **DB down:** `/api/menu` and `/api/menuboards` return 503; screens show an error state (Task 2).
+3. **The JSON is deleted only after a verified apply plus a DB export.** If either fails, the file stays (Task 4).
+4. **Coming-soon items and promotions are never sold by accident** (Task 1 and Task 3 reports).
+5. **Meal upgrade and kids-meal prices come only from DB modifier groups** (Task 8).
+6. **Board item with a deleted or sold-out SKU:** shown as sold out or hidden, never at a stale price (Task 6).
 
 ---
 
-## File structure (planned)
+## Planned files
 
 | File | Change |
 |---|---|
-| `data/menu/menu-2026-10.json` | **New.** The new menu as data (categories, products, VAT category, price, image, badge, upgrade eligibility, board layout as SKU lists). Built from the other person's uncommitted `catalog-data.ts`, `signage.engine.ts` and `order/page.tsx`. |
-| `src/lib/import/menu/plan.ts`, `apply.ts` | **New.** Same pattern as the Gladius importer: zod-validated, dry-run by default, upsert by SKU, never deletes, audit-logged, blocks undecided VAT/prices. Reuses `CatalogStore`. |
-| `scripts/import-menu.ts` + `npm run import:menu` | **New.** CLI with a report in `.import-work/reports/`. |
-| `src/app/api/menu/route.ts` | Remove the `CANONICAL_CATALOG_CATEGORIES` fallback; 503 on DB failure; include `imageUrl`, `badge` and upgrade groups. |
-| `src/app/api/menuboards/route.ts` | Remove the canonical seeding; screens 1–4 only; resolve SKU refs to live name/price/availability; PATCH accepts SKU lists only (manager role). |
-| `src/modules/signage/components/MenuBoard4K.tsx` | Fetch `/api/menuboards?screen=N`; keep SSE; loading, error and empty states. |
-| `src/app/order/page.tsx` | Fetch `/api/menu`; loading, error and empty states. |
-| `src/modules/pos/components/ModifierModal.tsx` | Render the meal upgrade from the product's modifier groups (DB); remove the €3.00/3.50/4.50 literals. |
-| `src/app/admin/menu-boards/page.tsx` | Edit boards as SKU lists (pick from products); no price fields. |
-| `src/lib/catalog-data.ts`, `src/modules/signage/signage.engine.ts`, `src/lib/menuboard-engine.ts` (data part), `src/lib/menu-assets.ts` (registry part) | **Delete the data.** Keep only pure helpers (daypart resolver, layout validation, placeholder generator). |
-| `prisma/seed.ts` | Remove the 103 hard-coded products and board configs. Dev seed = locations, terminals, demo accounts; the menu comes from `npm run import:menu`. |
-| `tests/no-hardcoded-menu.test.mjs` | **New** guard test (Task 9). |
+| `.import-work/menu/menu-2026-10.json` | **New, never committed.** The menu transcribed from `Menu/*.jpeg`: categories, products (per size), VAT category, price, image, badge, modifier groups, kids meal, boards 1–4 as SKU lists, `promotions[]`, coming-soon items. |
+| `src/lib/import/menu/schema.ts`, `plan.ts`, `apply.ts` | **New.** Zod schema and the import plan/apply logic, in the same pattern as the Gladius importer: dry-run default, upsert by SKU, never deletes, audit-logged; promos and coming-soon items reported, not applied. |
+| `src/lib/import/menu/export.ts` | **New.** DB → menu JSON export, so the deleted source can be regenerated. |
+| `scripts/import-menu.ts` + `npm run import:menu` | **New.** CLI: `--apply`; after a verified apply: export, then delete the source file. Report in `.import-work/reports/`. |
+| `src/app/api/menu/route.ts` | Remove the `catalog-data` fallback; 503 on DB failure; add `imageUrl`, `badge` and modifier groups. |
+| `src/app/api/menuboards/route.ts` | Remove the canonical seeding; screens 1–4; resolve SKU refs to live name/price/availability; PATCH takes SKU lists only. |
+| `src/modules/signage/components/MenuBoard4K.tsx` | Fetch `/api/menuboards?screen=N`, portrait 4K layout, SSE refresh, loading/error/not-configured states. |
+| `src/app/order/page.tsx` | Fetch `/api/menu`; loading/error/empty states. |
+| `src/modules/pos/components/ModifierModal.tsx` | Meal upgrade and choices from DB modifier groups; remove the €3.00/3.50/4.50 literals. |
+| `src/app/admin/menu-boards/page.tsx` | Board editor = SKU lists for screens 1–4; prices read-only. |
+| `src/lib/catalog-data.ts`, `signage.engine.ts`, `menuboard-engine.ts` (data part), `menu-assets.ts` (registry part) | Delete the data; keep the pure helpers. |
+| `prisma/seed.ts` | Remove the 103 hard-coded products and board configs (dev seed = locations, terminals, demo accounts). |
+| `tests/no-hardcoded-menu.test.mjs` | **New** guard test. |
 
 ---
 
-### Task 1: Menu data file + schema (from the other person's work)
-- [ ] Write the zod schema for `data/menu/*.json`:
-  - **Categories:** slug, name, sortOrder.
-  - **Products:**
-    - **Identity:** sku, category, name, description.
-    - **Price and tax:** gross price, VAT category or `null`.
-    - **Presentation:** imageUrl, badge.
-    - **Options:** allowMealUpgrade, modifierGroups.
-  - **Modifier groups and modifiers:** including the meal upgrade as a normal group with Regular/Medium/Large options and side/drink choices.
-  - **Boards:** screen 1–4, title, layout, ordered SKU lists.
-- [ ] Tests first: the schema rejects a missing SKU, a negative price, duplicate SKUs, screen 5, and an image path outside `/assets/`.
-- [ ] Convert the uncommitted hard-coded menu into `data/menu/menu-2026-10.json` with a one-off conversion script (not committed). Mark every price `"confirmed": false` until D2 and every VAT `null` until D3.
-- **Acceptance:** the file validates. Its item count equals the union of the three hard-coded sources (63 / 44 / 10, de-duplicated by SKU), and the report lists any item that appears in only one source.
+### Task 1: Transcribe the menu images into the data file
+- [ ] Zod schema first, with tests. Rejected: missing or duplicate SKU, negative price, screen outside 1–4, image path outside `/assets/`, unknown VAT category, `coming_soon` items placed on a board.
+- [ ] Transcribe every item and price from `Menu/1–4.jpeg`, `drinks*.jpeg` and `sauce.jpeg`:
+  - one product per size
+  - VAT category `ALCOHOL` for beer and wine, `FOOD_BEV` for everything else
+- [ ] Cross-check against the other person's hard-coded values and list every difference (name or price) for Sagar.
+- [ ] Map photos from `public/assets/menu/{products,sauces,upgrade}`; items without a photo use the placeholder.
+- **Acceptance:** the file validates. Sagar confirms the difference list and the onion-rings price.
 
 ### Task 2: `/api/menu`: no silent fallback
-- [ ] Tests first (route test with an injected repository): DB error → 503 `{ code: "MENU_UNAVAILABLE" }`, never the canonical catalogue. Success returns imageUrl, badge and modifier groups.
-- [ ] Remove the `catalog-data` import from the route.
-- **Acceptance:** stopping the DB makes `/pos` and `/` show their error state (checked live on a throwaway DB).
+- [ ] Tests first: DB error → 503 `{ code: "MENU_UNAVAILABLE" }`; success includes imageUrl, badge and modifier groups.
+- [ ] Remove the `catalog-data` import.
+- **Acceptance:** with the DB stopped, `/pos` and `/` show their error state (live check on a throwaway DB).
 
 ### Task 3: Menu importer (`npm run import:menu`)
-- [ ] Tests first, mirroring the Gladius importer:
-  - dry-run by default
+- [ ] Tests first:
+  - dry-run default
   - idempotent re-run
-  - `confirmed: false` prices and `null` VAT block, with a report entry
   - never deletes and never touches `isAvailable`
-  - price changes are audit-logged
-- [ ] Reuse `CatalogStore` / `prismaCatalogStore`; extend it to set `imageUrl`, `badge` and `allowMealUpgrade`.
-- [ ] Board layouts are written to `MenuBoardConfig.itemsJson` as `{ "skus": [...] }` only.
-- **Acceptance:** live test on a throwaway Postgres: refused while blocked, applied once, re-run unchanged.
+  - price changes audit-logged
+  - `promotions[]` and `coming_soon` items reported as "not imported"
+  - VAT category required
+- [ ] Reuse `CatalogStore`; extend it for `imageUrl`, `badge`, `allowMealUpgrade` and required modifier groups.
+- [ ] Boards go to `MenuBoardConfig.itemsJson` as `{ "skus": [...] }` for screens 1–4.
+- **Acceptance:** live test on a throwaway Postgres: applied once, re-run unchanged.
 
-### Task 4: Remove hard-coded products from `prisma/seed.ts`
-- [ ] The dev seed keeps locations, terminals and demo accounts only.
-- [ ] The docs say to run `npm run import:menu -- --apply` after seeding.
-- **Acceptance:** `npm run db:seed` on an empty DB creates zero products, and the import then creates the menu.
-
-### Task 5: `/api/menuboards`: SKU references, live prices, 4 screens
+### Task 4: Export after import, then delete the source JSON (D1)
 - [ ] Tests first:
-  - screen 5 → 404/400
-  - a referenced SKU resolves to the product's current name, price and availability
-  - an unknown SKU is dropped with a warning in the response
-  - a sold-out product comes back `isSoldOut: true`
-  - PATCH accepts `{ screenNumber: 1..4, title, layoutType, skus[] }` and rejects price fields
-  - PATCH needs STORE_MANAGER (already enforced by the policy) and is audit-logged
+  - the export round-trips (export → plan → apply gives "all unchanged")
+  - the source is deleted **only** if `--apply` succeeded **and** the export file was written and re-validated
+  - on any failure the source stays and the exit code is non-zero
+- [ ] `npm run import:menu -- --apply` does, in order: apply → verify counts → export → delete the source.
+- **Acceptance:** after a successful run, `.import-work/menu/menu-2026-10.json` is gone, `.import-work/exports/menu-<ts>.json` exists, and re-importing the export changes nothing.
+
+### Task 5: Remove the hard-coded products from `prisma/seed.ts`
+- [ ] Seed = locations, terminals, demo accounts; the docs say "then run `npm run import:menu`".
+- **Acceptance:** a seed on an empty DB creates 0 products.
+
+### Task 6: `/api/menuboards`: SKU references, live prices, 4 screens
+- [ ] Tests first:
+  - screen 5 → 400/404
+  - a SKU resolves to the current name, price and availability
+  - an unknown SKU is dropped with a warning
+  - a sold-out SKU comes back `isSoldOut: true`
+  - PATCH accepts `{ screenNumber 1..4, title, layoutType, skus[] }`, rejects price fields, needs manager, and is audit-logged
 - [ ] Remove the `CANONICAL_SCREEN_CONFIGS` seeding.
-- **Acceptance:** changing a product price in the DB changes the price on `/boards` with no other edit.
+- **Acceptance:** changing a product price in the DB changes `/boards` with no other edit.
 
-### Task 6: `/boards` and `/order` read the API
-- [ ] `MenuBoard4K` fetches `/api/menuboards?screen=N` and keeps SSE (`PRICE_UPDATED`, `STOCK_CHANGED` → refetch). It gets skeleton, error and "screen not configured" states.
-- [ ] `/order` fetches `/api/menu` and gets skeleton, error and empty states.
-- [ ] API-level consistency test: for every SKU on any board, the board price = the `/api/menu` price.
-- **Acceptance:** live check in a browser on a throwaway DB: same price on `/boards`, `/order` and `/pos` for three sample SKUs; a price change in `/admin` shows on all three via SSE.
+### Task 7: `/boards` (portrait 4K) and `/order` read the API
+- [ ] `MenuBoard4K` renders screens 1–4 from the API in portrait 2160×3840 (layout follows the posters' sections), with SSE refresh and skeleton/error/not-configured states.
+- [ ] `/order` reads `/api/menu`.
+- [ ] Consistency test: every board SKU's price = its `/api/menu` price.
+- **Acceptance:** live browser check: the same price on `/boards`, `/order` and `/pos` for three SKUs; an `/admin` price change shows on all three via SSE.
 
-### Task 7: Meal upgrade from the database
+### Task 8: Meal upgrade and kids meal from the database
 - [ ] Tests first:
-  - the modal shows upgrade options only for `allowMealUpgrade` products
-  - option prices come from the product's modifier group
-  - the line total is server-priced (the till already sends only IDs after Phase 4; until then the modal must not invent prices)
-- [ ] Remove the `mealUpgradePrice` literals from `ModifierModal.tsx`.
-- **Acceptance:** changing the "Medium" upgrade price in the DB changes the till without a code change.
+  - upgrade options shown only for `allowMealUpgrade` products
+  - prices come from the modifier group
+  - kids meal requires a Main and a Drink choice
+  - the modal never invents prices
+- [ ] Remove the `mealUpgradePrice` literals.
+- **Acceptance:** changing the "Medium" price in the DB changes the till without a code change.
 
-### Task 8: Admin board editor: SKU lists, no prices
-- [ ] `/admin/menu-boards` picks products for each of the 4 screens and orders them. Prices are read-only (shown from the DB) and the screen selector offers 1–4.
-- **Acceptance:** a manager can rebuild screen 2 from the UI; `/boards?screen=2` updates live.
+### Task 9: Admin board editor (screens 1–4, SKU lists)
+- [ ] Pick and order products per screen; prices read-only.
+- **Acceptance:** a manager rebuilds screen 2 in the UI and `/boards?screen=2` updates live.
 
-### Task 9: Delete the hard-coded copies + guard test
+### Task 10: Delete the hard-coded copies + guard test
 - [ ] Delete the data in `catalog-data.ts`, `CANONICAL_4K_SCREENS`, `CANONICAL_SCREEN_CONFIGS` items and `MENU_ASSET_REGISTRY`; keep the pure helpers.
-- [ ] `tests/no-hardcoded-menu.test.mjs` scans `src/**` and fails on:
-  - object literals combining `name` with a `price` / `priceEUR` / `basePrice` number
-  - `CANONICAL_*` menu exports
-  - SKU→image maps
-- **Acceptance:** the guard passes; it fails if someone re-adds a price literal (verified by a temporary failing fixture inside the test).
+- [ ] `tests/no-hardcoded-menu.test.mjs` fails on name+price literals, `CANONICAL_*` menu exports and SKU→image maps in `src/**` (proven with a temporary failing fixture).
+- **Acceptance:** the guard passes; re-adding a price literal fails the build.
 
-### Task 10: Docs and handover
-- [ ] PRD M10/M11 status; TRD API rows; open-questions D1–D3; the README "Getting started" gains the `import:menu` step.
+### Task 11: Docs
+- [ ] PRD M10/M11 status; TRD API rows; open questions:
+  - drinks/sauce screens (D6)
+  - alcohol VAT (Q-VAT-4)
+  - onion rings price
+  - promotions → Phase 2
+  - coming-soon launch
+- [ ] README: "run `npm run import:menu -- --apply`".
 
 ## Order and risk
 
-- Do Tasks 1–3 before any screen work, so the DB holds the new menu first.
-- Tasks 5–7 then switch the readers.
-- Task 9 deletes the copies last, which makes every step reversible until then.
-- The other person's uncommitted edits are **not** overwritten by hand. Task 1 converts them into the data file, and Task 9 removes the code copies in a reviewed commit.
-- **Tell them before starting**, because their files will change underneath them.
+- **Tasks 1–4** first: the DB holds the confirmed menu, and the source file is replaced by a DB export.
+- **Tasks 6–9** then switch every reader.
+- **Task 10** deletes the hard-coded copies last, so every step is reversible until then.
+
+**Open before "go":**
+- D6: what happens to the drinks and sauces content on 4 screens.
+- The accountant's written word on alcohol VAT. The import can run with 5% meanwhile; it's a one-value change later.
+- Confirm the onion-rings price.
