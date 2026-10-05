@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { requireRole } from "@/lib/auth/guard";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 // GET all products and modifiers for Admin Management
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
 
     const categories = await prisma.category.findMany({
       orderBy: { sortOrder: "asc" },
@@ -59,9 +62,11 @@ export async function GET() {
 }
 
 // PATCH to toggle availability or update price
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
+  const auth = await requireRole(request, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
 
     const body = await request.json();
     const { targetType, targetId, isAvailable, basePrice, locationId, overridePrice } = body;
@@ -98,6 +103,7 @@ export async function PATCH(request: Request) {
 
       await prisma.auditLog.create({
         data: {
+          adminUserId: auth.session.sub,
           action: "PRODUCT_UPDATED",
           details: JSON.stringify({ productId: targetId, isAvailable, basePrice }),
           severity: "INFO",
@@ -123,6 +129,7 @@ export async function PATCH(request: Request) {
 
       await prisma.auditLog.create({
         data: {
+          adminUserId: auth.session.sub,
           action: "MODIFIER_UPDATED",
           details: JSON.stringify({ modifierId: targetId, isAvailable, basePrice }),
           severity: "INFO",
@@ -146,9 +153,11 @@ export async function PATCH(request: Request) {
 }
 
 // POST to create a new product
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = await requireRole(request, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const body = await request.json();
     const {
       categoryId,
@@ -206,6 +215,7 @@ export async function POST(request: Request) {
 
     await prisma.auditLog.create({
       data: {
+        adminUserId: auth.session.sub,
         action: "PRODUCT_CREATED",
         details: JSON.stringify({ productId: newProduct.id, sku: newProduct.sku, name: newProduct.name }),
         severity: "INFO",
@@ -223,9 +233,11 @@ export async function POST(request: Request) {
 }
 
 // PUT to edit an existing product
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
+  const auth = await requireRole(request, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const body = await request.json();
     const {
       id,
@@ -272,6 +284,7 @@ export async function PUT(request: Request) {
 
     await prisma.auditLog.create({
       data: {
+        adminUserId: auth.session.sub,
         action: "PRODUCT_EDITED",
         details: JSON.stringify({ productId: id, name: updatedProduct.name, basePrice: updatedProduct.basePrice }),
         severity: "INFO",
@@ -289,9 +302,11 @@ export async function PUT(request: Request) {
 }
 
 // DELETE to remove an item from menu
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
+  const auth = await requireRole(request, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const url = new URL(request.url);
     let productId = url.searchParams.get("id");
 
@@ -315,6 +330,7 @@ export async function DELETE(request: Request) {
 
     await prisma.auditLog.create({
       data: {
+        adminUserId: auth.session.sub,
         action: "PRODUCT_DELETED",
         details: JSON.stringify({ productId, name: deleted.name, sku: deleted.sku }),
         severity: "WARNING",

@@ -34,9 +34,23 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma sqlite database files (preserve backup directory, ignore live WAL)
-prisma/data/*.db
-prisma/data/*.db-journal
-prisma/data/*.db-wal
-prisma/data/*.db-shm
+# local database files (never commit)
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# local tool scratch and UI screenshot output
+.superpowers/
+artifacts/
+
+# legacy store data — raw originals and working copies, may contain GDPR personal data; never commit
+/import/
+/.import-work/
+/Old Data/
+
+# raw brand/photo source library (26 GB) — originals live outside git; optimised copies go in public/assets
+/images/
+
+# md-linker plugin cache (generated)
+/.md-linker/

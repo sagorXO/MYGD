@@ -1,45 +1,36 @@
 {
-  "name": "my-german-doner-monorepo",
+  "name": "mygd",
   "version": "2.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx --test tests/*.test.mjs",
-    "test:all": "tsx --test tests/*.test.mjs",
-    "db:generate": "turbo run db:generate",
-    "db:push": "turbo run db:push",
-    "db:seed": "turbo run db:seed",
-    "docker:start": "bash scripts/docker-run.sh",
-    "docker:stop": "docker compose down"
+    "test": "tsx --tsconfig tsconfig.test.json --test tests/*.test.mjs",
+    "ui:smoke": "node scripts/ui-gallery-smoke.mjs",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "user:create": "tsx scripts/create-user.ts",
+    "import:gladius": "tsx scripts/import-gladius.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
     "bcryptjs": "^2.4.3",
-    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.475.0",
     "next": "^15.2.0",
-    "pdf-lib": "^1.17.1",
-    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.1",
-    "zod": "^3.24.2",
-    "zustand": "^5.0.3"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20.17.19",
-    "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "autoprefixer": "^10.4.20",
@@ -50,7 +41,6 @@
     "prisma": "^6.3.1",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.2",
-    "turbo": "^2.4.4",
     "typescript": "^5.7.3"
   }
 }

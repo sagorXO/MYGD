@@ -8,63 +8,6 @@ async function getTimeclockEngine() {
   });
 }
 
-// Reusable Mock Staff Roster for In-Store Wall Station Tablet
-const mockStaffRoster = [
-  {
-    id: "stf-001",
-    name: "Christos K.",
-    pin: "1111",
-    role: "CASHIER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 9.5,
-  },
-  {
-    id: "stf-002",
-    name: "Marco S.",
-    pin: "1234",
-    role: "MANAGER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 14.0,
-  },
-  {
-    id: "stf-003",
-    name: "Alex Mueller",
-    pin: "0000",
-    role: "SLICER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 11.0,
-  },
-  {
-    id: "stf-004",
-    name: "Rico & Oli",
-    pin: "9999",
-    role: "HQ OWNER",
-    locationSlug: "HQ",
-    isActive: true,
-    hourlyRateEUR: 0.0,
-  },
-  {
-    id: "stf-005",
-    name: "Elena Vassiliou",
-    pin: "2222",
-    role: "ASSEMBLER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 9.5,
-  },
-  {
-    id: "stf-006",
-    name: "Dimitris P.",
-    pin: "3333",
-    role: "GRILL_MASTER",
-    locationSlug: "EMBA",
-    isActive: false, // Deactivated account
-    hourlyRateEUR: 10.5,
-  },
-];
 
 // Reusable Mock Product & Recipe Steps for M8 SOP Build Sheets
 const mockClassicDonerProduct = {
@@ -140,117 +83,14 @@ const mockRecipeStepsUnordered = [
 // SUITE 1: MODULE M7 — PIN AUTHENTICATION & ROLE RESOLUTION
 // =========================================================================
 
-test("M7 PIN Auth - Resolves valid staff roles by 4-digit PIN (Cashier, Manager, Slicer, HQ Owner)", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  // 1. Christos K. -> CASHIER ("1111")
-  const cashierAuth = authenticateStaffPIN("1111", mockStaffRoster);
-  assert.equal(cashierAuth.isValid, true, "PIN 1111 must authenticate successfully");
-  assert.equal(cashierAuth.error, null);
-  assert.ok(cashierAuth.staff);
-  assert.equal(cashierAuth.staff.name, "Christos K.");
-  assert.equal(cashierAuth.staff.role, "CASHIER");
-  assert.equal(cashierAuth.staff.locationSlug, "EMBA");
-
-  // 2. Marco S. -> MANAGER ("1234")
-  const managerAuth = authenticateStaffPIN("1234", mockStaffRoster);
-  assert.equal(managerAuth.isValid, true, "PIN 1234 must authenticate successfully");
-  assert.ok(managerAuth.staff);
-  assert.equal(managerAuth.staff.name, "Marco S.");
-  assert.equal(managerAuth.staff.role, "MANAGER");
-
-  // 3. Alex Mueller -> SLICER ("0000")
-  const slicerAuth = authenticateStaffPIN("0000", mockStaffRoster);
-  assert.equal(slicerAuth.isValid, true, "PIN 0000 must authenticate successfully");
-  assert.ok(slicerAuth.staff);
-  assert.equal(slicerAuth.staff.name, "Alex Mueller");
-  assert.equal(slicerAuth.staff.role, "SLICER");
-
-  // 4. Rico & Oli -> HQ OWNER ("9999")
-  const ownerAuth = authenticateStaffPIN("9999", mockStaffRoster);
-  assert.equal(ownerAuth.isValid, true, "PIN 9999 must authenticate successfully");
-  assert.ok(ownerAuth.staff);
-  assert.equal(ownerAuth.staff.name, "Rico & Oli");
-  assert.equal(ownerAuth.staff.role, "HQ OWNER");
+test("M7 PIN Auth - engine ships no staff roster and no plaintext PIN check", async () => {
+  // Staff PINs used to be hard-coded here in plain text. Timeclock PINs are now
+  // bcrypt hashes on AdminUser, verified by src/lib/auth/staff-pin.ts
+  // (covered in tests/auth-login.test.mjs).
+  const engine = await getTimeclockEngine();
+  assert.equal(engine.CANONICAL_STAFF_ROSTER, undefined);
+  assert.equal(engine.authenticateStaffPIN, undefined);
 });
-
-test("M7 PIN Auth - Rejects invalid PIN lengths (< 4 digits and > 4 digits)", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  // Short PINs (< 4 digits)
-  const shortPins = ["", "1", "12", "123"];
-  for (const pin of shortPins) {
-    const result = authenticateStaffPIN(pin, mockStaffRoster);
-    assert.equal(result.isValid, false, `PIN '${pin}' must be rejected for invalid length`);
-    assert.equal(result.staff, null);
-    assert.ok(result.error && result.error.includes("4"), "Error message should mention 4 digits requirement");
-  }
-
-  // Long PINs (> 4 digits)
-  const longPins = ["12345", "11111", "000000"];
-  for (const pin of longPins) {
-    const result = authenticateStaffPIN(pin, mockStaffRoster);
-    assert.equal(result.isValid, false, `PIN '${pin}' must be rejected for exceeding 4 digits`);
-    assert.equal(result.staff, null);
-    assert.ok(result.error);
-  }
-});
-
-test("M7 PIN Auth - Rejects non-numeric, alphanumeric, and malformed PINs", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  const malformedPins = ["abcd", "12a4", "12 4", "12-4", "12.4", "!@#$", "00O0", " 111 "];
-  for (const pin of malformedPins) {
-    const result = authenticateStaffPIN(pin, mockStaffRoster);
-    assert.equal(result.isValid, false, `Malformed PIN '${pin}' must be rejected`);
-    assert.equal(result.staff, null);
-    assert.ok(result.error);
-  }
-});
-
-test("M7 PIN Auth - Rejects unregistered PINs not present in roster", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  const unknownPins = ["5555", "7777", "8888", "4321"];
-  for (const pin of unknownPins) {
-    const result = authenticateStaffPIN(pin, mockStaffRoster);
-    assert.equal(result.isValid, false, `Unregistered PIN '${pin}' must return isValid: false`);
-    assert.equal(result.staff, null);
-    assert.ok(result.error && result.error.includes("not found"));
-  }
-});
-
-test("M7 PIN Auth - Rejects deactivated staff accounts with clear deactivation error", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  // Dimitris P. has pin "3333" but isActive: false
-  const deactivatedAuth = authenticateStaffPIN("3333", mockStaffRoster);
-  assert.equal(deactivatedAuth.isValid, false, "Deactivated staff member must be rejected");
-  assert.equal(deactivatedAuth.staff, null);
-  assert.ok(
-    deactivatedAuth.error && deactivatedAuth.error.toLowerCase().includes("deactivated"),
-    "Error must specify that account is deactivated"
-  );
-});
-
-test("M7 PIN Auth - Defensive handling against null, undefined, empty roster, or invalid types", async () => {
-  const { authenticateStaffPIN } = await getTimeclockEngine();
-
-  // Non-string PINs
-  assert.equal(authenticateStaffPIN(null, mockStaffRoster).isValid, false);
-  assert.equal(authenticateStaffPIN(undefined, mockStaffRoster).isValid, false);
-  assert.equal(authenticateStaffPIN(1234, mockStaffRoster).isValid, false);
-  assert.equal(authenticateStaffPIN(true, mockStaffRoster).isValid, false);
-
-  // Missing or empty roster
-  assert.equal(authenticateStaffPIN("1111", null).isValid, false);
-  assert.equal(authenticateStaffPIN("1111", undefined).isValid, false);
-  assert.equal(authenticateStaffPIN("1111", []).isValid, false);
-});
-
-// =========================================================================
-// SUITE 2: MODULE M7 — SHIFT PUNCH & DURATION CALCULATION
-// =========================================================================
 
 test("M7 Shift Duration - Computes completed shift duration in minutes and 'Xh Ym' formatted string", async () => {
   const { calculateShiftDuration } = await getTimeclockEngine();
@@ -484,25 +324,10 @@ test("M8 Visual Build Sheet - Robust normalization for partial step records and 
   assert.equal(nullProductSheet.steps.length, 1);
 });
 
-test("M7 & M8 Engine - Validates CANONICAL_STAFF_ROSTER and CANONICAL_BUILD_SHEETS exports", async () => {
-  const { CANONICAL_STAFF_ROSTER, CANONICAL_BUILD_SHEETS, authenticateStaffPIN, formatProductBuildSheet } =
-    await getTimeclockEngine();
+test("M8 Engine - Validates CANONICAL_BUILD_SHEETS exports", async () => {
+  const { CANONICAL_BUILD_SHEETS, formatProductBuildSheet } = await getTimeclockEngine();
 
-  // 1. Validate CANONICAL_STAFF_ROSTER
-  assert.ok(Array.isArray(CANONICAL_STAFF_ROSTER));
-  assert.ok(CANONICAL_STAFF_ROSTER.length >= 6);
-
-  // Authenticate Cashier
-  const cashier = authenticateStaffPIN("1111", CANONICAL_STAFF_ROSTER);
-  assert.equal(cashier.isValid, true);
-  assert.equal(cashier.staff.name, "Christos K.");
-
-  // Authenticate Manager
-  const manager = authenticateStaffPIN("1234", CANONICAL_STAFF_ROSTER);
-  assert.equal(manager.isValid, true);
-  assert.equal(manager.staff.name, "Marco S.");
-
-  // 2. Validate CANONICAL_BUILD_SHEETS
+  // Validate CANONICAL_BUILD_SHEETS
   assert.ok(Array.isArray(CANONICAL_BUILD_SHEETS));
   assert.ok(CANONICAL_BUILD_SHEETS.length >= 4);
 

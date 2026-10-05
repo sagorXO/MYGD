@@ -1,82 +1,6 @@
 // MY GERMAN DÖNER — Module M7 Staff Timeclock & Module M8 Visual SOP Build Sheets Engine
-// Production-grade shift duration math, 4-digit PIN authentication, and visual recipe step sequencing.
-
-export type StaffRole =
-  | "CASHIER"
-  | "SLICER"
-  | "ASSEMBLER"
-  | "GRILL_MASTER"
-  | "MANAGER"
-  | "HQ OWNER"
-  | "HQ_OWNER"
-  | string;
-
-export interface StaffMember {
-  id: string;
-  name: string;
-  pin: string;
-  role: StaffRole;
-  locationSlug?: string;
-  isActive?: boolean;
-  hourlyRateEUR?: number;
-}
-
-export const CANONICAL_STAFF_ROSTER: StaffMember[] = [
-  {
-    id: "stf-001",
-    name: "Christos K.",
-    pin: "1111",
-    role: "CASHIER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 9.5,
-  },
-  {
-    id: "stf-002",
-    name: "Marco S.",
-    pin: "1234",
-    role: "MANAGER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 14.0,
-  },
-  {
-    id: "stf-003",
-    name: "Alex Mueller",
-    pin: "0000",
-    role: "SLICER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 11.0,
-  },
-  {
-    id: "stf-004",
-    name: "Rico & Oli",
-    pin: "9999",
-    role: "HQ OWNER",
-    locationSlug: "HQ",
-    isActive: true,
-    hourlyRateEUR: 0.0,
-  },
-  {
-    id: "stf-005",
-    name: "Elena Vassiliou",
-    pin: "2222",
-    role: "ASSEMBLER",
-    locationSlug: "EMBA",
-    isActive: true,
-    hourlyRateEUR: 9.5,
-  },
-  {
-    id: "stf-006",
-    name: "Dimitris P.",
-    pin: "3333",
-    role: "GRILL_MASTER",
-    locationSlug: "EMBA",
-    isActive: false, // Deactivated account
-    hourlyRateEUR: 10.5,
-  },
-];
+// Shift duration math and visual recipe step sequencing.
+// Staff PIN checks live in src/lib/auth/staff-pin.ts (bcrypt hashes on AdminUser); no PINs in source.
 
 export interface CanonicalBuildSheetData {
   product: {
@@ -355,12 +279,6 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
   },
 ];
 
-export interface PINAuthResult {
-  isValid: boolean;
-  staff: StaffMember | null;
-  error?: string | null;
-}
-
 export interface ShiftDurationResult {
   minutes: number;
   formatted: string; // e.g. "4h 15m", "0h 45m"
@@ -412,70 +330,6 @@ export interface ProductBuildSheetResult {
   totalTargetSec: number;
   stepCount: number;
   hasDefaultSOP: boolean;
-}
-
-/**
- * Module M7: Authenticate Staff 4-Digit PIN & Resolve Role
- *
- * Enforces strict 4-digit numeric format, checks active roster,
- * and returns the authenticated staff member with assigned role.
- */
-export function authenticateStaffPIN(
-  pin: unknown,
-  staffRoster?: StaffMember[] | null
-): PINAuthResult {
-  if (typeof pin !== "string") {
-    return {
-      isValid: false,
-      staff: null,
-      error: "Invalid PIN format: PIN must be a 4-digit string.",
-    };
-  }
-
-  const trimmedPin = pin.trim();
-
-  // Validate exactly 4 numeric digits
-  if (trimmedPin.length !== 4 || !/^\d{4}$/.test(trimmedPin)) {
-    return {
-      isValid: false,
-      staff: null,
-      error: "Invalid PIN format: must be exactly 4 numeric digits (0-9).",
-    };
-  }
-
-  if (!staffRoster || !Array.isArray(staffRoster) || staffRoster.length === 0) {
-    return {
-      isValid: false,
-      staff: null,
-      error: "Staff roster is empty or unavailable.",
-    };
-  }
-
-  const staffMember = staffRoster.find(
-    (member) => member && typeof member === "object" && member.pin === trimmedPin
-  );
-
-  if (!staffMember) {
-    return {
-      isValid: false,
-      staff: null,
-      error: "Unrecognized PIN: staff member not found in active roster.",
-    };
-  }
-
-  if (staffMember.isActive === false) {
-    return {
-      isValid: false,
-      staff: null,
-      error: "Staff member account is deactivated.",
-    };
-  }
-
-  return {
-    isValid: true,
-    staff: staffMember,
-    error: null,
-  };
 }
 
 /**

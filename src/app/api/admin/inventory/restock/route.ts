@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole } from "@/lib/auth/guard";
 import { prisma } from "@/lib/prisma";
 import { RestockIntakeRequestSchema } from "@/modules/inventory/inventory.schema";
 import { eventBroker } from "@/lib/events";
@@ -6,6 +7,9 @@ import { eventBroker } from "@/lib/events";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await req.json();
     const validated = RestockIntakeRequestSchema.parse(body);

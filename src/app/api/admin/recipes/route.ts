@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { requireRole } from "@/lib/auth/guard";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 // GET recipe and BOM for a product, along with all available master ingredients
 export async function GET(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const url = new URL(req.url);
     const productId = url.searchParams.get("productId");
 
@@ -72,8 +75,10 @@ export async function GET(req: NextRequest) {
 
 // POST to add an ingredient to a product's recipe & BOM
 export async function POST(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const body = await req.json();
     const { productId, ingredientId, amountGrams, isOptional = false } = body;
 
@@ -142,6 +147,7 @@ export async function POST(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        adminUserId: auth.session.sub,
         action: "RECIPE_INGREDIENT_ADDED",
         details: JSON.stringify({ productId, ingredientId, amountGrams }),
         severity: "INFO",
@@ -160,8 +166,10 @@ export async function POST(req: NextRequest) {
 
 // PUT to update an ingredient portion amount in a recipe
 export async function PUT(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const body = await req.json();
     const { productId, ingredientId, amountGrams, isOptional } = body;
 
@@ -206,8 +214,10 @@ export async function PUT(req: NextRequest) {
 
 // DELETE to remove an ingredient from a product's recipe & BOM
 export async function DELETE(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_MANAGER");
+  if (!auth.ok) return auth.response;
+
   try {
-    await initializeDatabasePragmas();
     const url = new URL(req.url);
     let productId = url.searchParams.get("productId");
     let ingredientId = url.searchParams.get("ingredientId");
@@ -240,6 +250,7 @@ export async function DELETE(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        adminUserId: auth.session.sub,
         action: "RECIPE_INGREDIENT_DELETED",
         details: JSON.stringify({ productId, ingredientId }),
         severity: "INFO",

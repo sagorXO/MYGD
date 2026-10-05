@@ -1,0 +1,181 @@
+/* MYGD design tokens — single source of truth.
+   Spec: docs/superpowers/specs/2026-09-28-ui-foundation-design.md
+   Components use the semantic --color-* tokens (via Tailwind), never the primitives. */
+
+:root {
+  /* Magenta ramp — 500 is the brand primary from the badge logo */
+  --mygd-magenta-50: #FDE7F2;
+  --mygd-magenta-100: #FBCFE5;
+  --mygd-magenta-200: #F7A0CB;
+  --mygd-magenta-300: #F170B0;
+  --mygd-magenta-400: #EC4096;
+  --mygd-magenta-500: #E50C7E;
+  --mygd-magenta-600: #C20A6A;
+  --mygd-magenta-700: #B8095F;
+  --mygd-magenta-800: #8F074A;
+  --mygd-magenta-900: #5E0431;
+  --mygd-magenta-950: #33021B;
+
+  /* Neutral ramp — 1000 is logo black */
+  --mygd-gray-0: #FFFFFF;
+  --mygd-gray-25: #FAFAFA;
+  --mygd-gray-50: #F4F4F5;
+  --mygd-gray-100: #EBEBED;
+  --mygd-gray-150: #E3E3E6;
+  --mygd-gray-200: #D4D4D8;
+  --mygd-gray-400: #A1A1AA;
+  --mygd-gray-500: #8A8A93;
+  --mygd-gray-550: #6B6B73;
+  --mygd-gray-600: #65656D;
+  --mygd-gray-650: #52525B;
+  --mygd-gray-750: #333338;
+  --mygd-gray-800: #27272A;
+  --mygd-gray-850: #202023;
+  --mygd-gray-900: #18181B;
+  --mygd-gray-950: #0B0B0C;
+  --mygd-gray-1000: #000000;
+
+  /* Status hues */
+  --mygd-green-100: #DCFCE7;
+  --mygd-green-300: #86EFAC;
+  --mygd-green-700: #15803D;
+  --mygd-green-900: #14532D;
+  --mygd-amber-100: #FEF3C7;
+  --mygd-amber-300: #FCD34D;
+  --mygd-amber-700: #B45309;
+  --mygd-amber-900: #78350F;
+  --mygd-red-100: #FEE2E2;
+  --mygd-red-300: #FCA5A5;
+  --mygd-red-700: #B91C1C;
+  --mygd-red-900: #7F1D1D;
+  --mygd-cyan-100: #CFFAFE;
+  --mygd-cyan-300: #67E8F9;
+  --mygd-cyan-700: #0E7490;
+  --mygd-cyan-900: #164E63;
+  --mygd-gold-100: #FEF9C3;
+  --mygd-gold-300: #FDE047;
+  --mygd-gold-700: #A16207;
+  --mygd-gold-900: #713F12;
+
+  /* Theme-independent brand constants */
+  --brand-black: #000000;
+  --brand-whatsapp: #25D366;
+
+  /* Scales */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Density defaults (overridden per [data-surface]) */
+  --text-base: 16px;
+  --hit-min: 44px;
+}
+
+:root, [data-theme="light"] {
+  --color-canvas: var(--mygd-gray-50);
+  --color-surface: var(--mygd-gray-0);
+  --color-surface-raised: var(--mygd-gray-0);
+  --color-surface-hover: var(--mygd-gray-100);
+  --color-border: var(--mygd-gray-200);
+  --color-border-subtle: var(--mygd-gray-150);
+  --color-border-input: var(--mygd-gray-500);
+  --color-text: var(--mygd-gray-900);
+  --color-text-secondary: var(--mygd-gray-650);
+  --color-text-subtle: var(--mygd-gray-600);
+  --color-accent: var(--mygd-magenta-500);
+  --color-accent-hover: var(--mygd-magenta-600);
+  --color-on-accent: var(--mygd-gray-0);
+  --color-accent-text: var(--mygd-magenta-700);
+  --color-accent-subtle: var(--mygd-magenta-50);
+  --color-success: var(--mygd-green-700);
+  --color-success-subtle: var(--mygd-green-100);
+  --color-warning: var(--mygd-amber-700);
+  --color-warning-subtle: var(--mygd-amber-100);
+  --color-danger: var(--mygd-red-700);
+  --color-danger-subtle: var(--mygd-red-100);
+  --color-info: var(--mygd-cyan-700);
+  --color-info-subtle: var(--mygd-cyan-100);
+  --color-highlight: var(--mygd-gold-700);
+  --color-highlight-subtle: var(--mygd-gold-100);
+  --color-focus: var(--mygd-magenta-500);
+  --shadow-card: 0 0 0 1px var(--mygd-gray-150), 0 1px 2px 0 color-mix(in srgb, var(--mygd-gray-1000) 8%, transparent);
+  --shadow-2: 0 4px 12px -2px color-mix(in srgb, var(--mygd-gray-1000) 12%, transparent);
+  --shadow-3: 0 16px 40px -8px color-mix(in srgb, var(--mygd-gray-1000) 22%, transparent);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --color-canvas: var(--mygd-gray-950);
+  --color-surface: var(--mygd-gray-900);
+  --color-surface-raised: var(--mygd-gray-850);
+  --color-surface-hover: var(--mygd-gray-800);
+  --color-border: var(--mygd-gray-750);
+  --color-border-subtle: var(--mygd-gray-800);
+  --color-border-input: var(--mygd-gray-550);
+  --color-text: var(--mygd-gray-25);
+  --color-text-secondary: var(--mygd-gray-400);
+  --color-text-subtle: var(--mygd-gray-500);
+  --color-accent: var(--mygd-magenta-500);
+  --color-accent-hover: var(--mygd-magenta-600);
+  --color-on-accent: var(--mygd-gray-0);
+  --color-accent-text: var(--mygd-magenta-300);
+  --color-accent-subtle: var(--mygd-magenta-950);
+  --color-success: var(--mygd-green-300);
+  --color-success-subtle: var(--mygd-green-900);
+  --color-warning: var(--mygd-amber-300);
+  --color-warning-subtle: var(--mygd-amber-900);
+  --color-danger: var(--mygd-red-300);
+  --color-danger-subtle: var(--mygd-red-900);
+  --color-info: var(--mygd-cyan-300);
+  --color-info-subtle: var(--mygd-cyan-900);
+  --color-highlight: var(--mygd-gold-300);
+  --color-highlight-subtle: var(--mygd-gold-900);
+  --color-focus: var(--mygd-magenta-500);
+  --shadow-card: 0 0 0 1px var(--mygd-gray-750);
+  --shadow-2: 0 0 0 1px var(--mygd-gray-750), 0 8px 24px -4px color-mix(in srgb, var(--mygd-gray-1000) 60%, transparent);
+  --shadow-3: 0 0 0 1px var(--mygd-gray-750), 0 24px 48px -8px color-mix(in srgb, var(--mygd-gray-1000) 70%, transparent);
+  color-scheme: dark;
+}
+
+[data-surface="kiosk"] { --text-base: 20px; --hit-min: 64px; }
+[data-surface="order"] { --text-base: 16px; --hit-min: 44px; }
+[data-surface="board"] { --text-base: 32px; --hit-min: 0px; }
+[data-surface="display"] { --text-base: 28px; --hit-min: 0px; }
+[data-surface="pos"] { --text-base: 17px; --hit-min: 52px; }
+[data-surface="kds"] { --text-base: 17px; --hit-min: 52px; }
+[data-surface="staff"] { --text-base: 17px; --hit-min: 52px; }
+[data-surface="admin"] { --text-base: 14px; --hit-min: 32px; }
+
+[data-surface] {
+  font-size: var(--text-base);
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+}
+
+[data-surface="admin"], [data-surface="order"] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+@keyframes mygd-pop-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-in {
+  animation: mygd-pop-in var(--dur-base) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+  .animate-in { animation: none; }
+}

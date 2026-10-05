@@ -1,11 +1,11 @@
-// MY GERMAN DÖNER — HACCP Compliance & Timeclock Service (EU Reg 852/2004)
+// MY GERMAN DÖNER — HACCP Compliance Service (EU Reg 852/2004)
+// Timeclock lives in /api/staff/timeclock (hashed PINs via src/lib/auth/staff-pin.ts).
 import { prisma } from "@/lib/prisma";
 import { eventBroker } from "@/lib/events";
 import {
   HACCPTargetType,
   HACCPValidationResult,
   HACCPLogRequest,
-  PinClockAction,
 } from "./haccp.schema";
 
 export class HACCPService {
@@ -113,57 +113,5 @@ export class HACCPService {
     }
 
     return { success: true, log, validation };
-  }
-
-  /**
-   * 4-Digit PIN Staff Timeclock Action
-   */
-  public static async clockAction(req: PinClockAction) {
-    const location = await prisma.location.findUnique({
-      where: { slug: req.locationSlug },
-    });
-    if (!location) throw new Error(`Location not found: ${req.locationSlug}`);
-
-    const now = new Date();
-
-    if (req.action === "CLOCK_IN") {
-      const shift = await prisma.staffShift.create({
-        data: {
-          locationId: location.id,
-          staffId: req.staffId,
-          staffName: `Staff #${req.staffId}`,
-          role: req.role,
-          pin: req.pin,
-          clockIn: now,
-        },
-      });
-      return { success: true, action: "CLOCK_IN", shift };
-    } else {
-      // Find open shift
-      const openShift = await prisma.staffShift.findFirst({
-        where: {
-          locationId: location.id,
-          staffId: req.staffId,
-          clockOut: null,
-        },
-        orderBy: { clockIn: "desc" },
-      });
-
-      if (!openShift) {
-        throw new Error("No active open shift found for this staff member.");
-      }
-
-      const diffMinutes = Math.max(1, Math.round((now.getTime() - openShift.clockIn.getTime()) / 60000));
-
-      const updated = await prisma.staffShift.update({
-        where: { id: openShift.id },
-        data: {
-          clockOut: now,
-          totalMinutes: diffMinutes,
-        },
-      });
-
-      return { success: true, action: "CLOCK_OUT", shift: updated, totalMinutes: diffMinutes };
-    }
   }
 }

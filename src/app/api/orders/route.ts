@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole } from "@/lib/auth/guard";
 import { POSService } from "@/modules/pos/pos.service";
 import { ZodError } from "zod";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireRole(req, "STORE_STAFF");
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await req.json();
     const result = await POSService.tenderOrder(body);

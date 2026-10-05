@@ -14,7 +14,11 @@ export function useRealtimeEvents({
   channel = "all",
   onEvent,
   enabled = true,
-  edgeGatewayUrl = process.env.NEXT_PUBLIC_MGD_EDGE_URL || "http://mgd-edge.local:8080/events",
+  // [ADR] Context: the default pointed at the archived apps/edge gateway, so every
+  // screen first failed against mgd-edge.local before falling back. Decision: no
+  // edge gateway unless NEXT_PUBLIC_MGD_EDGE_URL is set; connect straight to /api/events.
+  // Consequence: one connection attempt instead of two.
+  edgeGatewayUrl = process.env.NEXT_PUBLIC_MGD_EDGE_URL || "",
 }: UseRealtimeEventsOptions = {}) {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionTier, setConnectionTier] = useState<"EDGE" | "CLOUD" | "OFFLINE">("OFFLINE");

@@ -3,7 +3,7 @@
 // PATCH: Updates screen layout, products, or daypart and dispatches MENU_BOARD_UPDATED event
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma, initializeDatabasePragmas } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { eventBroker } from "@/lib/events";
 import {
   CANONICAL_SCREEN_CONFIGS,
@@ -39,7 +39,6 @@ async function ensureSeedConfigs() {
 
 export async function GET(req: NextRequest) {
   try {
-    await initializeDatabasePragmas();
     await ensureSeedConfigs();
 
     const { searchParams } = new URL(req.url);
@@ -108,7 +107,6 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    await initializeDatabasePragmas();
     const body = await req.json();
 
     const rawScreen = body.screenNumber ?? body.screen ?? body.slotId;
