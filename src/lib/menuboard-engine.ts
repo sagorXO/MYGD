@@ -284,6 +284,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "SIDES & SAUCES",
     layoutType: "PRICE_MATRIX",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-6-smoothies-shakes-kombucha.jpg",
     items: [
       {
         id: "prod-fries-1",
@@ -330,6 +331,7 @@ export const CANONICAL_SCREEN_CONFIGS: Record<number, MenuBoardScreenConfig> = {
     categoryBadge: "DRINKS & SWEETS",
     layoutType: "PRICE_MATRIX",
     activeDaypart: "AUTO",
+    boardImageUrl: "/assets/boards/board-7-sauces-showcase.jpg",
     items: [
       {
         id: "prod-ayran-1",

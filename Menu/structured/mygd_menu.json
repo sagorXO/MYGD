@@ -1,0 +1,1661 @@
+{
+  "brand": "MYGD (MY GERMAN DÖNER)",
+  "currency": "EUR",
+  "source": "Full menu text pasted by Sagar on 2026-10-05 (second version, includes drinks and salad ingredients); supersedes the first food-only version",
+  "categories": [
+    {
+      "category": "Pizza",
+      "offer": {
+        "text": "Second pizza 20% off",
+        "type": "percent_off_second",
+        "value": 20
+      },
+      "items": [
+        {
+          "name": "Margherita",
+          "variant": null,
+          "price_eur": 15.9,
+          "description": "tomato sauce, mozzarella, tomatoes",
+          "ingredients": [
+            "tomato sauce",
+            "mozzarella",
+            "tomatoes"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Funghi",
+          "variant": null,
+          "price_eur": 16.9,
+          "description": "tomato sauce, mozzarella, mushrooms, tomatoes",
+          "ingredients": [
+            "tomato sauce",
+            "mozzarella",
+            "mushrooms",
+            "tomatoes"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Salami",
+          "variant": null,
+          "price_eur": 16.9,
+          "description": "tomato sauce, mozzarella, salami, tomatoes",
+          "ingredients": [
+            "tomato sauce",
+            "mozzarella",
+            "salami",
+            "tomatoes"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Five cheese",
+          "variant": null,
+          "price_eur": 17.5,
+          "description": "tomato sauce, mozzarella, gorgonzola, edam, gouda, feta",
+          "ingredients": [
+            "tomato sauce",
+            "mozzarella",
+            "gorgonzola",
+            "edam",
+            "gouda",
+            "feta"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken doener pizza",
+          "variant": null,
+          "price_eur": 17.9,
+          "description": "tomato sauce, mozzarella, chicken doener, tomatoes, onions, 1 sauce of your choice",
+          "ingredients": [
+            "tomato sauce",
+            "mozzarella",
+            "chicken doener",
+            "tomatoes",
+            "onions"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Tacos",
+      "offer": {
+        "text": "4 tacos for 11.90",
+        "type": "bundle",
+        "quantity": 4,
+        "bundle_price_eur": 11.9,
+        "regular_price_eur": 14.0
+      },
+      "items": [
+        {
+          "name": "Beef taco",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "beef, onions, lettuce, cucumber, tomatoes, red cabbage, bbq sauce",
+          "ingredients": [
+            "beef",
+            "onions",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "bbq sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Beef taco with jalapeños",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "beef, onions, lettuce, cucumber, tomato sauce, red cabbage, jalapeños, sour cream",
+          "ingredients": [
+            "beef",
+            "onions",
+            "lettuce",
+            "cucumber",
+            "tomato sauce",
+            "red cabbage",
+            "jalapeños",
+            "sour cream"
+          ],
+          "vegan": false,
+          "review_flags": [
+            "Lists 'tomato sauce' where the other tacos list 'tomatoes' - confirm"
+          ]
+        },
+        {
+          "name": "Chicken taco",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "chicken, onions, lettuce, cucumber, tomatoes, red cabbage, garlic sauce",
+          "ingredients": [
+            "chicken",
+            "onions",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "garlic sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Vegan taco",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "vegan chicken strips, onions, lettuce, cucumber, tomatoes, red cabbage, vegan garlic sauce",
+          "ingredients": [
+            "vegan chicken strips",
+            "onions",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "vegan garlic sauce"
+          ],
+          "vegan": true,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "MYGD Doezza",
+      "offer": null,
+      "items": [
+        {
+          "name": "Margarita",
+          "variant": null,
+          "price_eur": 6.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients",
+            "Spelled 'Margarita' here but 'Margherita' under Pizza"
+          ]
+        },
+        {
+          "name": "Salami",
+          "variant": null,
+          "price_eur": 7.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients"
+          ]
+        },
+        {
+          "name": "Funghi",
+          "variant": null,
+          "price_eur": 6.95,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients"
+          ]
+        },
+        {
+          "name": "Four cheese",
+          "variant": null,
+          "price_eur": 7.95,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients",
+            "Pizza section calls its version 'Five cheese'"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "MYGD Burger",
+      "offer": null,
+      "items": [
+        {
+          "name": "Beefster",
+          "variant": null,
+          "price_eur": 7.95,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients (the source line ends with a dangling '-')"
+          ]
+        },
+        {
+          "name": "CHEESY GD",
+          "variant": null,
+          "price_eur": 9.95,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients"
+          ]
+        },
+        {
+          "name": "CHICKEN HYPE",
+          "variant": null,
+          "price_eur": 8.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients"
+          ]
+        },
+        {
+          "name": "C & C CHICKEN",
+          "variant": null,
+          "price_eur": 7.95,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description or ingredients"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Doener burger",
+      "offer": null,
+      "items": [
+        {
+          "name": "My chicken",
+          "variant": null,
+          "price_eur": 6.9,
+          "description": "chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, ketchup, mayo",
+          "ingredients": [
+            "chicken doener",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "ketchup",
+            "mayo"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cheese doener",
+          "variant": null,
+          "price_eur": 7.5,
+          "description": "doener meat, cheese, lettuce, tomatoes, cucumber, onions, red cabbage, bbq sauce",
+          "ingredients": [
+            "doener meat",
+            "cheese",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "bbq sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cheese chicken doener",
+          "variant": null,
+          "price_eur": 7.5,
+          "description": "chicken doener, cheese, lettuce, tomatoes, cucumber, onion, red cabbage, ketchup, mayo",
+          "ingredients": [
+            "chicken doener",
+            "cheese",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onion",
+            "red cabbage",
+            "ketchup",
+            "mayo"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Hamburg doener",
+          "variant": null,
+          "price_eur": 6.9,
+          "description": "doener meat, lettuce, tomatoes, cucumber, onions, red cabbage, ketchup, mayo, mustard",
+          "ingredients": [
+            "doener meat",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "ketchup",
+            "mayo",
+            "mustard"
+          ],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "My wraps",
+      "offer": null,
+      "source_heading": "My warps",
+      "items": [
+        {
+          "name": "Beef wrap",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "beef doener, lettuce, tomatoes, cucumber, onions, red cabbage, cocktail sauce",
+          "ingredients": [
+            "beef doener",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "cocktail sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken wrap",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, garlic sauce",
+          "ingredients": [
+            "chicken doener",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "garlic sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Mix wrap",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "beef and chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, lemon herb sauce",
+          "ingredients": [
+            "beef doener",
+            "chicken doener",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "lemon herb sauce"
+          ],
+          "vegan": false,
+          "review_flags": [
+            "Source spelled 'Miz wrap'"
+          ]
+        },
+        {
+          "name": "Vegan wrap",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "vegan balls, lettuce, tomatoes, cucumber, onion, red cabbage, vegan garlic sauce",
+          "ingredients": [
+            "vegan balls",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onion",
+            "red cabbage",
+            "vegan garlic sauce"
+          ],
+          "vegan": true,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "My big's",
+      "offer": null,
+      "items": [
+        {
+          "name": "Big chick",
+          "variant": null,
+          "price_eur": 11.9,
+          "description": "chicken doener, original berlin flatbread, lettuce, tomatoes, cucumber, onions, red cabbage, garlic sauce",
+          "ingredients": [
+            "chicken doener",
+            "original berlin flatbread",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "garlic sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Big B",
+          "variant": null,
+          "price_eur": 11.9,
+          "description": "beef doener, original berlin flatbread, lettuce, tomatoes, cucumber, onions, red cabbage, cocktail sauce",
+          "ingredients": [
+            "beef doener",
+            "original berlin flatbread",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "cocktail sauce"
+          ],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Big mix",
+          "variant": null,
+          "price_eur": 11.9,
+          "description": "beef and chicken doener, original berlin flatbread, lettuce, cucumber, onions, red cabbage, lemon herb sauce",
+          "ingredients": [
+            "beef doener",
+            "chicken doener",
+            "original berlin flatbread",
+            "lettuce",
+            "cucumber",
+            "onions",
+            "red cabbage",
+            "lemon herb sauce"
+          ],
+          "vegan": false,
+          "review_flags": [
+            "No tomatoes listed, unlike every other Big - confirm"
+          ]
+        },
+        {
+          "name": "Big green",
+          "variant": null,
+          "price_eur": 11.9,
+          "description": "vegan doener, original berlin flatbread, lettuce, tomatoes, cucumber, onion, red cabbage, vegan sauce",
+          "ingredients": [
+            "vegan doener",
+            "original berlin flatbread",
+            "lettuce",
+            "tomatoes",
+            "cucumber",
+            "onion",
+            "red cabbage",
+            "vegan sauce"
+          ],
+          "vegan": true,
+          "review_flags": [
+            "'vegan sauce' - elsewhere this is 'vegan garlic sauce'"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "My bowls",
+      "offer": null,
+      "items": [
+        {
+          "name": "Beef bowl",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "beef doener, white rice or fries, lettuce, tomatoes, cucumbers, red cabbage, onions, sauce of your choice",
+          "ingredients": [
+            "beef doener",
+            "lettuce",
+            "tomatoes",
+            "cucumbers",
+            "red cabbage",
+            "onions"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "white rice",
+            "fries"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Chicken bowl",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "chicken doener, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, sauce of your choice",
+          "ingredients": [
+            "chicken doener",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onions"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "white rice",
+            "fries"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Mix bowl",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "beef and chicken doener, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, sauce of your choice",
+          "ingredients": [
+            "beef doener",
+            "chicken doener",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onions"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "white rice",
+            "fries"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Vegan bowl",
+          "variant": null,
+          "price_eur": 9.9,
+          "description": "vegan balls, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, vegan garlic",
+          "ingredients": [
+            "vegan balls",
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onions",
+            "vegan garlic"
+          ],
+          "vegan": true,
+          "review_flags": [
+            "Sauce is fixed as 'vegan garlic', not 'of your choice'"
+          ],
+          "base_choice": [
+            "white rice",
+            "fries"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Sauce",
+      "offer": null,
+      "items": [
+        {
+          "name": "Garlic",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No price given - confirm included/free vs paid extra"
+          ]
+        },
+        {
+          "name": "BBQ",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Honey Mustard",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cheese Hot",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Tzatziki",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Sour cream",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Lemon herb",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cocktail",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Hot spicy",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Vegan garlic",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": true,
+          "review_flags": []
+        },
+        {
+          "name": "Mayonnaise",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Ketchup",
+          "variant": null,
+          "price_eur": null,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Kids meal",
+      "offer": null,
+      "items": [
+        {
+          "name": "Kids meal",
+          "variant": null,
+          "price_eur": 5.0,
+          "description": "Choice of kids doener, 4 chicken nuggets or 4 meatballs, + 1 kinder riegel + 1 drink (water or juice) + small fries",
+          "ingredients": [
+            "kinder riegel",
+            "small fries"
+          ],
+          "vegan": false,
+          "review_flags": [
+            "Source line has no 'EUR' sign - price 5 read as 5.00"
+          ],
+          "main_choice": [
+            "Kids doener",
+            "4 chicken nuggets",
+            "4 meatballs"
+          ],
+          "drink_choice": [
+            "water",
+            "juice"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Chicken nuggets",
+      "offer": null,
+      "items": [
+        {
+          "name": "Chicken nuggets",
+          "variant": "6 pcs",
+          "price_eur": 4.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken nuggets",
+          "variant": "12 pcs",
+          "price_eur": 7.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken nuggets",
+          "variant": "20 pcs",
+          "price_eur": 11.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Chicken wings",
+      "offer": null,
+      "items": [
+        {
+          "name": "Chicken wings",
+          "variant": "6 pcs",
+          "price_eur": 5.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken wings",
+          "variant": "12 pcs",
+          "price_eur": 9.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chicken wings",
+          "variant": "20 pcs",
+          "price_eur": 14.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Crunchy fries",
+      "offer": null,
+      "items": [
+        {
+          "name": "Crunchy fries",
+          "variant": "Regular",
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        },
+        {
+          "name": "Crunchy fries",
+          "variant": "Large",
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 2,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        },
+        {
+          "name": "Crunchy fries",
+          "variant": "XL",
+          "price_eur": 4.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 2,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Sweet potato fries",
+      "offer": null,
+      "items": [
+        {
+          "name": "Sweet potato fries",
+          "variant": "Regular",
+          "price_eur": 2.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        },
+        {
+          "name": "Sweet potato fries",
+          "variant": "Large",
+          "price_eur": 3.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 2,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        },
+        {
+          "name": "Sweet potato fries",
+          "variant": "XL",
+          "price_eur": 4.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 2,
+          "sauce_choice": [
+            "Ketchup",
+            "Mayo"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Make it a menu",
+      "offer": null,
+      "type": "add_on",
+      "description": "Choose fries or white rice + 0.4L drink",
+      "base_choice": [
+        "fries",
+        "white rice"
+      ],
+      "items": [
+        {
+          "name": "Make it a menu",
+          "variant": "Regular",
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "Every size says 0.4L drink - confirm whether Medium/Large differ in drink or side size"
+          ]
+        },
+        {
+          "name": "Make it a menu",
+          "variant": "Medium",
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Make it a menu",
+          "variant": "Large",
+          "price_eur": 4.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Loaded fries",
+      "offer": null,
+      "note": "One size, includes one sauce",
+      "items": [
+        {
+          "name": "Hollandaise Fries",
+          "variant": null,
+          "price_eur": 7.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description of toppings"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Jalapeño sour cream fries",
+          "variant": null,
+          "price_eur": 7.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description of toppings"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Gravy Fries",
+          "variant": null,
+          "price_eur": 7.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description of toppings"
+          ],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Cheesy Fries",
+          "variant": null,
+          "price_eur": 7.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "No description of toppings"
+          ],
+          "includes_sauces": 1
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Fresh salad",
+      "offer": null,
+      "items": [
+        {
+          "name": "Green Salad",
+          "variant": null,
+          "price_eur": 6.9,
+          "description": "lettuce, cucumber, tomatoes, red cabbage, onion with vinegar and oil dressing",
+          "ingredients": [
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onion"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "dressing": "vinegar and oil"
+        },
+        {
+          "name": "Chicken Salad",
+          "variant": null,
+          "price_eur": 8.9,
+          "description": "lettuce, cucumber, tomatoes, red cabbage, onion, chicken with vinegar and oil dressing",
+          "ingredients": [
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onion",
+            "chicken"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "dressing": "vinegar and oil"
+        },
+        {
+          "name": "Halloumi Salad",
+          "variant": null,
+          "price_eur": 8.9,
+          "description": "lettuce, cucumber, tomatoes, red cabbage, onions, halloumi with vinegar and oil dressing",
+          "ingredients": [
+            "lettuce",
+            "cucumber",
+            "tomatoes",
+            "red cabbage",
+            "onions",
+            "halloumi"
+          ],
+          "vegan": false,
+          "review_flags": [],
+          "dressing": "vinegar and oil"
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Meatballs",
+      "offer": null,
+      "note": "Served with fries or white rice and hollandaise sauce",
+      "items": [
+        {
+          "name": "Meatballs",
+          "variant": "6 pcs",
+          "price_eur": 7.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "fries",
+            "white rice"
+          ]
+        },
+        {
+          "name": "Meatballs",
+          "variant": "12 pcs",
+          "price_eur": 11.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "fries",
+            "white rice"
+          ]
+        },
+        {
+          "name": "Meatballs",
+          "variant": "20 pcs",
+          "price_eur": 16.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "base_choice": [
+            "fries",
+            "white rice"
+          ]
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Mozzarella sticks",
+      "offer": null,
+      "note": "1 sauce included",
+      "items": [
+        {
+          "name": "Mozzarella sticks",
+          "variant": "6 pcs",
+          "price_eur": 5.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Mozzarella sticks",
+          "variant": "12 pcs",
+          "price_eur": 9.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1
+        },
+        {
+          "name": "Mozzarella sticks",
+          "variant": "20 pcs",
+          "price_eur": 14.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [],
+          "includes_sauces": 1
+        }
+      ],
+      "group": "Food"
+    },
+    {
+      "category": "Smoothies",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Tropical twist",
+          "variant": null,
+          "price_eur": 2.99,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Berry booster",
+          "variant": null,
+          "price_eur": 2.99,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Green power",
+          "variant": null,
+          "price_eur": 2.99,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Sunset delight",
+          "variant": null,
+          "price_eur": 2.99,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Milk shakes",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Strawberry",
+          "variant": null,
+          "price_eur": 2.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Vanilla",
+          "variant": null,
+          "price_eur": 2.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Chocolate",
+          "variant": null,
+          "price_eur": 2.9,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Fruit juices",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Cappy orange",
+          "variant": null,
+          "price_eur": 1.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cappy apple",
+          "variant": null,
+          "price_eur": 1.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Water & Ayran",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Still water",
+          "variant": null,
+          "price_eur": 1.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Ayran",
+          "variant": "0.5L",
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "Source heading said 'Aryan'"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Energy drinks",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Redbull",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Redbull sugar free",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "Source spelled 'suger'"
+          ]
+        },
+        {
+          "name": "Coco Loco",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Kombucha",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Hibiscus",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": [
+            "Source spelled 'Hibicus'"
+          ]
+        },
+        {
+          "name": "Lemon zen",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Ginger insight",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Lemongrass unity",
+          "variant": null,
+          "price_eur": 3.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Draft beer",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Hofbräu München",
+          "variant": "0.5L",
+          "price_eur": 6.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Hofbräu München",
+          "variant": "0.3L",
+          "price_eur": 4.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Bottled beer",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Hofbräu original",
+          "variant": null,
+          "price_eur": 5.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Hofbräu helles",
+          "variant": null,
+          "price_eur": 5.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Corona extra",
+          "variant": null,
+          "price_eur": 4.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Corona 0%",
+          "variant": null,
+          "price_eur": 4.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Keo",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Carlsberg",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Carlsberg 0%",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Wine",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Red wine",
+          "variant": null,
+          "price_eur": 4.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "White wine",
+          "variant": null,
+          "price_eur": 4.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Soft drinks (postmix)",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Coca-Cola",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Coca-Cola Zero",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Fanta Zero",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Sprite",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Sprite Zero",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Sparkling water",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ],
+      "note": "Served from the fountain"
+    },
+    {
+      "category": "Canned drinks",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Fanta Zero",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Fanta Lemon",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Lipton Ice Tea Peach",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Lipton Ice Tea Peach Zero",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Lipton Ice Tea Lemon",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    },
+    {
+      "category": "Coffee",
+      "group": "Drinks",
+      "offer": null,
+      "items": [
+        {
+          "name": "Espresso",
+          "variant": null,
+          "price_eur": 2.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Americano",
+          "variant": null,
+          "price_eur": 2.5,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Cappuccino",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        },
+        {
+          "name": "Latte macchiato",
+          "variant": null,
+          "price_eur": 3.0,
+          "description": "",
+          "ingredients": [],
+          "vegan": false,
+          "review_flags": []
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "categories": 31,
+    "priced_rows": 106,
+    "items_with_review_flags": 23
+  }
+}

@@ -36,11 +36,11 @@ export const MenuBoard4K: React.FC = () => {
 
   const activeConfig = configs[selectedScreenNumber] || configs[1];
 
-  // Auto-cycle through the 5 screens every 12 seconds when enabled
+  // Auto-cycle through the 7 screens every 12 seconds when enabled
   useEffect(() => {
     if (!isAutoCycle) return;
     const interval = setInterval(() => {
-      setSelectedScreenNumber((prev) => (prev % 5) + 1);
+      setSelectedScreenNumber((prev) => (prev % 7) + 1);
     }, 12000);
     return () => clearInterval(interval);
   }, [isAutoCycle]);
@@ -85,9 +85,9 @@ export const MenuBoard4K: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
-        setSelectedScreenNumber((prev) => (prev % 5) + 1);
+        setSelectedScreenNumber((prev) => (prev % 7) + 1);
       } else if (e.key === "ArrowLeft") {
-        setSelectedScreenNumber((prev) => (prev === 1 ? 5 : prev - 1));
+        setSelectedScreenNumber((prev) => (prev === 1 ? 7 : prev - 1));
       } else if (e.key === "f" || e.key === "F") {
         toggleFullscreen();
       } else if (e.key === "v" || e.key === "V") {
@@ -136,13 +136,13 @@ export const MenuBoard4K: React.FC = () => {
 
         {/* Center: Screen Switcher & View Mode Toggle */}
         <div className="flex items-center gap-2">
-          {/* Screen Selection Buttons (1 to 5) */}
-          <div className="flex items-center bg-[#1F1F21] p-1 rounded-xl border border-[#3A3A3E] text-xs font-display font-bold">
-            {[1, 2, 3, 4, 5].map((num) => (
+          {/* Screen Selection Buttons (1 to 7) */}
+          <div className="flex items-center bg-[#1F1F21] p-1 rounded-xl border border-[#3A3A3E] text-xs font-display font-bold overflow-x-auto">
+            {[1, 2, 3, 4, 5, 6, 7].map((num) => (
               <button
                 key={num}
                 onClick={() => setSelectedScreenNumber(num)}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-2.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                   selectedScreenNumber === num
                     ? "bg-[#E50D7E] text-white shadow-lg shadow-pink-950/40"
                     : "text-zinc-400 hover:text-white"
@@ -267,14 +267,14 @@ export const MenuBoard4K: React.FC = () => {
 
               {/* Prev / Next Screen Floaters */}
               <button
-                onClick={() => setSelectedScreenNumber((prev) => (prev === 1 ? 5 : prev - 1))}
+                onClick={() => setSelectedScreenNumber((prev) => (prev === 1 ? 7 : prev - 1))}
                 className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-[#E50D7E] text-white border border-white/20 backdrop-blur-md transition-all shadow-xl"
                 title="Previous Screen"
               >
                 <ChevronLeft size={22} />
               </button>
               <button
-                onClick={() => setSelectedScreenNumber((prev) => (prev % 5) + 1)}
+                onClick={() => setSelectedScreenNumber((prev) => (prev % 7) + 1)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-[#E50D7E] text-white border border-white/20 backdrop-blur-md transition-all shadow-xl"
                 title="Next Screen"
               >
@@ -395,13 +395,20 @@ export const MenuBoard4K: React.FC = () => {
           <div className="w-9 h-9 rounded-xl bg-[#00FCED]/10 border border-[#00FCED]/40 flex items-center justify-center text-[#00FCED]">
             <Sparkles size={18} />
           </div>
-          <div>
-            <h4 className="font-display font-black text-sm uppercase text-white leading-none">
-              MAKE IT A COMBO (+€3.50)
-            </h4>
-            <span className="text-[11px] text-zinc-400 font-sans">
-              Crispy Berlin Fries + Any 330ml Drink or Authentic Turkish Ayran
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center -space-x-2">
+              <img src="/assets/menu/upgrade/fries.jpg" alt="Fries" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
+              <img src="/assets/menu/upgrade/rice.jpg" alt="Rice" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
+              <img src="/assets/menu/upgrade/drink.jpg" alt="Drink" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
+            </div>
+            <div>
+              <h4 className="font-display font-black text-sm uppercase text-white leading-none">
+                MAKE IT A MENU (+€3.00)
+              </h4>
+              <span className="text-[11px] text-zinc-400 font-sans">
+                Fries or Steamed Rice + 0.4L Drink (Regular +€3.00 • Medium +€3.50 • Large +€4.50)
+              </span>
+            </div>
           </div>
         </div>
 

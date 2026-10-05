@@ -14,50 +14,74 @@ export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
     sku: "MYGD-CL-DONER",
     name: "Original German Döner (150g)",
     category: "DOENER",
-    localPath: "/assets/menu/classic-doner.svg",
+    localPath: "/assets/menu/products/hamburg-doener.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+  },
+  "MYGD-DOENER-HAMBURG": {
+    sku: "MYGD-DOENER-HAMBURG",
+    name: "Hamburg Döner",
+    category: "DOENER",
+    localPath: "/assets/menu/products/hamburg-doener.jpg",
   },
   "MYGD-ST-DONER": {
     sku: "MYGD-ST-DONER",
     name: "Steak Döner (100% Beef)",
     category: "DOENER",
-    localPath: "/assets/menu/steak-doner.svg",
+    localPath: "/assets/menu/products/beef-wrap.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-CK-DONER": {
     sku: "MYGD-CK-DONER",
     name: "Crispy Chicken Döner",
     category: "DOENER",
-    localPath: "/assets/menu/chicken-doner.svg",
+    localPath: "/assets/menu/products/chicken-doener-pizza.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-ST-DURUM": {
     sku: "MYGD-ST-DURUM",
     name: "Standard Dürüm Wrap",
     category: "WRAPS",
-    localPath: "/assets/menu/durum-wrap.svg",
+    localPath: "/assets/menu/products/beef-wrap.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=85",
+  },
+  "MYGD-WRAP-BEEF": {
+    sku: "MYGD-WRAP-BEEF",
+    name: "Beef Dürüm Wrap",
+    category: "WRAPS",
+    localPath: "/assets/menu/products/beef-wrap.jpg",
   },
   "MYGD-DN-BOX": {
     sku: "MYGD-DN-BOX",
     name: "Döner Box with Fries",
     category: "BOWLS",
-    localPath: "/assets/menu/doner-box.svg",
+    localPath: "/assets/menu/products/doener-bowl.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=85",
+  },
+  "MYGD-BOWL-DOENER": {
+    sku: "MYGD-BOWL-DOENER",
+    name: "Döner Rice Bowl",
+    category: "BOWLS",
+    localPath: "/assets/menu/products/doener-bowl.jpg",
   },
   "MYGD-CR-FRIES": {
     sku: "MYGD-CR-FRIES",
     name: "Crispy Berlin Fries",
     category: "SIDES",
-    localPath: "/assets/menu/fries.svg",
+    localPath: "/assets/menu/upgrade/fries.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-GER-BEER": {
     sku: "MYGD-GER-BEER",
     name: "German Pilsner Beer (500ml)",
     category: "DRINKS",
-    localPath: "/assets/menu/beer.svg",
+    localPath: "/assets/menu/upgrade/drink.jpg",
     remoteFallbackUrl: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&auto=format&fit=crop&q=85",
+  },
+  "MYGD-UPGRADE-COMBO": {
+    sku: "MYGD-UPGRADE-COMBO",
+    name: "Make It A Menu Combo",
+    category: "SIDES",
+    localPath: "/assets/menu/upgrade/combo.jpg",
   },
 };
 
@@ -105,7 +129,7 @@ export function getMenuAsset(skuOrName: string, category: string = "DOENER"): st
   // Check exact SKU in registry
   const entry = MENU_ASSET_REGISTRY[skuOrName];
   if (entry) {
-    return entry.remoteFallbackUrl || entry.localPath || BRAND_ASSETS.PLACEHOLDER_MENU;
+    return entry.localPath || entry.remoteFallbackUrl || BRAND_ASSETS.PLACEHOLDER_MENU;
   }
 
   // Find by partial name
@@ -113,7 +137,7 @@ export function getMenuAsset(skuOrName: string, category: string = "DOENER"): st
     item.name.toLowerCase().includes(skuOrName.toLowerCase())
   );
   if (matched) {
-    return matched.remoteFallbackUrl || matched.localPath || BRAND_ASSETS.PLACEHOLDER_MENU;
+    return matched.localPath || matched.remoteFallbackUrl || BRAND_ASSETS.PLACEHOLDER_MENU;
   }
 
   // Generate vector placeholder as clean zero-broken-link fallback

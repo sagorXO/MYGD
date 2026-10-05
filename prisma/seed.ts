@@ -49,7 +49,7 @@ async function main() {
     },
   });
 
-  // 2. Hardware Terminals (1 Kiosk, 1 POS, 2 KDS, 1 Display, 6 Menu Boards)
+  // 2. Hardware Terminals (1 Kiosk, 1 POS, 2 KDS, 1 Display, 7 Menu Boards)
   const terminals = [
     { code: "KIOSK-01", type: "KIOSK", printer: "EPSON_TM" },
     { code: "POS-01", type: "POS_COUNTER", printer: "STAR_MICRONICS" },
@@ -62,6 +62,7 @@ async function main() {
     { code: "BOARD-04", type: "MENU_BOARD", printer: "SIMULATED_SCREEN" },
     { code: "BOARD-05", type: "MENU_BOARD", printer: "SIMULATED_SCREEN" },
     { code: "BOARD-06", type: "MENU_BOARD", printer: "SIMULATED_SCREEN" },
+    { code: "BOARD-07", type: "MENU_BOARD", printer: "SIMULATED_SCREEN" },
   ];
 
   for (const t of terminals) {

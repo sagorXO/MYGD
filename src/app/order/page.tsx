@@ -31,47 +31,100 @@ export default function MobilePreOrderPage() {
   const menuItems = [
     {
       id: "ord-1",
-      name: "Original German Döner (150g)",
-      desc: "Toasted sesame bread, fresh salad, garlic herb sauce",
-      price: 6.50,
+      name: "Hamburg Doener",
+      desc: "Rotisserie beef, salad, tomato, cucumber, onions, red cabbage (Ketchup, Mayo, Mustard)",
+      price: 6.90,
       badge: "POPULAR",
       category: "DOENER",
-      imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/hamburg-doener.jpg",
+      allowMealUpgrade: true,
     },
     {
       id: "ord-2",
-      name: "Steak Döner (100% Beef)",
-      desc: "Premium sliced steak, herbs, lemon garlic dip",
-      price: 8.50,
-      badge: "CHEF PICK",
+      name: "Chicken Doener",
+      desc: "Juicy chicken doener, salad, tomato, cucumber, onions, red cabbage (Ketchup, Mayo)",
+      price: 6.90,
+      badge: "BESTSELLER",
       category: "DOENER",
-      imageUrl: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/chicken-doener.webp",
+      allowMealUpgrade: true,
     },
     {
       id: "ord-3",
-      name: "Standard Dürüm Wrap",
-      desc: "Warm lavash flatbread, 150g rotisserie meat, tomato & parsley",
-      price: 8.00,
-      badge: "POPULAR",
+      name: "Beef Wrap",
+      desc: "Toasted lavash flatbread, beef doener, fresh salad, cocktail sauce",
+      price: 9.90,
+      badge: "TOP_SELLER",
       category: "WRAPS",
-      imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/beef-wrap.jpg",
+      allowMealUpgrade: true,
     },
     {
       id: "ord-4",
-      name: "Döner Box with Fries",
-      desc: "Hot crispy fries topped with meat and garlic sauce",
-      price: 6.50,
-      badge: "POPULAR",
-      category: "BOWLS",
-      imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=85",
+      name: "Big B (Original Berlin Flatbread)",
+      desc: "Massive triangular flatbread packed with extra beef doener, salad & cocktail sauce",
+      price: 11.90,
+      badge: "CHEF PICK",
+      category: "DOENER",
+      imageUrl: "/assets/menu/products/big-b-doener.jpg",
+      allowMealUpgrade: true,
     },
     {
       id: "ord-5",
-      name: "Crispy Berlin Fries",
-      desc: "Skin-on fries with German paprika seasoning",
+      name: "Beef Bowl",
+      desc: "Rotisserie beef, white rice or crunchy fries, fresh salad and choice of sauce",
+      price: 9.90,
+      category: "BOWLS",
+      imageUrl: "/assets/menu/products/doener-bowl.jpg",
+      allowMealUpgrade: true,
+    },
+    {
+      id: "ord-6",
+      name: "Chicken Doener Pizza (33cm)",
+      desc: "Stone-baked thin crust, mozzarella, roasted chicken doener, onions, garlic sauce spiral",
+      price: 17.90,
+      badge: "BESTSELLER",
+      category: "PIZZAS",
+      imageUrl: "/assets/menu/products/chicken-doener-pizza.jpg",
+      allowMealUpgrade: false,
+    },
+    {
+      id: "ord-7",
+      name: "Crispy Beef Taco",
+      desc: "Crunchy taco shell, seasoned beef, lettuce, tomato, cabbage, BBQ sauce",
       price: 3.50,
+      category: "TACOS",
+      imageUrl: "/assets/menu/products/beef-taco.jpg",
+      allowMealUpgrade: true,
+    },
+    {
+      id: "ord-8",
+      name: "Cheesy Loaded Fries",
+      desc: "Crispy skin-on fries smothered in rich cheddar cheese sauce, roasted bits & herbs",
+      price: 7.90,
+      badge: "POPULAR",
       category: "SIDES",
-      imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/cheesy-fries.jpg",
+      allowMealUpgrade: false,
+    },
+    {
+      id: "ord-9",
+      name: "Crunchy Fries",
+      desc: "Skin-on golden fries with German paprika sea salt seasoning",
+      price: 2.50,
+      category: "SIDES",
+      imageUrl: "/assets/menu/products/crunchy-fries.webp",
+      allowMealUpgrade: false,
+    },
+    {
+      id: "ord-10",
+      name: "Authentic Ayran (0.5L)",
+      desc: "Chilled Turkish salted yogurt beverage",
+      price: 3.50,
+      badge: "BESTSELLER",
+      category: "DRINKS",
+      imageUrl: "/assets/menu/products/water-ayran.webp",
+      allowMealUpgrade: false,
     },
   ];
 
@@ -152,7 +205,7 @@ export default function MobilePreOrderPage() {
 
           {/* Category Bar */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs">
-            {["DOENER", "WRAPS", "BOWLS", "SIDES", "DRINKS"].map((cat) => (
+            {["ALL", "DOENER", "WRAPS", "BOWLS", "PIZZAS", "TACOS", "SIDES", "DRINKS"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
@@ -169,34 +222,78 @@ export default function MobilePreOrderPage() {
 
           {/* Menu Items Feed */}
           <div className="space-y-3">
-            {menuItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-3.5 rounded-2xl bg-[#1A1A1E] border border-[#27272A] flex items-center justify-between gap-3 shadow-md"
-              >
-                <img src={item.imageUrl} alt={item.name} className="w-16 h-16 rounded-xl object-cover shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="font-display font-bold text-sm text-white truncate">{item.name}</h3>
-                    {item.badge && (
-                      <span className="px-2 py-0.5 rounded-full bg-[#E50D7E] text-white text-[9px] font-black uppercase">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">{item.desc}</p>
-                  <p className="font-display font-black text-sm text-[#E50D7E] mt-1 font-mono">
-                    {formatEuro(item.price, "en")}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCartCount((c) => c + 1)}
-                  className="w-8 h-8 rounded-xl bg-[#E50D7E] text-white flex items-center justify-center shadow active:scale-95 shrink-0"
+            {menuItems
+              .filter((item) => selectedCategory === "ALL" || item.category === selectedCategory)
+              .map((item) => (
+                <div
+                  key={item.id}
+                  className="p-3.5 rounded-2xl bg-[#1A1A1E] border border-[#27272A] flex flex-col gap-2.5 shadow-md"
                 >
-                  <Plus size={16} className="stroke-[3]" />
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center justify-between gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.imageUrl} alt={item.name} className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-display font-bold text-sm text-white truncate">{item.name}</h3>
+                        {item.badge && (
+                          <span className="px-2 py-0.5 rounded-full bg-[#E50D7E] text-white text-[9px] font-black uppercase">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">{item.desc}</p>
+                      <p className="font-display font-black text-sm text-[#E50D7E] mt-1 font-mono">
+                        {formatEuro(item.price, "en")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setCartCount((c) => c + 1)}
+                      className="w-8 h-8 rounded-xl bg-[#E50D7E] text-white flex items-center justify-center shadow active:scale-95 shrink-0"
+                    >
+                      <Plus size={16} className="stroke-[3]" />
+                    </button>
+                  </div>
+
+                  {/* Make It A Menu with Ingredient Images */}
+                  {item.allowMealUpgrade && (
+                    <div className="pt-2 border-t border-[#27272A] flex items-center justify-between bg-[#121214]/60 p-2 rounded-xl">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-[#E50D7E] uppercase">
+                          Make It A Menu (+€3.00):
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <img
+                            src="/assets/menu/upgrade/fries.jpg"
+                            alt="Fries"
+                            title="Crispy Fries"
+                            className="w-6 h-6 rounded object-cover border border-[#27272A]"
+                          />
+                          <span className="text-[9px] text-zinc-400">or</span>
+                          <img
+                            src="/assets/menu/upgrade/rice.jpg"
+                            alt="Rice"
+                            title="Steamed Rice"
+                            className="w-6 h-6 rounded object-cover border border-[#27272A]"
+                          />
+                          <span className="text-[9px] text-zinc-400">+</span>
+                          <img
+                            src="/assets/menu/upgrade/drink.jpg"
+                            alt="0.4L Drink"
+                            title="0.4L Drink"
+                            className="w-6 h-6 rounded object-cover border border-[#27272A]"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setCartCount((c) => c + 1)}
+                        className="text-[10px] font-mono font-bold bg-[#E50D7E]/20 text-[#E50D7E] border border-[#E50D7E]/40 px-2 py-0.5 rounded-lg hover:bg-[#E50D7E] hover:text-white transition-colors"
+                      >
+                        + Add Meal
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
         </main>
       ) : (

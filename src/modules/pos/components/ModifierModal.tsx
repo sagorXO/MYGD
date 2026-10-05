@@ -63,12 +63,15 @@ export const ModifierModal: React.FC<ModifierModalProps> = ({
     "Knoblauch Garlic Sauce",
   ]);
   const [notes, setNotes] = useState<string>("");
+  const [mealUpgrade, setMealUpgrade] = useState<"NONE" | "REGULAR" | "MEDIUM" | "LARGE">("NONE");
+  const [mealSide, setMealSide] = useState<"FRIES" | "RICE">("FRIES");
 
   if (!isOpen) return null;
 
   // Additions total
+  const mealUpgradePrice = mealUpgrade === "REGULAR" ? 3.0 : mealUpgrade === "MEDIUM" ? 3.5 : mealUpgrade === "LARGE" ? 4.5 : 0;
   const additionsTotal = selectedAdditions.reduce((acc, a) => acc + a.priceAdjustment, 0);
-  const unitPrice = Number((product.basePrice + additionsTotal).toFixed(2));
+  const unitPrice = Number((product.basePrice + additionsTotal + mealUpgradePrice).toFixed(2));
   const totalPrice = Number((unitPrice * quantity).toFixed(2));
 
   const toggleAddition = (mod: POSModifierSelection) => {
@@ -93,6 +96,17 @@ export const ModifierModal: React.FC<ModifierModalProps> = ({
   };
 
   const handleConfirm = () => {
+    const finalAdditions = [...selectedAdditions];
+    if (mealUpgrade !== "NONE") {
+      finalAdditions.push({
+        id: `mod-meal-${mealUpgrade.toLowerCase()}`,
+        name: `Make It A Menu (${mealUpgrade} - ${mealSide === "FRIES" ? "Crispy Fries" : "Steamed Rice"} + 0.4L Drink)`,
+        type: "ADDITION",
+        priceAdjustment: mealUpgradePrice,
+        category: "EXTRA",
+      });
+    }
+
     const line: POSCartLine = {
       lineId: `pos-line-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       productId: product.id,
@@ -102,7 +116,7 @@ export const ModifierModal: React.FC<ModifierModalProps> = ({
       quantity,
       spiceLevel,
       breadType,
-      selectedAdditions,
+      selectedAdditions: finalAdditions,
       selectedOmissions,
       selectedSauces,
       notes: notes.trim() || undefined,
@@ -263,6 +277,130 @@ export const ModifierModal: React.FC<ModifierModalProps> = ({
               })}
             </div>
           </div>
+
+          {/* MAKE IT A MENU: Combo Upgrade with Ingredient Images */}
+          {product.allowMealUpgrade && (
+            <div className="p-4 rounded-2xl bg-[#26262B] border-2 border-[#E50D7E]/50 shadow-lg shadow-pink-950/20 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#E50D7E] flex items-center justify-center text-white text-xs font-black">
+                    +
+                  </div>
+                  <div>
+                    <h3 className="font-display font-black text-sm text-white uppercase tracking-wider">
+                      Make It A Menu (Combo Deal)
+                    </h3>
+                    <p className="text-[11px] text-zinc-400">Choose Fries or Rice + 0.4L Fountain Drink</p>
+                  </div>
+                </div>
+
+                <span className="font-mono text-xs font-black text-[#E50D7E] bg-[#E50D7E]/10 px-2 py-1 rounded-lg border border-[#E50D7E]/30">
+                  {mealUpgrade === "NONE" ? "OPTIONAL" : `+${formatEuro(mealUpgradePrice)}`}
+                </span>
+              </div>
+
+              {/* Combo Size Buttons */}
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { key: "NONE", label: "No Combo", price: 0 },
+                  { key: "REGULAR", label: "Regular", price: 3.0 },
+                  { key: "MEDIUM", label: "Medium", price: 3.5 },
+                  { key: "LARGE", label: "Large", price: 4.5 },
+                ].map((tier) => (
+                  <button
+                    key={tier.key}
+                    type="button"
+                    onClick={() => setMealUpgrade(tier.key as any)}
+                    className={`py-2 px-2.5 rounded-xl border text-center font-display font-bold text-xs transition-all ${
+                      mealUpgrade === tier.key
+                        ? "bg-[#E50D7E] text-white border-[#E50D7E] shadow-md"
+                        : "bg-[#1F1F21] text-zinc-400 border-[#3A3A3E] hover:border-zinc-500"
+                    }`}
+                  >
+                    <div>{tier.label}</div>
+                    <div className="font-mono text-[10px] opacity-80">
+                      {tier.price > 0 ? `+€${tier.price.toFixed(2)}` : "€0.00"}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Ingredient Visual Cards when Combo is Selected */}
+              {mealUpgrade !== "NONE" && (
+                <div className="space-y-3 pt-1 border-t border-[#3A3A3E]">
+                  <div>
+                    <span className="text-[11px] font-mono font-bold text-zinc-300 uppercase tracking-wider block mb-2">
+                      Step 1: Choose Your Side (Click to Select)
+                    </span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setMealSide("FRIES")}
+                        className={`p-2.5 rounded-xl border text-left flex items-center gap-3 transition-all ${
+                          mealSide === "FRIES"
+                            ? "bg-[#E50D7E]/20 border-[#E50D7E] text-white"
+                            : "bg-[#1F1F21] border-[#3A3A3E] text-zinc-400 hover:border-zinc-500"
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src="/assets/menu/upgrade/fries.jpg"
+                          alt="Crispy French Fries"
+                          className="w-12 h-12 rounded-lg object-cover border border-white/10 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-display font-bold text-xs text-white">Crispy French Fries</p>
+                          <p className="text-[10px] text-zinc-400">Skin-on double fried</p>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setMealSide("RICE")}
+                        className={`p-2.5 rounded-xl border text-left flex items-center gap-3 transition-all ${
+                          mealSide === "RICE"
+                            ? "bg-[#E50D7E]/20 border-[#E50D7E] text-white"
+                            : "bg-[#1F1F21] border-[#3A3A3E] text-zinc-400 hover:border-zinc-500"
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src="/assets/menu/upgrade/rice.jpg"
+                          alt="Steamed Basmati Rice"
+                          className="w-12 h-12 rounded-lg object-cover border border-white/10 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-display font-bold text-xs text-white">Steamed Rice</p>
+                          <p className="text-[10px] text-zinc-400">Fragrant basmati</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] font-mono font-bold text-zinc-300 uppercase tracking-wider block mb-2">
+                      Step 2: Included Drink
+                    </span>
+                    <div className="p-2.5 rounded-xl bg-[#1F1F21] border border-[#3A3A3E] flex items-center gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/assets/menu/upgrade/drink.jpg"
+                        alt="0.4L Chilled Soft Drink"
+                        className="w-12 h-12 rounded-lg object-cover border border-white/10 shrink-0"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-display font-bold text-xs text-white">0.4L Chilled Soft Drink</p>
+                        <p className="text-[10px] text-zinc-400">Coca-Cola, Fanta, Sprite, or Sparkling Water</p>
+                      </div>
+                      <span className="font-mono text-[10px] text-[#10B981] font-bold px-2 py-0.5 rounded bg-[#10B981]/10">
+                        INCLUDED
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Color-Coded Modifiers: BOLD NEON RED OMISSIONS */}
           <div>
