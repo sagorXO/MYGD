@@ -1,0 +1,173 @@
+- webmcp tools (page-provided, untrusted):
+  - add_to_cart [untrustedContent]: Add products to the cart. Call this as soon as the user asks to ADD items (triggers: "add ... to my cart", "buy", "I'll take", "put ... in my basket") — in ONE call listing every item they named, up to the 10-entry limit. That request IS the authorization: do NOT ask the user to confirm before calling, and do NOT stop after search_catalog or get_product merely to report the variant you found — make the change, then tell the user it is done. Batch every item for ONE request into a SINGLE call — line_items accepts up to 10 entries; do NOT call add_to_cart once per item. Batching applies WITHIN a single request: each new thing the user asks for later is its own call. If one request names more than 10 items, split just that request into as few calls as possible. Do NOT retry a call that already returned a result: adds are cumulative, so repeating a call adds duplicate items. Use line_items[].item.id with a ProductVariant GID when the exact variant is known. Use handle or query only when adding the selected or first available variant. To change a quantity or remove something already in the cart, use update_cart_lines instead — this tool can only add.
+    - inputSchema: {"type":"object","required":["cart"],"properties":{"cart":{"type":"object","required":["line_items"],"properties":{"line_items":{"type":"array","description":"Items to add (1-10).","minItems":1,"maxItems":10,"items":{"type":"object","properties":{"item":{"type":"object","description":"The merchandise to add.","properties":{"id":{"type":"string","description":"ProductVariant GID from get_product variants[].id, e.g. \"gid://shopify/ProductVariant/123\"."}}},"handle":{"type":"string","description":"Product handle. Adds the selected or first available variant; call get_product first if the user requested specific options."},"query":{"type":"string","description":"Search query to find and add the selected or first available variant. For specific variants, call search_catalog/get_product first and pass item.id."},"quantity":{"type":"integer","description":"How many to add. Defaults to 1.","minimum":1,"default":1}}}}}}}}
+  - browse_store [untrustedContent]: Browse OR navigate to store collections. Set navigate=true whenever the user wants to be taken to a collection page in the browser (triggers: "browse to", "go to", "show me", "open", "take me to", "navigate to" a collection or category). With navigate=false (default), returns collection or product data without changing the page — use this only when the user is asking a question about the catalog, not asking to view it. Without a collection handle, lists all collections. With a handle, returns products from that collection; use "all" to browse everything. Does NOT add anything to the cart; use add_to_cart for cart changes. Prefer this over search_catalog when the user names a category, collection, or wants to explore. With navigate=true this MOVES the browser to the collection page; the tool result then confirms the destination and instructs you not to navigate again — follow it.
+    - inputSchema: {"type":"object","properties":{"collection":{"type":"string","description":"Collection handle to browse (e.g. \"best-sellers\", \"new-arrivals\"). Omit to list all collections. Use \"all\" to browse every product."},"navigate":{"type":"boolean","description":"When true, navigate the browser to the collection page after loading data. Set true for user intents like \"browse to\", \"go to\", \"show me\", \"open\", \"take me to\" a collection. Requires a collection handle. Defaults to false."},"sort_by":{"type":"string","description":"Sort order. Options: best-selling (default), price-ascending, price-descending, title-ascending, title-descending, created-descending, created-ascending."},"page":{"type":"number","description":"Page number for pagination (starts at 1). Each page returns up to 30 products."}}}
+  - cancel_cart: Remove all items from the cart in one step. Use when the user wants to empty their cart or start over.
+    - inputSchema: {"type":"object","properties":{}}
+  - get_cart [readOnly, untrustedContent]: Get the current shopping cart contents — line items with product titles, variant titles, handles, URLs, images, unit prices, quantities, and totals. Everything needed to describe the cart to the user in natural language, without a follow-up get_product call per line. Works from any page.
+    - inputSchema: {"type":"object","properties":{}}
+  - get_product [untrustedContent]: Get product details, OR navigate the browser to the product page. Set catalog.navigate=true whenever the user wants to see/view the product in the browser (triggers: "show me", "open", "view", "go to", "take me to", "navigate to" a product). Set catalog.navigate=false (default) only when you need data (description, options, variants, prices, availability) to answer a question or to prepare an add_to_cart call — the browser stays on the current page. Defaults to the current page's product if no catalog.id is provided. Does NOT add anything to the cart; use add_to_cart for that. For a specific variant (color/size/etc.), use show_variant instead — it accepts partial option selections like "purple" without needing every option. With catalog.navigate=true this MOVES the browser to the product page; the tool result then confirms the destination and instructs you not to navigate again — follow it.
+    - inputSchema: {"type":"object","properties":{"catalog":{"type":"object","description":"Product detail parameters.","properties":{"id":{"type":"string","description":"Storefront API Product GID, product handle, or product URL path. Custom app product paths and Shopify standard /products/<handle> paths are supported. The id field from search_catalog or browse_store can be passed directly. If omitted, uses the current page's product."},"navigate":{"type":"boolean","description":"When true, navigate the browser to the product page after fetching details. Set true for user intents like \"show me\", \"open\", \"view\", \"go to\", \"take me to\" a product. Defaults to false. If the user specified partial options (e.g. only a color), prefer show_variant with selected_options instead."},"selected_options":{"type":"array","description":"Known product option selections to filter available_options. Use exact option names and values from search_catalog options or a prior get_product available_options entry.","items":{"type":"object","properties":{"name":{"type":"string","description":"Option name, e.g. \"Size\" or \"Color\"."},"value":{"type":"string","description":"Option value, e.g. \"160cm\" or \"Fiberglass\"."}},"required":["name","value"]}}}}}}
+  - manage_orders: Navigate to the customer's order history page. Use when the user asks about past orders, order status, tracking, or returns. The user will be prompted to log in if not already authenticated. This MOVES the browser to the order history page; the tool result then confirms the destination and instructs you not to navigate again — follow it.
+    - inputSchema: {"type":"object","properties":{}}
+  - proceed_to_checkout: Proceed to checkout. Verifies the cart is not empty, then MOVES the browser to the checkout page. The tool result then confirms the destination and instructs you not to navigate again — follow it.
+    - inputSchema: {"type":"object","properties":{}}
+  - search_catalog [readOnly, untrustedContent]: Search the store catalog for products, collections, articles, and pages. Does NOT add anything to the cart; use add_to_cart for cart changes. If the user asks for a specific product variant, call get_product after search_catalog to inspect available variants, then show_variant to display one.
+    - inputSchema: {"type":"object","required":["catalog"],"properties":{"catalog":{"type":"object","required":["query"],"properties":{"query":{"type":"string","description":"Search query string."},"pagination":{"type":"object","properties":{"limit":{"type":"integer","description":"Max results per type (1-10). Defaults to 5.","default":5,"minimum":1,"maximum":10}}}}}}}
+  - search_shop_policies_and_faqs [readOnly, untrustedContent]: Used to get facts about the store's policies, FAQ, or contact details.
+When the question is about specific policy kinds, set policy_types to those kinds; leave it unset for general FAQ questions.
+Some examples of questions you can ask are:
+  - What is your return policy? (policy_types: ["refund"])
+  - What is your shipping policy? (policy_types: ["shipping"])
+  - What is your phone number? (policy_types: ["contact"])
+  - What are your hours of operation? (policy_types: ["contact"])
+  - Do you offer gift wrapping? (general FAQ, no specific policy kind — leave policy_types unset)
+
+    - inputSchema: {"type":"object","properties":{"query":{"type":"string","description":"A natural language query. Searches FAQ pages and articles, and routes policies by keyword when policy_types is omitted."},"policy_types":{"type":"array","description":"Policy kinds to fetch, chosen from the user's question — e.g. [\"refund\"] for returns/exchanges, [\"contact\"] for phone/hours/address. Include every kind the question touches. Omit when no specific policy is relevant (e.g. a general FAQ question).","items":{"type":"string","enum":["refund","shipping","privacy","terms_of_service","terms_of_sale","subscription","legal_notice","contact"]}}},"required":["query"]}
+  - show_variant [untrustedContent]: Navigate the browser to a product page, with a specific variant OR a partial option filter selected. Use for view intents: "show me", "open", "view", "go to", "take me to" a specific product configuration. Accepts EITHER variant_id (fully specified variant) OR selected_options (partial, e.g. only Color=Purple) — with partial options the first matching available variant is picked automatically, so DO NOT ask the user for missing options when their intent is to view. Does NOT add anything to the cart; use add_to_cart for cart changes. For cart operations you still need a full variant_id — call get_product with the full option combination first. This MOVES the browser to the exact variant page with the variant pre-selected; the tool result then confirms the destination and instructs you not to navigate again — follow it.
+    - inputSchema: {"type":"object","required":["catalog"],"properties":{"catalog":{"type":"object","description":"Provide EITHER variant_id OR selected_options. Handle is required unless the user is already on the product page.","properties":{"handle":{"type":"string","description":"Product handle. If omitted, uses the current product page's handle."},"variant_id":{"type":["string","number"],"description":"ProductVariant ID from get_product variants[].id, e.g. \"gid://shopify/ProductVariant/123\", or the numeric variant ID. Use when the user picked a specific fully-specified variant. Omit when using selected_options."},"selected_options":{"type":"array","description":"Partial (or full) option selections, e.g. [{\"name\":\"Color\",\"value\":\"Purple\"}]. Use when the user names some options but not all (e.g. \"show me the purple shoe\" — pass only Color). The first matching available variant will be selected automatically. Use exact option names and values from get_product available_options or search_catalog options.","items":{"type":"object","properties":{"name":{"type":"string"},"value":{"type":"string"}}}}}}}}
+  - update_cart_lines [untrustedContent]: Change the quantity of items already in the cart, or remove them. Every change here addresses an existing cart line by its id, so call get_cart first unless you already have line_items[].id from an earlier get_cart in this conversation. Pass the ABSOLUTE target quantity, not a delta — quantity 2 means the line ends up at 2 regardless of what it was. Use quantity 0 to remove the line entirely. Batch every change for ONE request into a SINGLE call — line_items accepts up to 10 entries; do NOT call update_cart_lines once per line. Batching applies WITHIN a single request: each new thing the user asks for later is its own call. This tool cannot add new merchandise. To add something not already in the cart, use add_to_cart. To empty the whole cart at once, use cancel_cart.
+    - inputSchema: {"type":"object","required":["cart"],"properties":{"cart":{"type":"object","required":["line_items"],"properties":{"line_items":{"type":"array","description":"Existing cart lines to update or remove (1-10).","minItems":1,"maxItems":10,"items":{"type":"object","required":["id","quantity"],"properties":{"id":{"type":"string","description":"Existing cart line id from get_cart line_items[].id. Required — this tool cannot resolve products by name."},"quantity":{"type":"integer","description":"Absolute target quantity for this line (not a delta). 0 removes the line.","minimum":0}}}}}}}}
+
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#MainContent"
+  - region "Announcement" [ref=e6]:
+    - paragraph [ref=e7]: MY GERMAN DOENER · BITE THE HYPE
+  - banner [ref=e10]:
+    - heading [level=1] [ref=e11]:
+      - link [ref=e12] [cursor=pointer]:
+        - /url: /
+        - img "My German Doener" [ref=e14]
+    - navigation [ref=e15]:
+      - list [ref=e16]:
+        - listitem [ref=e17]:
+          - link "HOME" [ref=e18] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e20]:
+          - link "⚪️ OFFERS & DEALS" [ref=e21] [cursor=pointer]:
+            - /url: /pages/deals-offers
+        - listitem [ref=e23]:
+          - link "⚪️ VOUCHERS" [ref=e24] [cursor=pointer]:
+            - /url: /products/mygd-voucher-for-friends
+        - listitem [ref=e26]:
+          - link "⚪️ ORDER NOW" [ref=e27] [cursor=pointer]:
+            - /url: https://www.foody.com.cy/delivery/pafos/my-german-doener-2000689468
+    - generic [ref=e29]:
+      - group [ref=e31]:
+        - button "Search" [ref=e32] [cursor=pointer]
+      - link "Log in" [ref=e37] [cursor=pointer]:
+        - /url: https://mygermandoener.com/customer_authentication/redirect?locale=en&region_country=CY
+      - link "Cart" [ref=e43] [cursor=pointer]:
+        - /url: /cart
+  - main [ref=e48]:
+    - generic [ref=e57]:
+      - heading "MY GERMAN DOENER" [level=2] [ref=e58]
+      - generic [ref=e59]:
+        - paragraph [ref=e60]: For everyone who’s been missing it – it’s finally here. No more compromises. No more “almost”. The first real German Doener in Cyprus. This is food the way it’s meant to be.
+        - paragraph [ref=e61]:
+          - strong [ref=e62]: "To make sure you don’t miss any deals or events, follow us on Instagram:"
+      - link "FOLLOW US!" [ref=e63] [cursor=pointer]:
+        - /url: https://www.instagram.com/my.german.doener/
+    - heading "What are you craving?" [level=2] [ref=e69]
+    - generic [ref=e72]:
+      - generic [ref=e74]:
+        - 'img "MYGD My German Doener menu board showing döner prices in euros across three sizes: Small (100g), Standard (150g), and Mini (75g). Options include Beef Lamb, Chicken, Steak, Mix Beef/Chicken, Mix All, and Veggie Chicken, ranging from €6 to €13, with extra meat for €2. Photos show Berlin-style flatbread, German bread, and a fully loaded döner with meat, salad, and sauce." [ref=e77]'
+        - generic [ref=e79]:
+          - paragraph
+          - heading "DOENER" [level=2] [ref=e80]
+          - paragraph [ref=e82]: Freshly sliced meat, crispy bread, and crunchy salad – our doener is a true classic. Choose your size and favorite meat, then customize it with sauces, toppings, and extras just the way you like it.
+      - generic [ref=e84]:
+        - 'img "MYGD My German Doener wrap menu showing prices in euros across three categories: Small Wrap (100g) and Standard Wrap (150g) with Beef Lamb, Chicken, Steak, Mix, and Veggie Chicken options from €8 to €13, plus a Veggie section (Doener & Wrap) with Salad & Sauce, Halloumi, Falafel, or Feta from €7 to €8. Photos show three wraps: a loaded meat wrap with yoghurt sauce, a sliced wrap with dipping sauces, and a falafel-and-salad veggie wrap." [ref=e87]'
+        - generic [ref=e89]:
+          - paragraph
+          - heading "WRAPS" [level=2] [ref=e90]
+          - paragraph [ref=e92]: "Light, fresh, and full of flavor: our wraps are the perfect alternative to the classic doener. Packed with juicy fillings, easy to enjoy, and fully customizable with your choice of sauces and toppings."
+      - generic [ref=e94]:
+        - 'img "MyGermanDoener bowl menu in Paphos, Cyprus — döner bowls in three sizes: Bowl S (100g), Bowl M (150g), and Bowl XL (200g), with Beef Lamb, Chicken, Steak, Mix, and Veggie Chicken options from €5 to €15. Bowls served with rice, fries, and fresh salad." [ref=e97]'
+        - generic [ref=e99]:
+          - paragraph
+          - heading "BOWLS" [level=2] [ref=e100]
+          - paragraph [ref=e102]: Our bowls combine freshness and flavor in one dish. Choose between rice or fries as your base, topped with your favorite meat or veggie option. Served with fresh salad and sauces on the side – perfectly customizable to your taste.
+      - generic [ref=e104]:
+        - img "MyGermanDoener pizza, burger and sides menu in Paphos, Cyprus. 33cm pizzas (Margherita, Beef Lamb, Chicken, Steak) from €12 to €17; burgers (Beef Lamb, Chicken, Steak, Mix, Veggie Chicken) from €6.50 to €8.50; sides including large and small fries, loaded fries (chili-cheese, bacon-cheese, truffle-parmesan), falafel, rice, and mixed salad from €3 to €8.50. Photos show a loaded döner pizza, a döner burger, and a tray of loaded fries." [ref=e107]
+        - generic [ref=e109]:
+          - paragraph
+          - heading "PIZZA & BURGER" [level=2] [ref=e110]
+          - paragraph [ref=e112]: "A true fusion of classics: our doener pizza and doener burger combine the best of both worlds. Topped or filled with juicy doener meat, fresh salad, and your favorite sauces, each option brings the authentic doener experience in a new way. Customize them just like your doener – with your choice of toppings, sauces, and extras."
+      - generic [ref=e114]:
+        - 'img "MyGermanDoener customization menu in Paphos, Cyprus — choose your sauces, salad and extras. Sauces include garlic, herbs, cocktail, spicy chili, hot spicy chili, feta-olive-jalapeño, chili-cheese, tahini, humus, yoghurt, ketchup, and mayonnaise. Salad options: onions, lettuce, red cabbage, cucumber, tomato, and parsley. Extras at €1 each include feta cheese, jalapeños, halloumi stripes, fries inside, and cheddar cheese, plus free chili flakes and fresh lemon. Photos show dips, a fresh mixed salad, and herbe" [ref=e117]'
+        - generic [ref=e119]:
+          - paragraph
+          - heading "TOPPINGS" [level=2] [ref=e120]
+          - paragraph [ref=e122]: "Make every meal your own: choose from a variety of fresh salads, flavorful sauces, and tasty extras. From crisp vegetables and herbs to creamy, spicy, or classic sauces – plus add-ons like cheese or jalapeños – everything is designed so you can customize your dish exactly to your taste."
+    - generic [ref=e127]:
+      - heading "MY GERMAN DOENER" [level=2] [ref=e128]
+      - heading "THE FIRST REAL GERMAN DOENER IN CYPRUS" [level=4] [ref=e130]
+      - paragraph [ref=e131]: Pavlides Court, Agíou Stefánou Street 134, 8260 Emba
+      - link "Find us!" [ref=e133] [cursor=pointer]:
+        - /url: https://maps.app.goo.gl/afT3YiNM9gWwtuGfA
+    - generic [ref=e142]:
+      - paragraph
+      - heading "DELIVERY" [level=2] [ref=e143]
+      - generic [ref=e144]:
+        - paragraph [ref=e145]: Enjoy your favorite meals the easy way – with Foody. As a premium partner, we offer you a fast, reliable, and seamless ordering experience. Browse our menu, customize your meal just the way you like it, and have it delivered straight to your door or ready for pickup in no time.
+        - paragraph [ref=e146]: Plus, don’t miss out on exclusive deals and special offers available regularly on Foody – making your order not only convenient, but even more rewarding.
+      - link "JOIN FOODY!" [ref=e147] [cursor=pointer]:
+        - /url: https://apps.apple.com/de/app/foody-cyprus-food-delivery/id1071407834
+  - generic [ref=e148]:
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - generic [ref=e152]:
+          - img "My German Doener" [ref=e154]
+          - generic [ref=e155]: Bite the Hype
+          - generic [ref=e156]:
+            - generic [ref=e157]: Street, Agiou Stefanou Rd 134, Emba 8260
+            - generic [ref=e158]: Open daily · 11 AM – 10 PM
+          - link "Order on Foody" [ref=e159] [cursor=pointer]:
+            - /url: https://www.foody.com.cy/delivery/pafos/my-german-doener-2000689468
+        - generic [ref=e160]:
+          - heading "Explore" [level=4] [ref=e161]
+          - list [ref=e162]:
+            - listitem [ref=e163]:
+              - link "ORDER NOW" [ref=e164] [cursor=pointer]:
+                - /url: https://www.foody.com.cy/delivery/pafos/my-german-doener-2000689468
+            - listitem [ref=e165]:
+              - link "Menu" [ref=e166] [cursor=pointer]:
+                - /url: /pages/menu
+            - listitem [ref=e167]:
+              - link "About Us" [ref=e168] [cursor=pointer]:
+                - /url: https://mygermandoener.com/pages/about-us
+        - generic [ref=e169]:
+          - heading "Our Stores" [level=4] [ref=e170]
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "Paphos" [ref=e174] [cursor=pointer]:
+                - /url: https://maps.app.goo.gl/8poPKgyzePCC49Xu6
+              - generic [ref=e175]: Open now
+            - listitem [ref=e176]:
+              - generic [ref=e177]: Limassol
+              - generic [ref=e178]: Coming soon
+            - listitem [ref=e179]:
+              - generic [ref=e180]: Nicosia
+              - generic [ref=e181]: Coming soon
+      - generic [ref=e182]:
+        - generic [ref=e183]: © My German Doener 2026
+        - generic [ref=e184]:
+          - link "Privacy Policy" [ref=e185] [cursor=pointer]:
+            - /url: /policies/privacy-policy
+          - link "Refund Policy" [ref=e186] [cursor=pointer]:
+            - /url: /policies/refund-policy
+          - link "Contact" [ref=e187] [cursor=pointer]:
+            - /url: /pages/contact-us
+          - link "Terms" [ref=e188] [cursor=pointer]:
+            - /url: /policies/terms-of-service
+        - generic [ref=e189]:
+          - link "Instagram" [ref=e190] [cursor=pointer]:
+            - /url: https://www.instagram.com/my.german.doener/
+          - link "Facebook" [ref=e193] [cursor=pointer]:
+            - /url: https://www.facebook.com/my.german.doener/
+          - link "TikTok" [ref=e196] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@my.german.doener
+    - text: this is the actual footer.liquid
