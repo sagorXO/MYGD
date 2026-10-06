@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { SearchX } from "lucide-react";
 import type { CategoryDTO } from "@/types";
-import { EmptyState, ErrorState, SegmentedControl, Skeleton, Tabs } from "@/ui";
-import { displayCategoryName, filterProducts, type MenuFilter } from "./menuModel";
+import { Banner, EmptyState, ErrorState, SegmentedControl, Skeleton, Tabs } from "@/ui";
+import { displayCategoryName, filterProducts, offerTitles, type MenuFilter } from "./menuModel";
 import { ProductCard } from "./ProductCard";
 import { LOCATIONS, type StoreLocation } from "./storeLocations";
 
@@ -19,6 +19,7 @@ const FILTERS: { value: MenuFilter; label: string }[] = [
 interface MenuResponse {
   success: boolean;
   categories?: CategoryDTO[];
+  promotions?: { name: string }[];
 }
 
 export function MenuSection() {
@@ -26,6 +27,7 @@ export function MenuSection() {
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [categoryId, setCategoryId] = useState("");
   const [filter, setFilter] = useState<MenuFilter>("ALL");
+  const [offers, setOffers] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>("loading");
 
   const load = useCallback(async (slug: StoreLocation["slug"], signal?: AbortSignal) => {
@@ -37,6 +39,7 @@ export function MenuSection() {
       if (!data.success) throw new Error("Menu request unsuccessful");
       const cats = data.categories ?? [];
       setCategories(cats);
+      setOffers(offerTitles(data.promotions));
       setCategoryId((prev) => (cats.some((c) => c.id === prev) ? prev : cats[0]?.id ?? ""));
       setStatus("ready");
     } catch (err) {
@@ -71,6 +74,16 @@ export function MenuSection() {
           options={LOCATIONS.map((l) => ({ value: l.slug, label: l.name }))}
         />
       </div>
+
+      {status === "ready" && offers.length > 0 && (
+        <Banner tone="info" title="Offers" className="mb-4">
+          <ul className="list-inside list-disc">
+            {offers.map((title) => (
+              <li key={title}>{title}</li>
+            ))}
+          </ul>
+        </Banner>
+      )}
 
       {status === "ready" && categories.length > 0 && (
         <Tabs

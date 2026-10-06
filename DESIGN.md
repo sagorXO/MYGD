@@ -119,7 +119,7 @@ Kitchen display tickets use dynamic urgency coloring to eliminate kitchen lag:
 | `/kds` | Line Cook / Assembler | Landscape HD Monitor (16:9) | `1920 × 1080` |
 | `/display` | Waiting Area Guest | Overhead 4K Display (16:9) | `1920 × 1080` |
 | `/staff` | Crew & Slicers | Wall Station Tablet (16:10) | `1024 × 768` / `1280 × 800` |
-| `/boards?screen=1..4` | Overhead Menu (4 screens, SOW) | 4K Commercial TVs (16:9) | `3840 × 2160` (per screen) |
+| `/boards` | Overhead Menu — **redirects to ScreenyPro** (https://screenypro.com/dashboard) since 2026-10-06 | 4K Commercial TVs (16:9) | `3840 × 2160` (per screen) |
 | `/order` | Mobile Pre-Order | Smartphone Browser (9:19.5) | `390 × 844` |
 | `/admin` | Store Manager / HQ | Desktop / Widescreen Laptop | `1440 × 900+` |
 

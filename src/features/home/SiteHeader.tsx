@@ -1,4 +1,4 @@
-import { buttonClasses, Logo } from "@/ui";
+import { buttonClasses, Logo, ThemeToggle } from "@/ui";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
@@ -13,7 +13,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 md:px-6">
         <a href="#top" className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           <Logo size={40} />
-          <span className="font-display text-lg uppercase tracking-wide">My German Doener</span>
+          <span className="hidden font-display text-lg uppercase tracking-wide sm:inline">My German Doener</span>
         </a>
         <nav aria-label="Main" className="ml-6 hidden items-center gap-6 text-sm md:flex">
           {LINKS.map((l) => (
@@ -23,6 +23,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle surface="order" />
           <a href="https://wolt.com" target="_blank" rel="noopener noreferrer" className={cn(buttonClasses({ variant: "tertiary", size: "md" }), "hidden text-[var(--mygd-gray-0)] hover:text-text sm:inline-flex")}>
             Order on Wolt
           </a>

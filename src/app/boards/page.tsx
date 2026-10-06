@@ -1,8 +1,11 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import React from "react";
-import { MenuBoard4K } from "@/modules/signage/components/MenuBoard4K";
+// [ADR] Context: the overhead menu screens are now run from ScreenyPro, a hosted signage service.
+// Decision: /boards no longer renders our own board; it sends the screen to the ScreenyPro dashboard.
+// Consequence: screens no longer follow our database (prices, sold-out, offers) automatically;
+// the in-app board (src/modules/signage) is kept but unused by this route.
+const SCREENYPRO_DASHBOARD = "https://screenypro.com/dashboard";
 
-export default function DigitalMenuBoardsPage() {
-  return <MenuBoard4K />;
+export default function MenuBoardsPage() {
+  redirect(SCREENYPRO_DASHBOARD);
 }
