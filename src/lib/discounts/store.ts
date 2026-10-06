@@ -19,14 +19,14 @@ export function voucherToInput(v: Voucher): VoucherInput {
   return {
     code: v.code,
     kind: v.kind,
-    value: v.value,
+    value: Number(v.value),
     isActive: v.isActive,
-    minSubtotal: v.minSubtotal,
+    minSubtotal: Number(v.minSubtotal),
     validFrom: v.validFrom,
     validUntil: v.validUntil,
     maxRedemptions: v.maxRedemptions,
     redemptions: v.redemptions,
-    balance: v.balance,
+    balance: v.balance !== null && v.balance !== undefined ? Number(v.balance) : null,
   };
 }
 

@@ -67,3 +67,30 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 - **Q-DATA-4 (ANSWERED 2026-10-03)** Customers, loyalty, online orders and employees are not imported.
 - **Q-DATA-5 (PARTLY ANSWERED 2026-10-03)** Sales history is kept (the `.bak` files) and will be imported after Phase 2 adds the read-only history table. How many months: open.
 - **Q-HW-1 (PARTLY ANSWERED 2026-10-03)** The old receipt printers use the **SEWOO "Elite"** driver (ESC/POS). Exact models and connections still needed.
+
+## PRD v1.1 additions (2026-10-06): order channels and day close
+Source: `docs/gladius-feature-extraction.md`. None of these may be guessed in code; each is a setting or a marked TODO (PRD P.8).
+
+**Order channels (M12)**
+- **Q-FOODY-1 (OPEN, blocking M12)** Does Foody (and Bolt, Wolt) give MYGD a direct API or webhook, or is the Softech bridge the only route? Who owns the credentials, and are platform orders paid to the platform (assumed) or sometimes collected in cash?
+- **Q-AUTOACCEPT-1 (OPEN)** Should platform orders auto-accept during opening hours, or wait for staff? What timeout before the owner is alerted?
+- **Q-PREP-1 (OPEN)** Default preparation time per channel (feeds the promised time).
+- **Q-COMM-1 (OPEN)** Commission percentage per platform (for the net-revenue report).
+- **Q-INV-4 (OPEN, accountant)** For platform orders, which tax document is issued and to whom (the customer, or the platform)? How is the platform commission treated for VAT?
+- **Q-PRIV-1 (OPEN)** Retention for customer name, phone and address on channel orders (proposed 30 days) and for raw payloads (proposed 90 days).
+- **Q-HW-6 (OPEN)** Is there a label printer for bag labels (the old shop used Zebra GC420t and a linerless printer), or print the label data on the slip header?
+- **Q-DRIVER-1 (OPEN)** Will MYGD run its own delivery drivers (Limassol), or platforms only? Own drivers add dispatch and driver cash-out.
+
+**Day close (M13)**
+- **Q-CLOSE-1 (OPEN)** Who counts the drawer and closes the day, and when? Auto-close at a set time (the old till used 22:30), or manual only?
+- **Q-DAY-1 (OPEN)** Trading hours per weekday and whether the business day ever runs past midnight.
+- **Q-CASH-1 (OPEN)** Opening float per drawer, the variance amount that should alert the owners, and who may recount.
+- **Q-PAYOUT-1 (OPEN)** The 58 payee names in the old paid-outs: which are suppliers? What approval limit should apply, and which categories?
+- **Q-DIGEST-1 (OPEN)** Who receives the owner digest and the accountant's PDF and CSV, and by which channel (push, email, WhatsApp)?
+- **Q-FISCAL-1 (OPEN, accountant)** The old till has fiscal-device settings (device address, driver, "fiscal Z report"). Was a fiscal device connected? Feeds Q-INV-1.
+
+**Payments, schedule, contract**
+- **Q-LINK4PAY-1 (OPEN)** Is the Link4Pay terminal the same device model the old till used? Merchant ID and Terminal ID `[Sch-C §3]`. Which fields come back (transaction id, approval code, card brand)?
+- **Q-SWITCH-1 (OPEN)** Target date to stop using Gladius, relative to its maintenance end date 2026-12-01.
+- **Q-CON-3 (OPEN)** Client confirmation of proposed Variance V10 (delivery intake moved from Stage 9) and V11 (day close not named in the SOW; inside Stage 3 or a change request?).
+- **Q-SCHED-1 (UPDATED 2026-10-06)** Besides the order of Stages 1 and 2: delivery intake (M12) and day close (M13) are proposed to come before Gladius is switched off.
