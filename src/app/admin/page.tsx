@@ -10,6 +10,7 @@ import {
   PackageCheck,
   ShieldCheck,
   Tv,
+  Ticket,
   ShoppingBag,
   UtensilsCrossed,
   AlertTriangle,
@@ -156,6 +157,13 @@ export default function BackofficeAdminPage() {
           >
             <Tv size={14} className="text-[#10B981]" />
             <span>CX Wait TV</span>
+          </Link>
+          <Link
+            href="/admin/vouchers"
+            className="px-3 py-2 rounded-xl bg-[#2B2B2E] hover:bg-[#343438] text-white border border-[#3A3A3E] flex items-center gap-1.5"
+          >
+            <Ticket size={14} className="text-[#E50D7E]" />
+            <span>Vouchers</span>
           </Link>
         </div>
       </header>

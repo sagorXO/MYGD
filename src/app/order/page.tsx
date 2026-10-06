@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { formatEuro } from "@/lib/i18n";
 import {
   ShoppingBag,
@@ -14,66 +14,73 @@ import {
   CheckCircle2,
   Flame,
   Plus,
+  Minus,
+  AlertOctagon,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import type { CategoryDTO } from "@/types";
+import { priceCart } from "@/lib/discounts/engine";
+import type { PromotionDef } from "@/lib/menu/mygd-menu";
 
 export default function MobilePreOrderPage() {
   const [orderChannel, setOrderChannel] = useState<"COUNTER_PICKUP" | "DRIVE_THROUGH">("DRIVE_THROUGH");
   const [vehicleInfo, setVehicleInfo] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("DOENER");
-  const [cartCount, setCartCount] = useState<number>(2);
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [promotions, setPromotions] = useState<PromotionDef[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [menuStatus, setMenuStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [isOrderPlaced, setIsOrderPlaced] = useState<boolean>(false);
 
   // Dynamic Wait Calculation based on simulated active KDS queue
   const activeKdsTickets = 4;
   const estimatedPickupMins = 4 + Math.round(activeKdsTickets * 1.2);
 
-  const menuItems = [
-    {
-      id: "ord-1",
-      name: "Original German Döner (150g)",
-      desc: "Toasted sesame bread, fresh salad, garlic herb sauce",
-      price: 6.50,
-      badge: "POPULAR",
-      category: "DOENER",
-      imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
-    },
-    {
-      id: "ord-2",
-      name: "Steak Döner (100% Beef)",
-      desc: "Premium sliced steak, herbs, lemon garlic dip",
-      price: 8.50,
-      badge: "CHEF PICK",
-      category: "DOENER",
-      imageUrl: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800&auto=format&fit=crop&q=85",
-    },
-    {
-      id: "ord-3",
-      name: "Standard Dürüm Wrap",
-      desc: "Warm lavash flatbread, 150g rotisserie meat, tomato & parsley",
-      price: 8.00,
-      badge: "POPULAR",
-      category: "WRAPS",
-      imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=85",
-    },
-    {
-      id: "ord-4",
-      name: "Döner Box with Fries",
-      desc: "Hot crispy fries topped with meat and garlic sauce",
-      price: 6.50,
-      badge: "POPULAR",
-      category: "BOWLS",
-      imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=85",
-    },
-    {
-      id: "ord-5",
-      name: "Crispy Berlin Fries",
-      desc: "Skin-on fries with German paprika seasoning",
-      price: 3.50,
-      category: "SIDES",
-      imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=85",
-    },
-  ];
+  const loadMenu = useCallback(async (signal?: AbortSignal) => {
+    setMenuStatus("loading");
+    try {
+      const res = await fetch("/api/menu?location=EMBA", { signal });
+      if (!res.ok) throw new Error(`Menu request failed: ${res.status}`);
+      const data = await res.json();
+      if (!data.success || !Array.isArray(data.categories)) throw new Error("Menu request unsuccessful");
+      setCategories(data.categories);
+      setPromotions(Array.isArray(data.promotions) ? data.promotions : []);
+      setSelectedCategoryId((prev) => (data.categories.some((c: CategoryDTO) => c.id === prev) ? prev : data.categories[0]?.id ?? ""));
+      setMenuStatus("ready");
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      console.error("[Order] Failed to load menu", err);
+      setMenuStatus("error");
+    }
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadMenu(controller.signal);
+    return () => controller.abort();
+  }, [loadMenu]);
+
+  const activeCategory = categories.find((c) => c.id === selectedCategoryId);
+  const menuItems = (activeCategory?.products ?? []).filter((p) => p.isAvailable);
+
+  const { cartCount, priced } = useMemo(() => {
+    const lines = categories.flatMap((c) =>
+      (c.products ?? [])
+        .filter((p) => (cart[p.id] ?? 0) > 0)
+        .map((p) => ({ sku: p.sku, sectionSlug: c.slug, unitPrice: p.basePrice, quantity: cart[p.id] })),
+    );
+    return {
+      cartCount: lines.reduce((n, l) => n + l.quantity, 0),
+      priced: priceCart({ lines, promotions }),
+    };
+  }, [categories, cart, promotions]);
+
+  const changeQty = (productId: string, delta: number) =>
+    setCart((prev) => {
+      const next = Math.max(0, (prev[productId] ?? 0) + delta);
+      const { [productId]: _removed, ...rest } = prev;
+      return next === 0 ? rest : { ...rest, [productId]: next };
+    });
 
   const handlePlaceOrder = () => {
     setIsOrderPlaced(true);
@@ -150,53 +157,102 @@ export default function MobilePreOrderPage() {
             </div>
           )}
 
+          {/* Offers */}
+          {promotions.length > 0 && (
+            <div className="rounded-2xl border border-[#E50D7E]/40 bg-[#E50D7E]/10 p-3 text-xs text-white">
+              <p className="font-display font-black uppercase tracking-wider text-[#E50D7E] mb-1">Offers</p>
+              <ul className="space-y-0.5">
+                {promotions.map((p) => (
+                  <li key={p.code}>{p.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Category Bar */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs">
-            {["DOENER", "WRAPS", "BOWLS", "SIDES", "DRINKS"].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full font-bold uppercase transition-all whitespace-nowrap ${
-                  selectedCategory === cat
-                    ? "bg-[#00FCED]/20 text-[#00FCED] border border-[#00FCED]/60"
-                    : "bg-[#1A1A1E] text-zinc-400 border border-[#27272A]"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs min-h-[34px]">
+            {menuStatus === "loading"
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-[30px] w-24 shrink-0 rounded-full bg-[#1A1A1E] animate-pulse" />
+                ))
+              : categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategoryId(cat.id)}
+                    className={`px-3.5 py-1.5 rounded-full font-bold uppercase transition-all whitespace-nowrap ${
+                      selectedCategoryId === cat.id
+                        ? "bg-[#00FCED]/20 text-[#00FCED] border border-[#00FCED]/60"
+                        : "bg-[#1A1A1E] text-zinc-400 border border-[#27272A]"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
           </div>
 
           {/* Menu Items Feed */}
           <div className="space-y-3">
-            {menuItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-3.5 rounded-2xl bg-[#1A1A1E] border border-[#27272A] flex items-center justify-between gap-3 shadow-md"
-              >
-                <img src={item.imageUrl} alt={item.name} className="w-16 h-16 rounded-xl object-cover shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="font-display font-bold text-sm text-white truncate">{item.name}</h3>
-                    {item.badge && (
-                      <span className="px-2 py-0.5 rounded-full bg-[#E50D7E] text-white text-[9px] font-black uppercase">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">{item.desc}</p>
-                  <p className="font-display font-black text-sm text-[#E50D7E] mt-1 font-mono">
-                    {formatEuro(item.price, "en")}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCartCount((c) => c + 1)}
-                  className="w-8 h-8 rounded-xl bg-[#E50D7E] text-white flex items-center justify-center shadow active:scale-95 shrink-0"
-                >
-                  <Plus size={16} className="stroke-[3]" />
+            {menuStatus === "loading" &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-[92px] rounded-2xl bg-[#1A1A1E] border border-[#27272A] animate-pulse" />
+              ))}
+
+            {menuStatus === "error" && (
+              <div className="p-4 rounded-2xl bg-[#1A1A1E] border border-red-900/60 text-center space-y-2">
+                <AlertOctagon className="mx-auto text-red-500" size={28} />
+                <p className="text-sm text-white font-bold">We couldn&apos;t load the menu.</p>
+                <button onClick={() => void loadMenu()} className="px-4 py-2 rounded-xl bg-[#E50D7E] text-white text-xs font-bold uppercase">
+                  Try again
                 </button>
               </div>
-            ))}
+            )}
+
+            {menuStatus === "ready" &&
+              menuItems.map((item) => {
+                const qty = cart[item.id] ?? 0;
+                return (
+                  <div
+                    key={item.id}
+                    className="p-3.5 rounded-2xl bg-[#1A1A1E] border border-[#27272A] flex items-center justify-between gap-3 shadow-md min-h-[92px]"
+                  >
+                    <img
+                      src={item.imageUrl ?? ""}
+                      alt={item.name}
+                      className="w-16 h-16 rounded-xl object-cover shrink-0 bg-[#121214]"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-bold text-sm text-white truncate">{item.name}</h3>
+                      {item.description && (
+                        <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">{item.description}</p>
+                      )}
+                      <p className="font-display font-black text-sm text-[#E50D7E] mt-1 font-mono">
+                        {formatEuro(item.basePrice, "en")}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {qty > 0 && (
+                        <>
+                          <button
+                            onClick={() => changeQty(item.id, -1)}
+                            aria-label={`Remove one ${item.name}`}
+                            className="w-8 h-8 rounded-xl bg-[#252528] text-white flex items-center justify-center active:scale-95"
+                          >
+                            <Minus size={16} className="stroke-[3]" />
+                          </button>
+                          <span className="font-mono font-black text-sm text-white w-4 text-center">{qty}</span>
+                        </>
+                      )}
+                      <button
+                        onClick={() => changeQty(item.id, 1)}
+                        aria-label={`Add ${item.name}`}
+                        className="w-8 h-8 rounded-xl bg-[#E50D7E] text-white flex items-center justify-center shadow active:scale-95"
+                      >
+                        <Plus size={16} className="stroke-[3]" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </main>
       ) : (
@@ -245,13 +301,21 @@ export default function MobilePreOrderPage() {
         <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1A1A1E]/95 backdrop-blur-md border-t border-[#27272A] p-3.5">
           <button
             onClick={handlePlaceOrder}
-            className="w-full py-3.5 px-5 rounded-2xl bg-[#E50D7E] hover:bg-[#C80B6E] text-white font-display font-black text-sm uppercase flex items-center justify-between shadow-xl glow-magenta transition-all active:scale-98"
+            disabled={cartCount === 0}
+            className="w-full disabled:opacity-50 py-3.5 px-5 rounded-2xl bg-[#E50D7E] hover:bg-[#C80B6E] text-white font-display font-black text-sm uppercase flex items-center justify-between shadow-xl glow-magenta transition-all active:scale-98"
           >
             <div className="flex items-center gap-2">
               <ShoppingBag size={18} />
               <span>{cartCount} Items in Order</span>
             </div>
-            <span className="font-mono font-black text-base">{formatEuro(14.50, "en")}</span>
+            <span className="flex flex-col items-end leading-tight">
+              {priced.discountTotal > 0 && (
+                <span className="font-mono text-[10px] font-bold text-white/80">
+                  Offers −{formatEuro(priced.discountTotal, "en")}
+                </span>
+              )}
+              <span className="font-mono font-black text-base">{formatEuro(priced.total, "en")}</span>
+            </span>
           </button>
         </div>
       )}

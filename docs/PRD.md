@@ -324,7 +324,7 @@ A **channel** is a source of orders with its own adapter, credentials, rules and
 
 | Route | Device / viewport | Module | Status |
 |---|---|---|---|
-| `/` | Public web (responsive) | M6 | Old home page; redesign waiting at `/dev/preview/home` |
+| `/` | Public web (responsive) | M6 | Redesigned home (kit) |
 | `/order` | Public web | M6 | Static, not wired |
 | `/pos` | iPad landscape 1024×768 | M4 | Wired, see M4 status |
 | `/kds`, `/kds/indoor`, `/kds/grill` | Kitchen monitor 1920×1080, iPads | M5 | Wired (single-ticket model) |
@@ -334,7 +334,7 @@ A **channel** is a source of orders with its own adapter, credentials, rules and
 | `/admin` | Laptop / phone | M3, M9, M11, M8 | Wired, **no login** |
 | `/admin/menu-boards` | Laptop | M10 | Wired |
 | `/admin/suppliers` | Laptop | M2 | Static |
-| `/dev/ui`, `/dev/preview/home` | Dev only (404 in production) | — | UI kit gallery and preview |
+| `/dev/ui` | Dev only (404 in production) | — | UI kit gallery |
 
 New screens needed:
 - login (P.1)

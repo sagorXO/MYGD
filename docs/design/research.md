@@ -58,7 +58,7 @@ Next.js 15.2 (App Router), React 19, **Tailwind 3.4** (not v4), Prisma 6 + Postg
 | `/staff` | HACCP and checklists (M1/M7) | `modules/haccp/StaffHaccpHub.tsx` (367) | staff | |
 | `/admin`, `/admin/menu-boards`, `/admin/suppliers` | Back office | inline pages (309/520/407) + `MenuRecipeManager` (1163), `InventoryManager` (554), `BIDashboard` (185) | manager | Only 3 admin routes; most modules have no page |
 | `/login` | Staff sign-in | uses the UI kit | public | The **only** route built on the UI kit |
-| `/dev/ui`, `/dev/preview/home` | Kit gallery, home preview | | dev only | |
+| `/dev/ui` | Kit gallery | | dev only | |
 
 **There is no kiosk route.** Per the contract, the in-store touch kiosk is DM Soft's hardware and software (see the brain note and `docs/contract-alignment.md`), so a kiosk surface (Phase 3, work unit 2) may not be ours to build. ⚠ Needs your confirmation.
 

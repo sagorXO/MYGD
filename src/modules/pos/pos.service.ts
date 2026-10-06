@@ -5,10 +5,11 @@ import { POSOrderTender, POSOrderTenderSchema, Link4PayTerminalResponse } from "
 import { tcpPrintSpooler } from "../printer/tcp-spooler";
 import { ThermalChitPayload } from "../printer/printer.schema";
 import { deductOrderBOMAsync } from "../inventory/bom-decrement.engine";
-import { priceTender } from "./pos.pricing";
 import { getVatRates } from "@/lib/vat-rates.db";
-import { bpToRate } from "@/lib/tax";
-import { centsToDecimalString, fromCents } from "@/lib/money";
+import { bpToRate, splitGross, type VatCategory } from "@/lib/tax";
+import { centsToDecimalString, fromCents, toCents } from "@/lib/money";
+import { priceCart, type CartLine } from "@/lib/discounts/engine";
+import { findVoucher, loadActivePromotions, voucherToInput } from "@/lib/discounts/store";
 
 export interface POSTenderResult {
   success: boolean;
@@ -17,6 +18,8 @@ export interface POSTenderResult {
   dailySequence: number;
   subtotal: number;
   discountAmount: number;
+  appliedPromotions: { code: string; name: string; amount: number }[];
+  voucherAmount: number;
   taxableSubtotal: number;
   vatAmount: number;
   totalAmount: number;
@@ -33,14 +36,80 @@ export class POSService {
   public static async tenderOrder(rawPayload: unknown): Promise<POSTenderResult> {
     const validated = POSOrderTenderSchema.parse(rawPayload);
 
-    // 1-4. Exact pricing in integer cents: VAT category per line from the product record, rates from
-    // the VatRate table (read once), discount shared per line, cash change in cents (PRD M4.3, M11.4, P.4).
-    const priced = await priceTender(validated, {
-      findProductCategories: (ids) =>
-        prisma.product.findMany({ where: { id: { in: ids } }, select: { id: true, vatCategory: true } }),
-      loadRates: () => getVatRates(),
+    // 1-2. Price the cart server-side: automatic promotions -> voucher / gift card -> staff percent.
+    const products = await prisma.product.findMany({
+      where: { id: { in: validated.lines.map((l) => l.productId) } },
+      select: { id: true, vatCategory: true, category: { select: { slug: true } } },
     });
-    const { totals, changeDueCents } = priced;
+    const sectionByProduct = new Map(products.map((p) => [p.id, p.category.slug]));
+    const vatCategoryByProduct = new Map(products.map((p) => [p.id, p.vatCategory]));
+
+    const cartLines: CartLine[] = validated.lines.map((l) => ({
+      sku: l.sku,
+      sectionSlug: sectionByProduct.get(l.productId) ?? "",
+      unitPrice: l.unitPrice,
+      quantity: l.quantity,
+    }));
+
+    const voucherRow = validated.voucherCode ? await findVoucher(prisma, validated.voucherCode) : null;
+    if (validated.voucherCode && !voucherRow) {
+      throw new Error(`Voucher ${validated.voucherCode.toUpperCase()} does not exist`);
+    }
+    const pricedDiscounts = priceCart({
+      lines: cartLines,
+      promotions: await loadActivePromotions(prisma),
+      voucher: voucherRow ? voucherToInput(voucherRow) : undefined,
+      manualPercent: validated.discountPercent,
+    });
+    if (pricedDiscounts.voucher?.rejectedReason) {
+      throw new Error(`Voucher ${pricedDiscounts.voucher.code} cannot be used: ${pricedDiscounts.voucher.rejectedReason}`);
+    }
+    const grossSubtotal = pricedDiscounts.subtotal;
+    const discountAmount = pricedDiscounts.discountTotal;
+    const finalTotal = pricedDiscounts.total;
+    const voucherAmount = pricedDiscounts.voucher?.amount ?? 0;
+
+    // 3. Load VAT rates & calculate exact line-by-line net and VAT
+    const rates = await getVatRates();
+    const grossSubtotalCents = toCents(grossSubtotal);
+    const totalDiscountCents = toCents(discountAmount);
+    const finalTotalCents = toCents(finalTotal);
+
+    let allocatedDiscountCents = 0;
+    const pricedLines = validated.lines.map((l, index) => {
+      const lineListCents = toCents(l.totalPrice);
+      const isLast = index === validated.lines.length - 1;
+      const lineDiscount = isLast
+        ? totalDiscountCents - allocatedDiscountCents
+        : Math.round((totalDiscountCents * lineListCents) / (grossSubtotalCents || 1));
+      allocatedDiscountCents += lineDiscount;
+      const lineGrossCents = Math.max(0, lineListCents - lineDiscount);
+
+      const category = (vatCategoryByProduct.get(l.productId) ?? "FOOD_BEV") as VatCategory;
+      const rateBp = rates[category] ?? 500;
+      const split = splitGross(lineGrossCents, rateBp);
+
+      return {
+        baseUnitCents: toCents(l.basePrice),
+        vatCategory: category,
+        rateBp,
+        grossCents: lineGrossCents,
+        netCents: split.netCents,
+        vatCents: split.vatCents,
+      };
+    });
+
+    const totalNetCents = pricedLines.reduce((sum, l) => sum + l.netCents, 0);
+    const totalVatCents = pricedLines.reduce((sum, l) => sum + l.vatCents, 0);
+
+    // 4. Cash change calculation
+    let changeDue = 0;
+    if (validated.paymentMethod === "CASH" && validated.cashTendered !== undefined) {
+      if (validated.cashTendered < finalTotal) {
+        throw new Error(`Insufficient cash tendered: Received €${validated.cashTendered.toFixed(2)}, required €${finalTotal.toFixed(2)}`);
+      }
+      changeDue = Number((validated.cashTendered - finalTotal).toFixed(2));
+    }
 
     // 5. Generate Daily Order Sequence & Order Reference
     const today = new Date();
@@ -55,15 +124,20 @@ export class POSService {
     }
 
     // Get sequence count for today
-    const countToday = await prisma.order.count({
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const todayOrdersCount = await prisma.order.count({
       where: {
         locationId: location.id,
         createdAt: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          gte: startOfDay,
+          lte: endOfDay,
         },
       },
     });
-    const dailySeq = countToday + 1;
+
+    const dailySeq = todayOrdersCount + 1;
     const orderNumber = `${validated.locationSlug}-${datePrefix}-${String(dailySeq).padStart(3, "0")}`;
 
     // Find or create terminal
@@ -86,61 +160,82 @@ export class POSService {
       });
     }
 
-    // 6. Persist Order and Items to Database
-    const order = await prisma.order.create({
-      data: {
-        orderNumber,
-        dailySequence: dailySeq,
-        locationId: location.id,
-        terminalId: terminal.id,
-        orderType: validated.orderType,
-        orderStatus: "PREPARING",
-        paymentMethod: validated.paymentMethod,
-        paymentStatus: "CAPTURED",
-        subtotal: centsToDecimalString(totals.netCents),
-        vatAmount: centsToDecimalString(totals.vatCents),
-        totalAmount: centsToDecimalString(totals.totalCents),
-        customerNote: validated.customerNote,
-        items: {
-          // Per line: totalPrice is what the customer pays for the line after its share of any discount,
-          // so netAmount + vatAmount = totalPrice and the lines add up to the order total.
-          create: validated.lines.map((l, index) => ({
-            productId: l.productId,
-            productName: l.name,
-            productSku: l.sku,
-            basePrice: centsToDecimalString(priced.lines[index].baseUnitCents),
-            quantity: l.quantity,
-            spiceLevel: l.spiceLevel,
-            vatCategory: priced.lines[index].vatCategory,
-            vatRate: bpToRate(priced.lines[index].rateBp),
-            netAmount: centsToDecimalString(priced.lines[index].netCents),
-            vatAmount: centsToDecimalString(priced.lines[index].vatCents),
-            totalPrice: centsToDecimalString(priced.lines[index].grossCents),
-            itemNotes: [
-              l.breadType ? `Bread: ${l.breadType}` : "",
-              l.selectedSauces.length ? `Sauces: ${l.selectedSauces.join(", ")}` : "",
-              l.selectedAdditions.length ? `Add: ${l.selectedAdditions.map((a) => a.name).join(", ")}` : "",
-              l.selectedOmissions.length ? `No: ${l.selectedOmissions.join(", ")}` : "",
-              l.notes || "",
-            ]
-              .filter(Boolean)
-              .join(" | "),
-          })),
-        },
-        kitchenTickets: {
-          create: {
-            orderNumber,
-            orderType: validated.orderType,
-            station: "ALL",
-            ticketData: JSON.stringify(validated.lines),
-            ticketStatus: "QUEUED",
+    // 6. Persist Order, Items and the voucher redemption atomically
+    const order = await prisma.$transaction(async (tx) => {
+      const created = await tx.order.create({
+        data: {
+          orderNumber,
+          dailySequence: dailySeq,
+          locationId: location.id,
+          terminalId: terminal.id,
+          orderType: validated.orderType,
+          orderStatus: "PREPARING",
+          paymentMethod: validated.paymentMethod,
+          paymentStatus: "CAPTURED",
+          subtotal: centsToDecimalString(totalNetCents),
+          vatAmount: centsToDecimalString(totalVatCents),
+          totalAmount: centsToDecimalString(finalTotalCents),
+          discountAmount: centsToDecimalString(totalDiscountCents),
+          voucherCode: voucherRow?.code ?? null,
+          promotionCodes: pricedDiscounts.discounts.length ? JSON.stringify(pricedDiscounts.discounts.map((d) => d.code)) : null,
+          customerNote: validated.customerNote,
+          items: {
+            create: validated.lines.map((l, index) => ({
+              productId: l.productId,
+              productName: l.name,
+              productSku: l.sku,
+              basePrice: centsToDecimalString(pricedLines[index].baseUnitCents),
+              quantity: l.quantity,
+              spiceLevel: l.spiceLevel,
+              vatCategory: pricedLines[index].vatCategory,
+              vatRate: bpToRate(pricedLines[index].rateBp),
+              netAmount: centsToDecimalString(pricedLines[index].netCents),
+              vatAmount: centsToDecimalString(pricedLines[index].vatCents),
+              totalPrice: centsToDecimalString(pricedLines[index].grossCents),
+              itemNotes: [
+                l.breadType ? `Bread: ${l.breadType}` : "",
+                l.selectedSauces.length ? `Sauces: ${l.selectedSauces.join(", ")}` : "",
+                l.selectedAdditions.length ? `Add: ${l.selectedAdditions.map((a) => a.name).join(", ")}` : "",
+                l.selectedOmissions.length ? `No: ${l.selectedOmissions.join(", ")}` : "",
+                l.notes || "",
+              ]
+                .filter(Boolean)
+                .join(" | "),
+            })),
+          },
+          kitchenTickets: {
+            create: {
+              orderNumber,
+              orderType: validated.orderType,
+              station: "ALL",
+              ticketData: JSON.stringify(validated.lines),
+              ticketStatus: "QUEUED",
+            },
           },
         },
-      },
-      include: {
-        items: true,
-        kitchenTickets: true,
-      },
+        include: {
+          items: true,
+          kitchenTickets: true,
+        },
+      });
+
+      if (voucherRow && voucherAmount > 0) {
+        // Optimistic guard: only succeeds if nobody redeemed this voucher since we read it.
+        const claimed = await tx.voucher.updateMany({
+          where: { id: voucherRow.id, redemptions: voucherRow.redemptions },
+          data: {
+            redemptions: { increment: 1 },
+            ...(voucherRow.kind === "GIFT_CARD" ? { balance: pricedDiscounts.voucher?.balanceAfter ?? 0 } : {}),
+          },
+        });
+        if (claimed.count !== 1) {
+          throw new Error(`Voucher ${voucherRow.code} was just used on another till — try again`);
+        }
+        await tx.voucherRedemption.create({
+          data: { voucherId: voucherRow.id, orderId: created.id, amount: voucherAmount },
+        });
+      }
+      return created;
     });
 
     // 7. Atomic BOM Inventory Decrement
@@ -203,12 +298,14 @@ export class POSService {
       orderId: order.id,
       orderNumber,
       dailySequence: dailySeq,
-      subtotal: fromCents(totals.grossSubtotalCents),
-      discountAmount: fromCents(totals.discountCents),
-      taxableSubtotal: fromCents(totals.netCents),
-      vatAmount: fromCents(totals.vatCents),
-      totalAmount: fromCents(totals.totalCents),
-      changeDue: changeDueCents > 0 ? fromCents(changeDueCents) : undefined,
+      subtotal: grossSubtotal,
+      discountAmount,
+      appliedPromotions: pricedDiscounts.discounts.map((d) => ({ ...d })),
+      voucherAmount,
+      taxableSubtotal: fromCents(totalNetCents),
+      vatAmount: fromCents(totalVatCents),
+      totalAmount: finalTotal,
+      changeDue: changeDue > 0 ? changeDue : undefined,
       paymentRef: `LP-${Date.now().toString().slice(-6)}`,
       printed: printSuccess,
     };

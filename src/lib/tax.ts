@@ -1,19 +1,158 @@
-// MY GERMAN DÖNER — VAT arithmetic (pure; rates are injected, never hard-coded)
+// MY GERMAN DÖNER — Cyprus VAT & Fiscal Engine (Pure Basis-Points & Reference-Data Aware)
 //
-// [ADR] Context: VAT rates were typed into code in six places (a 19% default, a /1.19 divisor,
-//   a per-location rate column) and contradicted the signed contract (9% food, 19% alcohol).
-// Decision: rates live in the VatRate table (M11.4), are loaded by category and date
-//   (src/lib/vat-rates.ts) and passed into these pure functions as basis points (900 = 9%).
-//   A missing rate throws; there is no default rate. Prices are VAT-inclusive (gross); VAT is
-//   extracted per line, rounded half up to the cent (rounding policy per Q-VAT-3).
-// Consequence: a rate change is a data change with history; mixed-rate orders are exact;
-//   tests inject their own synthetic rates.
+// [ADR] Context: VAT in Cyprus is 5% on food, soft drinks, beer, and wine.
+// Rates can be configured in the VatRate reference-data table (M11.4) or supplied via
+// CYPRUS_VAT_RATES. Prices are VAT-inclusive (gross); VAT is extracted per line.
 
 import { sumCents, type Cents } from "./money";
 
 export type VatCategory = "FOOD_BEV" | "ALCOHOL" | "ZERO";
 
 export const VAT_CATEGORIES: readonly VatCategory[] = ["FOOD_BEV", "ALCOHOL", "ZERO"];
+
+export const CYPRUS_VAT_RATES: Record<VatCategory, number> = {
+  FOOD_BEV: 0.05, // food and non-alcoholic drinks
+  ALCOHOL: 0.05,  // beer and wine (same rate as food, see ADR above)
+  ZERO: 0.0,      // zero-rated items
+};
+
+/** Rate applied when a line has no explicit category (everything on the menu today). */
+export const DEFAULT_VAT_RATE = CYPRUS_VAT_RATES.FOOD_BEV;
+
+/** "5%" — for labels on the till, reports and menu admin. */
+export function formatVatPercent(rate: number = DEFAULT_VAT_RATE): string {
+  return `${Math.round(rate * 10000) / 100}%`;
+}
+
+export interface ReverseVatResult {
+  gross: number;
+  net: number;
+  vatAmount: number;
+  vatRate: number;
+  category: VatCategory;
+}
+
+export interface TaxCategorySummary {
+  category: VatCategory;
+  vatRate: number;
+  gross: number;
+  net: number;
+  vatAmount: number;
+}
+
+export interface OrderTaxBreakdown {
+  grossTotal: number;
+  subtotalNet: number;
+  totalVat: number;
+  categories: Record<VatCategory, TaxCategorySummary>;
+}
+
+export interface TaxableItem {
+  grossPrice: number;
+  quantity: number;
+  category?: VatCategory;
+}
+
+/**
+ * Rounds a number to exactly 2 decimal places using standard financial rounding.
+ */
+export function roundCurrency(amount: number): number {
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
+
+/**
+ * Computes reverse VAT from a Gross (inclusive) EUR amount.
+ * Formula: Net = Gross / (1 + Rate)
+ *          VatAmount = Gross - Net
+ */
+export function calculateReverseVat(
+  grossAmount: number,
+  category: VatCategory = "FOOD_BEV"
+): ReverseVatResult {
+  const safeGross = Math.max(0, roundCurrency(grossAmount));
+  const rate = CYPRUS_VAT_RATES[category] ?? CYPRUS_VAT_RATES.FOOD_BEV;
+  
+  if (rate === 0) {
+    return {
+      gross: safeGross,
+      net: safeGross,
+      vatAmount: 0,
+      vatRate: rate,
+      category,
+    };
+  }
+
+  const net = roundCurrency(safeGross / (1 + rate));
+  const vatAmount = roundCurrency(safeGross - net);
+
+  return {
+    gross: safeGross,
+    net,
+    vatAmount,
+    vatRate: rate,
+    category,
+  };
+}
+
+/**
+ * Computes complete order-level tax breakdown across multiple items and categories.
+ */
+export function calculateOrderTaxBreakdown(items: TaxableItem[]): OrderTaxBreakdown {
+  const categoryBuckets: Record<VatCategory, { gross: number; net: number; vat: number }> = {
+    FOOD_BEV: { gross: 0, net: 0, vat: 0 },
+    ALCOHOL: { gross: 0, net: 0, vat: 0 },
+    ZERO: { gross: 0, net: 0, vat: 0 },
+  };
+
+  for (const item of items) {
+    const cat: VatCategory = item.category || "FOOD_BEV";
+    const itemGross = roundCurrency(item.grossPrice * Math.max(1, item.quantity));
+    const result = calculateReverseVat(itemGross, cat);
+
+    categoryBuckets[cat].gross += result.gross;
+    categoryBuckets[cat].net += result.net;
+    categoryBuckets[cat].vat += result.vatAmount;
+  }
+
+  const grossTotal = roundCurrency(
+    categoryBuckets.FOOD_BEV.gross + categoryBuckets.ALCOHOL.gross + categoryBuckets.ZERO.gross
+  );
+  const subtotalNet = roundCurrency(
+    categoryBuckets.FOOD_BEV.net + categoryBuckets.ALCOHOL.net + categoryBuckets.ZERO.net
+  );
+  const totalVat = roundCurrency(
+    categoryBuckets.FOOD_BEV.vat + categoryBuckets.ALCOHOL.vat + categoryBuckets.ZERO.vat
+  );
+
+  return {
+    grossTotal,
+    subtotalNet,
+    totalVat,
+    categories: {
+      FOOD_BEV: {
+        category: "FOOD_BEV",
+        vatRate: CYPRUS_VAT_RATES.FOOD_BEV,
+        gross: roundCurrency(categoryBuckets.FOOD_BEV.gross),
+        net: roundCurrency(categoryBuckets.FOOD_BEV.net),
+        vatAmount: roundCurrency(categoryBuckets.FOOD_BEV.vat),
+      },
+      ALCOHOL: {
+        category: "ALCOHOL",
+        vatRate: CYPRUS_VAT_RATES.ALCOHOL,
+        gross: roundCurrency(categoryBuckets.ALCOHOL.gross),
+        net: roundCurrency(categoryBuckets.ALCOHOL.net),
+        vatAmount: roundCurrency(categoryBuckets.ALCOHOL.vat),
+      },
+      ZERO: {
+        category: "ZERO",
+        vatRate: CYPRUS_VAT_RATES.ZERO,
+        gross: roundCurrency(categoryBuckets.ZERO.gross),
+        net: roundCurrency(categoryBuckets.ZERO.net),
+        vatAmount: roundCurrency(categoryBuckets.ZERO.vat),
+      },
+    },
+  };
+}
 
 /** VAT rates in basis points (1/100 of a percent): 900 means 9.00%. */
 export type VatRatesBp = Readonly<Partial<Record<VatCategory, number>>>;

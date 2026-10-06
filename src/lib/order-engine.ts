@@ -1,5 +1,6 @@
 // MY GERMAN DÖNER — Order & VAT Calculation Engine
-// Cyprus 19% Standard VAT (EU Regulation (EC) 852/2004) & Hardware Solenoid Triggers
+// 5% VAT (single source: ./tax.ts) & Hardware Solenoid Triggers
+import { DEFAULT_VAT_RATE } from "./tax";
 
 export interface OrderItemInput {
   productId?: string;
@@ -29,13 +30,13 @@ export interface OrderValidationResult {
 }
 
 /**
- * Calculate Cyprus 19% VAT breakdown from line items
+ * Calculate the VAT breakdown (default rate from ./tax.ts) from line items
  * Net = Gross / (1 + vatRate)
  * VAT = Gross - Net
  */
 export function calculateOrderFinancials(
   items: { price?: number; basePrice?: number; quantity?: number }[],
-  vatRate: number = 0.19
+  vatRate: number = DEFAULT_VAT_RATE
 ): OrderFinancials {
   let grossTotal = 0;
 
@@ -48,7 +49,7 @@ export function calculateOrderFinancials(
   // Round gross to 2 decimals
   grossTotal = Math.round(grossTotal * 100) / 100;
 
-  // Net = Gross / 1.19
+  // Net = Gross / (1 + rate)
   const subtotalNet = Math.round((grossTotal / (1 + vatRate)) * 100) / 100;
   const vatAmount = Math.round((grossTotal - subtotalNet) * 100) / 100;
 

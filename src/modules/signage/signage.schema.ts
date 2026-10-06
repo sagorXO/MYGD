@@ -16,6 +16,8 @@ export const SignageItemSchema = z.object({
   isAvailable: z.boolean().default(true),
   modifiers: z.array(z.string()).optional(),
   calories: z.number().optional(),
+  section: z.string().optional(),
+  sectionNote: z.string().optional(),
 });
 export type SignageItem = z.infer<typeof SignageItemSchema>;
 
@@ -25,7 +27,6 @@ export const SignageScreenConfigSchema = z.object({
   subtitle: z.string().optional(),
   layoutType: z.enum(["PROMO_HERO", "PRICE_MATRIX", "SPLIT_COMBO", "DRINKS_SIDES"]),
   activeDaypart: SignageDaypartSchema.default("AUTO"),
-  boardImageUrl: z.string().optional(),
   items: z.array(SignageItemSchema),
   bannerMessage: z.string().optional(),
   updatedAt: z.string(),

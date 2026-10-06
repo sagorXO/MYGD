@@ -54,7 +54,7 @@ Living list. Every unknown is a config value or a marked TODO in the code and is
 - **Q-SCHED-1 (OPEN)** Contract Stage 1 (M1 checklists + M2 supplier ordering, ≈ due 24 Sep) is not delivered, and the engineering plan builds kiosk, till and kitchen first. Agree the order with the client.
 - **Q-DB-1 (OPEN)** New database: engine and hosting. Proposed: PostgreSQL 16 on the store PC + PostgreSQL on the VPS, outbox sync (`docs/TRD.md`). Who provides and pays for the VPS?
 - **Q-CRED-1 (OPEN)** Old Supabase connection strings with passwords remain in git history (pre-cleanup `.env.example`, `docker-compose.yml`). Rotate them or confirm the projects are deleted.
-- **Q-WEB-1 (OPEN)** When does the redesigned homepage (`/dev/preview/home`) replace the current `/`?
+- **Q-WEB-1 (RESOLVED 2026-10-06 — redesigned home now live at `/`)** When does the redesigned homepage (`/dev/preview/home`) replace the current `/`?
 - **Q-BRD-1 (OPEN)** Menu-board daypart times (the signed SOW says "automated dayparting" without times).
 - **Q-PO-1 (OPEN)** Pre-order: ETA formula (not in the signed SOW), online payment provider, and drive-through car detection method (client to provide, per the brief).
 
