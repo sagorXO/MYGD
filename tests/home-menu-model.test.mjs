@@ -16,7 +16,7 @@ test("filterProducts keeps legacy rules and hides unavailable items", () => {
     p({ id: "a", badge: "POPULAR" }),
     p({ id: "b", badge: "CHEF_CHOICE" }),
     p({ id: "c", isVeggie: true }),
-    p({ id: "d", name: "Falafel Wrap" }),
+    p({ id: "d", name: "Halloumi Salad", isVeggie: true }),
     p({ id: "e", isSpicy: true }),
     p({ id: "f", description: "with chili sauce" }),
     p({ id: "g", isAvailable: false }),
@@ -37,4 +37,21 @@ test("productBadges maps backend badges and flags to kit tones without duplicate
   ]);
   assert.deepEqual(m.productBadges(p({ badge: "VEGGIE", isVeggie: true })), [{ label: "Veggie", tone: "success" }]);
   assert.deepEqual(m.productBadges(p({ badge: "UNKNOWN" })), []);
+});
+
+test("products that can be made a menu say so, after their other badges", () => {
+  assert.deepEqual(m.productBadges(p({ allowMealUpgrade: true })), [{ label: "Make it a menu", tone: "info" }]);
+  assert.deepEqual(m.productBadges(p({ badge: "TOP_SELLER", allowMealUpgrade: true })), [
+    { label: "Bestseller", tone: "highlight" },
+    { label: "Make it a menu", tone: "info" },
+  ]);
+  assert.deepEqual(m.productBadges(p({ allowMealUpgrade: false })), []);
+});
+
+test("offerTitles lists active offers by name and ignores blanks", () => {
+  assert.deepEqual(m.offerTitles([{ name: "Second pizza 20% off" }, { name: "  " }, { name: "4 tacos for €11.90" }]), [
+    "Second pizza 20% off",
+    "4 tacos for €11.90",
+  ]);
+  assert.deepEqual(m.offerTitles(undefined), []);
 });

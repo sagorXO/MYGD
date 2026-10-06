@@ -37,6 +37,7 @@ export const POSOrderTenderSchema = z.object({
   orderType: z.enum(["DINE_IN", "TAKE_AWAY"]).default("DINE_IN"),
   paymentMethod: z.enum(["CARD", "CASH", "NFC_WALLET"]).default("CARD"),
   discountPercent: z.number().min(0).max(100).default(0),
+  voucherCode: z.string().trim().min(1).max(40).optional(),
   cashTendered: z.number().optional(),
   customerNote: z.string().optional(),
   lines: z.array(POSCartLineSchema).min(1, "Cart cannot be empty"),

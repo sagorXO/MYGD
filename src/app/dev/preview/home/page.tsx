@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import { HomePage } from "@/features/home/HomePage";
+import { redirect } from "next/navigation";
 
-export default function HomePreview() {
-  if (process.env.NODE_ENV === "production") notFound();
-  return <HomePage />;
+// The redesigned home now lives at "/". This stub only keeps old links working;
+// delete this folder when convenient: git rm -r src/app/dev/preview
+export default function HomePreviewMoved() {
+  redirect("/");
 }
