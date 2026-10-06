@@ -1,5 +1,6 @@
 import { PrismaClient, VatCategory } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { VAT_RATE_SEED } from "./reference-data";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,6 @@ async function main() {
       address: "Pavlides Court, Agíou Stefánou Street 134, 8260 Emba, Paphos",
       phone: "+357 99 531198",
       currency: "EUR",
-      vatRate: 0.19,
       isActive: true,
     },
     create: {
@@ -23,7 +23,6 @@ async function main() {
       address: "Pavlides Court, Agíou Stefánou Street 134, 8260 Emba, Paphos",
       phone: "+357 99 531198",
       currency: "EUR",
-      vatRate: 0.19,
       isActive: true,
     },
   });
@@ -35,7 +34,6 @@ async function main() {
       address: "Limassol Marina Commercial Promenade, 3042 Limassol",
       phone: "+357 99 654321",
       currency: "EUR",
-      vatRate: 0.19,
       isActive: true,
     },
     create: {
@@ -44,10 +42,18 @@ async function main() {
       address: "Limassol Marina Commercial Promenade, 3042 Limassol",
       phone: "+357 99 654321",
       currency: "EUR",
-      vatRate: 0.19,
       isActive: true,
     },
   });
+
+  // 1b. VAT rates (reference data, PRD M11.4). Idempotent: one row per category and start date.
+  for (const seed of VAT_RATE_SEED) {
+    await prisma.vatRate.upsert({
+      where: { category_validFrom: { category: seed.category, validFrom: seed.validFrom } },
+      update: { rate: seed.rate, note: seed.note },
+      create: { category: seed.category, rate: seed.rate, validFrom: seed.validFrom, note: seed.note },
+    });
+  }
 
   // 2. Hardware Terminals (1 Kiosk, 1 POS, 2 KDS, 1 Display, 6 Menu Boards)
   const terminals = [

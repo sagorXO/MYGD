@@ -8,6 +8,7 @@
   - The originals are never modified.
   - No program from it is run.
   - Personal data is described by column name only.
+- **See also:** [`gladius-feature-extraction.md`](./gladius-feature-extraction.md) (2026-10-06) for the feature, settings and report analysis. It also corrects the earlier note that payment code `RC` means staff: `RC` is Link4Pay.
 
 ## 1. What the old system is
 

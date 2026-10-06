@@ -5,6 +5,10 @@ import { POSOrderTender, POSOrderTenderSchema, Link4PayTerminalResponse } from "
 import { tcpPrintSpooler } from "../printer/tcp-spooler";
 import { ThermalChitPayload } from "../printer/printer.schema";
 import { deductOrderBOMAsync } from "../inventory/bom-decrement.engine";
+import { priceTender } from "./pos.pricing";
+import { getVatRates } from "@/lib/vat-rates.db";
+import { bpToRate } from "@/lib/tax";
+import { centsToDecimalString, fromCents } from "@/lib/money";
 
 export interface POSTenderResult {
   success: boolean;
@@ -29,27 +33,14 @@ export class POSService {
   public static async tenderOrder(rawPayload: unknown): Promise<POSTenderResult> {
     const validated = POSOrderTenderSchema.parse(rawPayload);
 
-    // 1. Calculate Gross Subtotal
-    const grossSubtotal = validated.lines.reduce((sum, line) => sum + line.totalPrice, 0);
-
-    // 2. Apply Discount (if any, e.g. 10% VIP or 20% Staff)
-    const discountFactor = Math.min(100, Math.max(0, validated.discountPercent)) / 100;
-    const discountAmount = Number((grossSubtotal * discountFactor).toFixed(2));
-    const finalTotal = Math.max(0, Number((grossSubtotal - discountAmount).toFixed(2)));
-
-    // 3. Cyprus Standard 19% VAT Calculation (included in final consumer price)
-    // net = gross / 1.19, vat = gross - net
-    const netSubtotal = Number((finalTotal / 1.19).toFixed(2));
-    const vatAmount = Number((finalTotal - netSubtotal).toFixed(2));
-
-    // 4. Cash change calculation
-    let changeDue = 0;
-    if (validated.paymentMethod === "CASH" && validated.cashTendered !== undefined) {
-      if (validated.cashTendered < finalTotal) {
-        throw new Error(`Insufficient cash tendered: Received €${validated.cashTendered.toFixed(2)}, required €${finalTotal.toFixed(2)}`);
-      }
-      changeDue = Number((validated.cashTendered - finalTotal).toFixed(2));
-    }
+    // 1-4. Exact pricing in integer cents: VAT category per line from the product record, rates from
+    // the VatRate table (read once), discount shared per line, cash change in cents (PRD M4.3, M11.4, P.4).
+    const priced = await priceTender(validated, {
+      findProductCategories: (ids) =>
+        prisma.product.findMany({ where: { id: { in: ids } }, select: { id: true, vatCategory: true } }),
+      loadRates: () => getVatRates(),
+    });
+    const { totals, changeDueCents } = priced;
 
     // 5. Generate Daily Order Sequence & Order Reference
     const today = new Date();
@@ -106,20 +97,25 @@ export class POSService {
         orderStatus: "PREPARING",
         paymentMethod: validated.paymentMethod,
         paymentStatus: "CAPTURED",
-        subtotal: netSubtotal,
-        vatRate: 0.19,
-        vatAmount,
-        totalAmount: finalTotal,
+        subtotal: centsToDecimalString(totals.netCents),
+        vatAmount: centsToDecimalString(totals.vatCents),
+        totalAmount: centsToDecimalString(totals.totalCents),
         customerNote: validated.customerNote,
         items: {
-          create: validated.lines.map((l) => ({
+          // Per line: totalPrice is what the customer pays for the line after its share of any discount,
+          // so netAmount + vatAmount = totalPrice and the lines add up to the order total.
+          create: validated.lines.map((l, index) => ({
             productId: l.productId,
             productName: l.name,
             productSku: l.sku,
-            basePrice: l.basePrice,
+            basePrice: centsToDecimalString(priced.lines[index].baseUnitCents),
             quantity: l.quantity,
             spiceLevel: l.spiceLevel,
-            totalPrice: l.totalPrice,
+            vatCategory: priced.lines[index].vatCategory,
+            vatRate: bpToRate(priced.lines[index].rateBp),
+            netAmount: centsToDecimalString(priced.lines[index].netCents),
+            vatAmount: centsToDecimalString(priced.lines[index].vatCents),
+            totalPrice: centsToDecimalString(priced.lines[index].grossCents),
             itemNotes: [
               l.breadType ? `Bread: ${l.breadType}` : "",
               l.selectedSauces.length ? `Sauces: ${l.selectedSauces.join(", ")}` : "",
@@ -207,12 +203,12 @@ export class POSService {
       orderId: order.id,
       orderNumber,
       dailySequence: dailySeq,
-      subtotal: grossSubtotal,
-      discountAmount,
-      taxableSubtotal: netSubtotal,
-      vatAmount,
-      totalAmount: finalTotal,
-      changeDue: changeDue > 0 ? changeDue : undefined,
+      subtotal: fromCents(totals.grossSubtotalCents),
+      discountAmount: fromCents(totals.discountCents),
+      taxableSubtotal: fromCents(totals.netCents),
+      vatAmount: fromCents(totals.vatCents),
+      totalAmount: fromCents(totals.totalCents),
+      changeDue: changeDueCents > 0 ? fromCents(changeDueCents) : undefined,
       paymentRef: `LP-${Date.now().toString().slice(-6)}`,
       printed: printSuccess,
     };
