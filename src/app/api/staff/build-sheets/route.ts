@@ -49,12 +49,7 @@ export async function GET(req: NextRequest) {
       for (const sheet of CANONICAL_BUILD_SHEETS) {
         const prod = await prisma.product.upsert({
           where: { sku: sheet.product.sku },
-          update: {
-            name: sheet.product.name,
-            basePrice: sheet.product.basePrice,
-            imageUrl: sheet.product.imageUrl,
-            sortOrder: sheet.product.sortOrder,
-          },
+          update: {}, // the menu seed owns name, price, photo and order of existing products
           create: {
             categoryId: defaultCategory.id,
             sku: sheet.product.sku,

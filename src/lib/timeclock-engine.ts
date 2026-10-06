@@ -1,6 +1,7 @@
 // MY GERMAN DÖNER — Module M7 Staff Timeclock & Module M8 Visual SOP Build Sheets Engine
 // Shift duration math and visual recipe step sequencing.
 // Staff PIN checks live in src/lib/auth/staff-pin.ts (bcrypt hashes on AdminUser); no PINs in source.
+import { findMenuItem } from "./menu/mygd-menu";
 
 export interface CanonicalBuildSheetData {
   product: {
@@ -24,257 +25,70 @@ export interface CanonicalBuildSheetData {
   }>;
 }
 
+type SheetStep = CanonicalBuildSheetData["steps"][number];
+
+/** Product header from the single menu source, so name, SKU, price and description can never drift. */
+function sheetProduct(
+  sku: string,
+  extra: Pick<CanonicalBuildSheetData["product"], "meatWeight" | "breadType" | "sauceSequence">,
+  sortOrder: number,
+): CanonicalBuildSheetData["product"] {
+  const item = findMenuItem(sku);
+  if (!item) throw new Error(`Build sheet references unknown menu SKU ${sku}`);
+  return { name: item.name, sku, description: item.description, basePrice: item.price, imageUrl: item.imageUrl, sortOrder, ...extra };
+}
+
+const step = (stepNumber: number, instruction: string, instructionDE: string, targetSec: number, qualityCheck: string): SheetStep => ({
+  stepNumber,
+  instruction,
+  instructionDE,
+  targetSec,
+  qualityCheck,
+});
+
+// Assembly steps use only the ingredients printed on the menu. Portion weights are set per recipe card
+// (see the bill of materials), not repeated here.
 export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
   {
-    product: {
-      name: "Original German Döner (150g)",
-      sku: "MYGD-CL-DONER",
-      description: "Original toasted triangle flatbread, sliced rotisserie meat, fresh crisp salad & trio homemade sauces.",
-      basePrice: 7.5,
-      meatWeight: "150g Sliced Rotisserie Meat",
-      breadType: "Crispy Turkish Fladenbrot",
-      sauceSequence: "Bottom: Knoblauch (Garlic) ➔ Top: Kräuter (Herb) + Optional Scharf (Chili)",
-      imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      sortOrder: 1,
-    },
+    product: sheetProduct("MYGD-BIG-B", { meatWeight: "Beef doener portion", breadType: "Original Berlin flatbread", sauceSequence: "Cocktail sauce" }, 1),
     steps: [
-      {
-        stepNumber: 1,
-        instruction: "Toast quarter Fladenbrot in contact grill for 45s until crispy exterior with soft core.",
-        instructionDE: "Fladenbrot 45s im Kontaktgrill toasten.",
-        targetSec: 45,
-        qualityCheck: "Golden grill marks, bread warmth > 60°C.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 2,
-        instruction: "Spread 20g homemade Knoblauch garlic sauce across bottom inner bread pouch.",
-        instructionDE: "20g Knoblauchsauce auf dem Brotinnenboden verstreichen.",
-        targetSec: 15,
-        qualityCheck: "Even edge-to-edge coat, no bare bread corners.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 3,
-        instruction: "Layer 40g fresh shredded red cabbage and crisp iceberg lettuce base.",
-        instructionDE: "40g Rotkohl und Eisbergsalat gleichmäßig verteilen.",
-        targetSec: 15,
-        qualityCheck: "Crisp texture, cabbage drained of excess moisture.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 4,
-        instruction: "Weigh exactly 150g hot rotisserie shaved meat on scale (internal meat temp > 75°C).",
-        instructionDE: "Genau 150g heißes Fleisch auf Waage abwiegen (> 75°C).",
-        targetSec: 30,
-        qualityCheck: "Zero meat clumps, steam rising, strictly 150g ± 5g.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 5,
-        instruction: "Add 3 fresh tomato half-slices, cucumber ribbons, and chopped parsley.",
-        instructionDE: "3 Tomatenscheiben, Gurken und frische Petersilie einlegen.",
-        targetSec: 15,
-        qualityCheck: "Vibrant color distribution edge-to-edge.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 6,
-        instruction: "Drizzle Kräuter herb sauce and chili flakes according to customer spice preference.",
-        instructionDE: "Kräutersauce und Scharf-Gewürz nach Kundenwunsch dosieren.",
-        targetSec: 10,
-        qualityCheck: "Uniform sauce drizzle along top crest.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
-      {
-        stepNumber: 7,
-        instruction: "Slide completed Döner into branded MYGD greaseproof triangle paper sleeve.",
-        instructionDE: "Döner in MYGD Papiertasche stecken.",
-        targetSec: 10,
-        qualityCheck: "Upright presentation, clean sleeve exterior with no sauce smudges.",
-        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
-      },
+      step(1, "Warm the original Berlin flatbread on the contact grill until soft inside and lightly crisp outside.", "Berliner Fladenbrot auf dem Kontaktgrill erwärmen, innen weich und außen leicht knusprig.", 45, "Golden grill marks, bread warm to the touch."),
+      step(2, "Spread cocktail sauce across the inside of the flatbread.", "Cocktailsauce auf der Innenseite des Fladenbrots verstreichen.", 15, "Even coat, no bare corners."),
+      step(3, "Add lettuce and red cabbage.", "Salat und Rotkohl hinzufügen.", 20, "Even layer, nothing falling out."),
+      step(4, "Add the beef doener portion, carved hot from the spit.", "Rinder-Döner-Portion heiß vom Spieß schneiden und hinzufügen.", 20, "Meat steaming hot (core above 75°C)."),
+      step(5, "Add tomatoes, cucumber and onions.", "Tomaten, Gurke und Zwiebeln hinzufügen.", 20, "Balanced distribution across the flatbread."),
+      step(6, "Slide the Big B into a MYGD paper sleeve and hand over.", "Big B in die MYGD-Papiertasche stecken und übergeben.", 10, "Clean sleeve, no sauce smudges."),
     ],
   },
   {
-    product: {
-      name: "Standard Dürüm Wrap (150g)",
-      sku: "MYGD-WRP-01",
-      description: "Warm thin lavash flatbread, 150g shaved rotisserie meat, crisp salad and signature sauces rolled tight.",
-      basePrice: 8.0,
-      meatWeight: "150g Sliced Rotisserie Meat",
-      breadType: "Warm Thin Lavash Flatbread",
-      sauceSequence: "Even stripe of Kräuter & Knoblauch down center line",
-      imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      sortOrder: 2,
-    },
+    product: sheetProduct("MYGD-WRAP-BEEF", { meatWeight: "Beef doener portion", breadType: "Wrap bread", sauceSequence: "Cocktail sauce" }, 2),
     steps: [
-      {
-        stepNumber: 1,
-        instruction: "Warm lavash flatbread on flat grill for 15s to make pliable.",
-        instructionDE: "Lavash-Brot 15s auf dem Kontaktgrill erwärmen.",
-        targetSec: 15,
-        qualityCheck: "Warm and flexible, zero tearing.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
-      {
-        stepNumber: 2,
-        instruction: "Spread sauces evenly down the center 1/3 of the flatbread.",
-        instructionDE: "Saucen gleichmäßig auf dem mittleren Drittel verteilen.",
-        targetSec: 10,
-        qualityCheck: "Uniform sauce stripe, clean borders.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
-      {
-        stepNumber: 3,
-        instruction: "Add 150g freshly carved rotisserie meat in an even cylinder line.",
-        instructionDE: "150g frisch geschnittenes Fleisch mittig auflegen.",
-        targetSec: 25,
-        qualityCheck: "Meat temperature > 75°C, exact 150g portion.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
-      {
-        stepNumber: 4,
-        instruction: "Top with shredded cabbage, tomatoes, onions, and fresh mint/parsley.",
-        instructionDE: "Mit Kraut, Tomaten, Zwiebeln und Kräutern belegen.",
-        targetSec: 15,
-        qualityCheck: "Fresh crisp salad, evenly proportioned.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
-      {
-        stepNumber: 5,
-        instruction: "Tightly tuck bottom flap, roll tightly into a cylindrical wrap, and toast exterior 20s.",
-        instructionDE: "Boden einschlagen, fest rollen und 20s anknuspern.",
-        targetSec: 20,
-        qualityCheck: "Tight structural roll, light grill marks.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
-      {
-        stepNumber: 6,
-        instruction: "Wrap bottom half in branded aluminum foil sleeve.",
-        instructionDE: "Untere Hälfte in MYGD Alufolie wickeln.",
-        targetSec: 10,
-        qualityCheck: "Clean exterior presentation, no sauce leakage.",
-        imageUrl: "/assets/menu/products/beef-wrap.jpg",
-      },
+      step(1, "Warm the wrap bread on the flat grill until pliable.", "Wrap-Brot auf der Grillplatte geschmeidig erwärmen.", 15, "Soft, bends without cracking."),
+      step(2, "Spread cocktail sauce down the centre of the wrap.", "Cocktailsauce mittig auf dem Wrap verstreichen.", 15, "Even stripe, not reaching the edges."),
+      step(3, "Add the beef doener portion in an even line.", "Rinder-Döner-Portion gleichmäßig auflegen.", 20, "Meat steaming hot (core above 75°C)."),
+      step(4, "Top with lettuce, tomatoes, cucumber, onions and red cabbage.", "Mit Salat, Tomaten, Gurke, Zwiebeln und Rotkohl belegen.", 20, "All five salad items present."),
+      step(5, "Fold in the bottom, roll tight and toast the outside briefly.", "Unteren Rand einschlagen, fest aufrollen und außen kurz anrösten.", 25, "Tight roll, seam underneath."),
+      step(6, "Wrap the bottom half in a foil sleeve.", "Untere Hälfte in die Alufolie einschlagen.", 10, "Clean exterior, no leaks."),
     ],
   },
   {
-    product: {
-      name: "Berlin Döner Box with Fries",
-      sku: "MYGD-BOX-CRISP",
-      description: "Crispy skin-on fries topped with juicy rotisserie meat, garlic herb sauce, and pickled red cabbage.",
-      basePrice: 8.5,
-      meatWeight: "150g Sliced Meat",
-      breadType: "No Bread (Base: 150g Berlin Fries)",
-      sauceSequence: "Double drizzle over fries + top meat layer",
-      imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      sortOrder: 3,
-    },
+    product: sheetProduct("MYGD-BOWL-BEEF", { meatWeight: "Beef doener portion", breadType: "No bread (white rice or fries base)", sauceSequence: "Sauce of the guest's choice" }, 3),
     steps: [
-      {
-        stepNumber: 1,
-        instruction: "Drop fresh Berlin fries into branded Döner Box (fill 50% height).",
-        instructionDE: "Frische Berliner Pommes bis zur Hälfte in die Box füllen.",
-        targetSec: 15,
-        qualityCheck: "Golden crispy fries, properly drained of oil.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
-      {
-        stepNumber: 2,
-        instruction: "Season fries with signature paprika-salt blend.",
-        instructionDE: "Pommes mit Paprika-Gewürzsalz bestreuen.",
-        targetSec: 5,
-        qualityCheck: "Even seasoning distribution.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
-      {
-        stepNumber: 3,
-        instruction: "Drizzle 1 stroke of Garlic or Cocktail sauce over the fries.",
-        instructionDE: "1 Portion Knoblauch- oder Cocktailsauce auf die Pommes geben.",
-        targetSec: 10,
-        qualityCheck: "Even sauce coat over fry layer.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
-      {
-        stepNumber: 4,
-        instruction: "Top with 150g hot rotisserie meat weighed on scale.",
-        instructionDE: "150g heißes Fleisch auf die Pommes schichten.",
-        targetSec: 25,
-        qualityCheck: "Meat temp > 75°C, exact 150g portion.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
-      {
-        stepNumber: 5,
-        instruction: "Add side scoop of mixed red cabbage and tomato salad.",
-        instructionDE: "Seitlich Rotkraut- und Tomatensalat anrichten.",
-        targetSec: 10,
-        qualityCheck: "Vibrant visual appeal and crisp texture.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
-      {
-        stepNumber: 6,
-        instruction: "Drizzle top sauce and serve with wooden fork.",
-        instructionDE: "Mit Obersauce garnieren und Holzgabel beilegen.",
-        targetSec: 10,
-        qualityCheck: "Clean box rim, no drips, fork inserted upright.",
-        imageUrl: "/assets/menu/products/doener-bowl.jpg",
-      },
+      step(1, "Fill the bowl with the guest's base: white rice or fries.", "Schale mit der gewählten Basis füllen: weißer Reis oder Pommes.", 25, "Base fills about half the bowl, fries hot and crisp."),
+      step(2, "Add the beef doener portion on top.", "Rinder-Döner-Portion darauf geben.", 20, "Meat steaming hot (core above 75°C)."),
+      step(3, "Add lettuce, tomatoes, cucumbers, red cabbage and onions.", "Salat, Tomaten, Gurken, Rotkohl und Zwiebeln hinzufügen.", 25, "Each salad item in its own section."),
+      step(4, "Drizzle the sauce the guest chose.", "Die gewählte Sauce darüber geben.", 10, "Correct sauce, even drizzle."),
+      step(5, "Close the lid, add a fork and hand over.", "Deckel schließen, Gabel dazu und übergeben.", 10, "Clean rim, fork included."),
     ],
   },
   {
-    product: {
-      name: "Truffle Parmesan Loaded Fries",
-      sku: "MYGD-FR-TRUFFLE",
-      description: "Golden crispy fries drizzled with black truffle mayo, shaved aged parmesan & fresh parsley.",
-      basePrice: 4.9,
-      meatWeight: "No Meat (Vegetarian Loaded Side)",
-      breadType: "No Bread (Base: 250g Berlin Fries)",
-      sauceSequence: "Black Truffle Mayo zigzag drizzle",
-      imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      sortOrder: 4,
-    },
+    product: sheetProduct("MYGD-LOADED-CHEESY", { meatWeight: "No meat", breadType: "No bread (fries base)", sauceSequence: "One sauce of the guest's choice" }, 4),
     steps: [
-      {
-        stepNumber: 1,
-        instruction: "Fry 250g skin-on fries at 175°C for 3m30s until golden crispy.",
-        instructionDE: "250g Pommes bei 175°C 3:30 Min. frittieren.",
-        targetSec: 210,
-        qualityCheck: "Golden color, internal temperature > 85°C.",
-        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      },
-      {
-        stepNumber: 2,
-        instruction: "Toss in stainless steel bowl with sea salt and cracked black pepper.",
-        instructionDE: "In Edelstahlschüssel mit Meersalz und Pfeffer schwenken.",
-        targetSec: 10,
-        qualityCheck: "Even seasoning distribution.",
-        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      },
-      {
-        stepNumber: 3,
-        instruction: "Transfer fries to open branded side box.",
-        instructionDE: "Pommes in MYGD Snack-Box füllen.",
-        targetSec: 5,
-        qualityCheck: "Centered pile, zero spilling.",
-        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      },
-      {
-        stepNumber: 4,
-        instruction: "Drizzle 30g black truffle mayonnaise in consistent zigzag motion.",
-        instructionDE: "30g Trüffelmayo im Zickzack-Muster auftragen.",
-        targetSec: 10,
-        qualityCheck: "Even drizzle coverage from end to end.",
-        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      },
-      {
-        stepNumber: 5,
-        instruction: "Garnish with 15g shaved aged parmesan and fresh chopped parsley.",
-        instructionDE: "Mit 15g gehobeltem Parmesan und Petersilie bestreuen.",
-        targetSec: 10,
-        qualityCheck: "Gourmet visual finish, vibrant green accents.",
-        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
-      },
+      step(1, "Fry the fries until golden and crisp.", "Pommes goldbraun und knusprig frittieren.", 210, "Golden colour, crisp bite."),
+      step(2, "Fill the fries into an open box.", "Pommes in eine offene Box füllen.", 15, "Full portion, no loose fries on the counter."),
+      step(3, "Add the cheesy topping.", "Cheesy-Topping auftragen.", 15, "Topping covers the fries, hot and melted."),
+      step(4, "Add the guest's one included sauce.", "Die eine inkludierte Sauce des Gastes hinzufügen.", 10, "Correct sauce."),
+      step(5, "Add a fork and hand over.", "Gabel dazu und übergeben.", 10, "Clean box rim."),
     ],
   },
 ];

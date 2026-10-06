@@ -63,11 +63,11 @@ Every change must pass `npm test`, `npm run typecheck` and `npm run build`.
 
 ```
 src/
-  app/            routes: /, /order, /pos, /kds(/indoor,/grill), /display, /boards, /staff, /admin(/menu-boards,/suppliers)
-    api/          route handlers (menu, orders, kds, events [SSE], menuboards, terminal/print, admin/*, checklists/*, staff/*)
+  app/            routes: /, /order, /pos, /kds(/indoor,/grill), /display, /boards, /staff, /admin(/menu-boards,/suppliers,/vouchers)
+    api/          route handlers (menu, orders, pricing, kds, events [SSE], menuboards, terminal/print, admin/*, checklists/*, staff/*)
     dev/          UI kit gallery and home preview (404 in production)
   modules/        bi · cx-wait · haccp · inventory · kds · menu · pos · printer · signage
-  features/home/  redesigned public homepage (preview at /dev/preview/home)
+  features/home/  public homepage (served at /)
   ui/             design-system components and tokens
   lib/            prisma client, events (SSE broker), i18n, tax, engines
   locales/        en · de · gr
@@ -87,3 +87,7 @@ public/assets/    brand, menu and board images
 ---
 
 **Client:** MY GERMAN DÖNER TRADING LTD (Rico & Oliver). **Lead engineer:** Md. Saied Sagar. © 2026 MY GERMAN DÖNER. All rights reserved.
+
+## Menu, offers and vouchers
+
+The menu lives in `src/lib/menu/mygd-menu.ts` and is loaded with `npm run db:seed`. How offers, vouchers and gift cards work: [docs/MENU.md](docs/MENU.md).

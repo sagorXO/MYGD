@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CANONICAL_CATALOG_CATEGORIES } from "@/lib/catalog-data";
+import { MYGD_PROMOTIONS } from "@/lib/menu/mygd-menu";
+import { DEFAULT_VAT_RATE } from "@/lib/tax";
+import { loadActivePromotions } from "@/lib/discounts/store";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +116,8 @@ export async function GET(request: Request) {
 
         return NextResponse.json({
           success: true,
+          source: "DATABASE",
+          promotions: await loadActivePromotions(prisma),
           location: {
             id: location.id,
             slug: location.slug,
@@ -128,9 +133,11 @@ export async function GET(request: Request) {
     console.warn("[Menu API] Database query failed, using resilient canonical catalog fallback:", error);
   }
 
-  // Resilient Offline / Pre-Seeded Fallback with 100% full MYGD catalog
+  // Offline copy of the same menu (derived from src/lib/menu/mygd-menu.ts). Flagged so clients can tell.
   return NextResponse.json({
     success: true,
+    source: "OFFLINE_FALLBACK",
+    promotions: MYGD_PROMOTIONS,
     location: {
       id: locationSlug === "LIMASSOL" ? "loc-limassol" : "loc-emba",
       slug: locationSlug,
@@ -139,7 +146,7 @@ export async function GET(request: Request) {
           ? "MY GERMAN DÖNER — Limassol Marina"
           : "MY GERMAN DÖNER — Emba Flagship (Paphos)",
       currency: "EUR",
-      vatRate: 0.19,
+      vatRate: DEFAULT_VAT_RATE,
     },
     categories: CANONICAL_CATALOG_CATEGORIES,
   });

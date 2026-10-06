@@ -1,5 +1,6 @@
 // MY GERMAN DÖNER — Business Intelligence & Cross-Store Data Core Service
 import { prisma } from "@/lib/prisma";
+import { calculateReverseVat } from "@/lib/tax";
 import { CrossStoreReport, StoreRevenueMetrics } from "./bi.schema";
 
 export class BIService {
@@ -24,8 +25,7 @@ export class BIService {
 
       const orderCount = orders.length;
       const grossRevenueEUR = Number(orders.reduce((sum, o) => sum + o.totalAmount, 0).toFixed(2));
-      const netRevenueEUR = Number((grossRevenueEUR / 1.19).toFixed(2));
-      const vatAmountEUR = Number((grossRevenueEUR - netRevenueEUR).toFixed(2));
+      const { net: netRevenueEUR, vatAmount: vatAmountEUR } = calculateReverseVat(grossRevenueEUR);
 
       const cardRevenueEUR = Number(
         orders

@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert";
+import { calculateReverseVat } from "../src/lib/tax.ts";
 
-test("POS Color-Coded Modifier Calculation & Cyprus 19% VAT", () => {
+test("POS Color-Coded Modifier Calculation & 5% VAT", () => {
   const basePrice = 7.5; // Berlin Döner Sandwich
   const additions = [
     { name: "Grilled Halloumi", priceAdjustment: 1.0 },
@@ -30,12 +31,11 @@ test("POS Color-Coded Modifier Calculation & Cyprus 19% VAT", () => {
   assert.strictEqual(discountAmount, 3.3);
   assert.strictEqual(totalAmount, 29.7);
 
-  // 4. Cyprus 19% Standard VAT Decomposition
-  const netSubtotal = Number((totalAmount / 1.19).toFixed(2));
-  const vatAmount = Number((totalAmount - netSubtotal).toFixed(2));
+  // 4. 5% VAT decomposition
+  const { net: netSubtotal, vatAmount } = calculateReverseVat(totalAmount);
 
-  assert.strictEqual(netSubtotal, 24.96);
-  assert.strictEqual(vatAmount, 4.74);
+  assert.strictEqual(netSubtotal, 28.29);
+  assert.strictEqual(vatAmount, 1.41);
   assert.strictEqual(Number((netSubtotal + vatAmount).toFixed(2)), totalAmount);
 
   // 5. Verify Omissions do not alter pricing

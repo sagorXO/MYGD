@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Flame, Leaf, Search, SearchX, type LucideIcon } from "lucide-react";
 import type { CategoryDTO, ProductDTO } from "@/types";
-import { Badge, EmptyState, ErrorState, PriceTag } from "@/ui";
+import { Badge, Banner, EmptyState, ErrorState, PriceTag } from "@/ui";
 import { cn } from "@/lib/cn";
-import { displayCategoryName, filterProducts, productBadges, type MenuFilter } from "./menuModel";
+import { displayCategoryName, filterProducts, offerTitles, productBadges, type MenuFilter } from "./menuModel";
 import { MenuItemRow } from "./MenuItemRow";
 import { ItemSheet } from "./ItemSheet";
 import { useStore } from "./StoreContext";
@@ -16,6 +16,7 @@ type Status = "loading" | "ready" | "error";
 interface MenuResponse {
   success: boolean;
   categories?: CategoryDTO[];
+  promotions?: { name: string }[];
 }
 
 const FILTERS: { value: MenuFilter; label: string; icon?: LucideIcon }[] = [
@@ -37,6 +38,7 @@ function prefersReducedMotion(): boolean {
 export function MenuSection() {
   const { store } = useStore();
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [offers, setOffers] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>("loading");
   const [filter, setFilter] = useState<MenuFilter>("ALL");
   const [query, setQuery] = useState("");
@@ -53,6 +55,7 @@ export function MenuSection() {
       const data = (await res.json()) as MenuResponse;
       if (!data.success) throw new Error("Menu request unsuccessful");
       setCategories(data.categories ?? []);
+      setOffers(offerTitles(data.promotions));
       setStatus("ready");
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
@@ -115,6 +118,18 @@ export function MenuSection() {
 
   return (
     <section id="menu" aria-labelledby="menu-title" className="scroll-mt-16 border-t border-border-subtle">
+      {status === "ready" && offers.length > 0 && (
+        <div className="mx-auto max-w-6xl px-5 pt-8 md:px-8">
+          <Banner tone="info" title="Offers" className="mb-4">
+            <ul className="list-inside list-disc">
+              {offers.map((title) => (
+                <li key={title}>{title}</li>
+              ))}
+            </ul>
+          </Banner>
+        </div>
+      )}
+
       {status === "ready" && popular.length > 0 && (
         <div className="mx-auto max-w-6xl px-5 pt-14 md:px-8">
           <h2 id="popular-title" className="font-display text-3xl font-semibold uppercase text-text md:text-4xl">

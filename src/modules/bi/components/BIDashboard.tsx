@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { formatVatPercent } from "@/lib/tax";
 import { formatEuro } from "@/lib/i18n";
 import { CrossStoreReport } from "../bi.schema";
 import {
@@ -49,7 +50,7 @@ export const BIDashboard: React.FC = () => {
             </h2>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Cyprus 19% VAT fiscal audit • Card vs Cash split • Speed of service analytics
+            VAT fiscal audit • Card vs Cash split • Speed of service analytics
           </p>
         </div>
 
@@ -79,7 +80,7 @@ export const BIDashboard: React.FC = () => {
 
             <div className="bg-white border border-[#DFDFE3] rounded-2xl p-4 shadow-sm">
               <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">
-                Cyprus VAT (19%)
+                VAT ({formatVatPercent()})
               </span>
               <span className="font-mono font-black text-2xl text-cyan-700 block mt-1">
                 {formatEuro(report.totalVatEUR)}
@@ -142,7 +143,7 @@ export const BIDashboard: React.FC = () => {
                   </div>
 
                   <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
-                    <span className="text-[10px] text-zinc-500 block">19% VAT Collected</span>
+                    <span className="text-[10px] text-zinc-500 block">{formatVatPercent()} VAT Collected</span>
                     <span className="font-black text-base text-cyan-700">
                       {formatEuro(store.vatAmountEUR)}
                     </span>

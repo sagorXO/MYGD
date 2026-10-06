@@ -33,7 +33,7 @@
     "meatChoice": "Fleischauswahl",
     "breadChoice": "Brotauswahl",
     "sauces": "Saucenauswahl",
-    "saucesHint": "Wähle bis zu 3 Saucen",
+    "saucesHint": "Wähle deine Sauce",
     "extras": "Extras & Toppings",
     "spiceLevel": "Schärfegrad",
     "spiceMild": "Mild",
@@ -41,8 +41,8 @@
     "spiceScharf": "Scharf",
     "spiceExtra": "Extra Scharf",
     "spiceHolle": "Hölle (Feurig)",
-    "makeItMeal": "Als Menü bestellen (+€3.50)",
-    "mealDescription": "Inklusive knuspriger Pommes & 0.33L Erfrischungsgetränk",
+    "makeItMeal": "Als Menü bestellen",
+    "mealDescription": "Pommes oder weißer Reis + 0,4L Getränk. Regular, Medium oder Large.",
     "selectDrink": "Getränk wählen",
     "selectSide": "Beilage wählen",
     "specialNotes": "Besondere Wünsche oder Allergiehinweise...",
@@ -53,11 +53,11 @@
     "addMoreItems": "+ Weitere Artikel hinzufügen",
     "specialInstructions": "Besondere Küchenanweisungen (z. B. ohne Zwiebeln)",
     "subtotal": "Zwischensumme (ohne MwSt.)",
-    "vat": "Zypern MwSt. (19%)",
+    "vat": "MwSt. (5%)",
     "total": "Gesamtbetrag",
     "proceedToPayment": "ZUR ZAHLUNG",
     "clearCart": "Bestellung leeren",
-    "emptyPrompt": "Noch keine Artikel hinzugefügt. Entdecke unsere Berliner Döner-Spezialitäten!"
+    "emptyPrompt": "Noch keine Artikel hinzugefügt. Entdecke unsere Döner, Wraps, Bowls und Pizza!"
   },
   "payment": {
     "choosePayment": "ZAHLUNGSMETHODE WÄHLEN",

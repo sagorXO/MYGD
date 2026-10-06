@@ -1,6 +1,6 @@
 "use client";
 
-import { buttonClasses, Logo } from "@/ui";
+import { buttonClasses, Logo, ThemeToggle } from "@/ui";
 import { StoreSwitcher, useStore } from "./StoreContext";
 
 const LINKS = [
@@ -30,6 +30,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle surface="order" />
           <StoreSwitcher className="hidden sm:inline-flex" />
           <a href={store.delivery.href} target="_blank" rel="noopener noreferrer" className={buttonClasses({ variant: "primary", size: "lg" })}>
             Order online

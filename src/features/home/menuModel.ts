@@ -3,7 +3,7 @@ import type { Tone } from "@/ui";
 
 export type MenuFilter = "ALL" | "POPULAR" | "VEGGIE" | "SPICY";
 export type MenuProduct = Pick<ProductDTO, "id" | "name" | "description" | "basePrice" | "badge" | "isVeggie" | "isSpicy" | "isAvailable"> &
-  Partial<Pick<ProductDTO, "imageUrl" | "nameDE" | "nameGR" | "allowMealUpgrade">>;
+  Partial<Pick<ProductDTO, "allowMealUpgrade" | "imageUrl" | "nameDE" | "nameGR">>;
 
 export interface ProductBadge {
   label: string;
@@ -28,7 +28,7 @@ export function displayCategoryName(name: string): string {
 }
 
 function isVeggie(p: MenuProduct): boolean {
-  return p.isVeggie || p.badge === "VEGGIE" || p.name.toLowerCase().includes("falafel");
+  return p.isVeggie || p.badge === "VEGGIE";
 }
 
 function isSpicy(p: MenuProduct): boolean {
@@ -53,5 +53,11 @@ export function productBadges(p: MenuProduct): ProductBadge[] {
   add(p.badge ? BADGE_MAP[p.badge] : undefined);
   if (p.isVeggie) add(BADGE_MAP.VEGGIE);
   if (p.isSpicy) add(BADGE_MAP.SPICY);
+  if (p.allowMealUpgrade) add({ label: "Make it a menu", tone: "info" });
   return out;
+}
+
+/** Names of the active automatic offers ("Second pizza 20% off"), blanks dropped. */
+export function offerTitles(offers: readonly { name: string }[] | undefined): string[] {
+  return (offers ?? []).map((o) => o.name.trim()).filter((name) => name.length > 0);
 }

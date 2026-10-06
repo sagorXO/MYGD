@@ -248,7 +248,7 @@ function Showcase() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <ProductTile title="Classic German Döner" price={7.5} availability="available" description="Spit-roasted chicken/beef, red cabbage, garlic sauce" />
                   <ProductTile title="Halloumi Dürüm Box" price={8.2} availability="low-stock" stockCount={4} description="Crisp flatbread, grilled halloumi, herb salad" />
-                  <ProductTile title="Truffle Special Döner" price={9.9} availability="sold-out" description="Seasonal special with black truffle cream" />
+                  <ProductTile title="Spicy Garlic Döner" price={9.9} availability="sold-out" description="Seasonal special with chili garlic cream" />
                 </div>
               </div>
 

@@ -10,14 +10,14 @@ import {
 } from "../src/lib/menu-assets.ts";
 
 test("Asset Registry - Contains canonical products with valid categories", () => {
-  assert.ok(MENU_ASSET_REGISTRY["MYGD-CL-DONER"]);
-  assert.equal(MENU_ASSET_REGISTRY["MYGD-CL-DONER"].category, "DOENER");
-  assert.ok(MENU_ASSET_REGISTRY["MYGD-DN-BOX"]);
-  assert.equal(MENU_ASSET_REGISTRY["MYGD-DN-BOX"].category, "BOWLS");
+  assert.ok(MENU_ASSET_REGISTRY["MYGD-DB-HAMBURG"]);
+  assert.equal(MENU_ASSET_REGISTRY["MYGD-DB-HAMBURG"].category, "doener-burgers");
+  assert.ok(MENU_ASSET_REGISTRY["MYGD-BOWL-BEEF"]);
+  assert.equal(MENU_ASSET_REGISTRY["MYGD-BOWL-BEEF"].category, "bowls");
 });
 
 test("Menu Asset Lookup - Resolves exact SKU or falls back to remote image", () => {
-  const asset = getMenuAsset("MYGD-CL-DONER");
+  const asset = getMenuAsset("MYGD-DB-HAMBURG");
   assert.ok(asset.startsWith("http") || asset.startsWith("/assets/"));
 });
 
@@ -28,10 +28,10 @@ test("Menu Asset Lookup - Clean fallback to vector placeholder on unknown SKU", 
 });
 
 test("Vector Placeholder Generator - Produces valid SVG data URI with branding", () => {
-  const uri = generateVectorPlaceholder("Steak Döner", "DOENER");
+  const uri = generateVectorPlaceholder("Beef Wrap", "WRAPS");
   assert.ok(uri.startsWith("data:image/svg+xml;utf8,"));
   assert.ok(uri.includes("MYGD"));
-  assert.ok(uri.includes("Steak%20D%C3%B6ner") || uri.includes("Steak Döner"));
+  assert.ok(uri.includes("Beef%20Wrap") || uri.includes("Beef Wrap"));
 });
 
 test("Brand Asset Lookup - Resolves primary logo", () => {

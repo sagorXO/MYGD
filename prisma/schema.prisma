@@ -25,7 +25,7 @@ model Location {
   city        String   @default("Paphos")
   country     String   @default("CY")
   currency    String   @default("EUR")
-  vatRate     Float    @default(0.19) // 19% Cyprus standard VAT
+  vatRate     Float    @default(0.05) // 5% VAT (see src/lib/tax.ts)
   phone       String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -497,9 +497,12 @@ model Order {
   paymentRef      String?
 
   subtotal        Float
-  vatRate         Float         @default(0.19)
+  vatRate         Float         @default(0.05)
   vatAmount       Float
   totalAmount     Float
+  discountAmount  Float         @default(0.00) // promotions + voucher + staff discount (already deducted from totalAmount)
+  voucherCode     String?
+  promotionCodes  String?       // JSON array of applied automatic promotion codes
 
   customerNote    String?
   locale          String        @default("en")
@@ -515,6 +518,8 @@ model Order {
   items          OrderItem[]
   kitchenTickets KitchenTicket[]
   syncQueue      SyncQueue[]
+
+  voucherRedemptions VoucherRedemption[]
 
   @@index([locationId, orderStatus])
   @@index([terminalId, createdAt])
@@ -727,3 +732,60 @@ enum VatCategory {
   ZERO
 }
 
+
+// ---------------------------------------------------------
+// DISCOUNTS: AUTOMATIC PROMOTIONS & VOUCHERS / GIFT CARDS
+// ---------------------------------------------------------
+
+enum VoucherKind {
+  PERCENT    // value = percent off the remaining total
+  FIXED      // value = euro amount off
+  GIFT_CARD  // balance = remaining euro credit; spent across several orders
+}
+
+model Promotion {
+  id        String   @id @default(cuid())
+  code      String   @unique // "PIZZA-2ND-20"
+  name      String
+  ruleJson  String   // PromotionRule JSON, see src/lib/menu/mygd-menu.ts
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model Voucher {
+  id             String      @id @default(cuid())
+  code           String      @unique // stored upper-case
+  kind           VoucherKind
+  value          Float       @default(0)
+  minSubtotal    Float       @default(0)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  maxRedemptions Int?        // null = unlimited
+  redemptions    Int         @default(0)
+  balance        Float?      // GIFT_CARD only
+  isActive       Boolean     @default(true)
+  note           String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  log VoucherRedemption[]
+
+  @@index([isActive])
+}
+
+model VoucherRedemption {
+  id        String   @id @default(cuid())
+  voucherId String
+  orderId   String
+  amount    Float
+  createdAt DateTime @default(now())
+
+  voucher Voucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([voucherId, orderId])
+  @@index([orderId])
+}

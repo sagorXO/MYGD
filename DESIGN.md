@@ -109,6 +109,19 @@ Every semantic color is strictly paired with a label, icon, or explicit geometri
 | **Numeric XL**| 56px | 700 | 60px | Cash change due / Link4Pay terminal prompt |
 | **Numeric** | 28px | 700 | 36px | Prices / Inventory counts |
 
+### Route Matrix & Viewports
+
+| Route | Persona | Form Factor & Aspect Ratio | Viewport Width × Height |
+|:---|:---|:---:|:---:|
+| `/` | Public website | Responsive (phone → desktop) | `390 × 844` → `1440 × 900+` |
+| `/pos` | Counter Cashier | Landscape Tablet (4:3 / 16:10) | `1024 × 768` |
+| `/kds` | Line Cook / Assembler | Landscape HD Monitor (16:9) | `1920 × 1080` |
+| `/display` | Waiting Area Guest | Overhead 4K Display (16:9) | `1920 × 1080` |
+| `/staff` | Crew & Slicers | Wall Station Tablet (16:10) | `1024 × 768` / `1280 × 800` |
+| `/boards` | Overhead Menu — **redirects to ScreenyPro** (https://screenypro.com/dashboard) since 2026-10-06 | 4K Commercial TVs (16:9) | `3840 × 2160` (per screen) |
+| `/order` | Mobile Pre-Order | Smartphone Browser (9:19.5) | `390 × 844` |
+| `/admin` | Store Manager / HQ | Desktop / Widescreen Laptop | `1440 × 900+` |
+
 ---
 
 ## 5. Spacing, Radii & Elevation

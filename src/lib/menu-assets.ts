@@ -1,82 +1,29 @@
 // MY GERMAN DÖNER — Asset Ingestion Pipeline & Fallback Engine
 // Resolves menu photography & brand vector assets with resilient SVG fallback
+import { allMenuItems } from "./menu/mygd-menu";
 
 export interface MenuAssetDefinition {
   sku: string;
   name: string;
-  category: "DOENER" | "WRAPS" | "BOWLS" | "SIDES" | "DRINKS" | "SAUCES";
+  /** Menu section slug, e.g. "wraps". */
+  category: string;
   localPath: string;
   remoteFallbackUrl?: string;
 }
 
-export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
-  "MYGD-CL-DONER": {
-    sku: "MYGD-CL-DONER",
-    name: "Original German Döner (150g)",
-    category: "DOENER",
-    localPath: "/assets/menu/products/hamburg-doener.jpg",
-  },
-  "MYGD-DOENER-HAMBURG": {
-    sku: "MYGD-DOENER-HAMBURG",
-    name: "Hamburg Döner",
-    category: "DOENER",
-    localPath: "/assets/menu/products/hamburg-doener.jpg",
-  },
-  "MYGD-ST-DONER": {
-    sku: "MYGD-ST-DONER",
-    name: "Steak Döner (100% Beef)",
-    category: "DOENER",
-    localPath: "/assets/menu/products/beef-wrap.jpg",
-  },
-  "MYGD-CK-DONER": {
-    sku: "MYGD-CK-DONER",
-    name: "Crispy Chicken Döner",
-    category: "DOENER",
-    localPath: "/assets/menu/products/chicken-doener-pizza.jpg",
-  },
-  "MYGD-ST-DURUM": {
-    sku: "MYGD-ST-DURUM",
-    name: "Standard Dürüm Wrap",
-    category: "WRAPS",
-    localPath: "/assets/menu/products/beef-wrap.jpg",
-  },
-  "MYGD-WRAP-BEEF": {
-    sku: "MYGD-WRAP-BEEF",
-    name: "Beef Dürüm Wrap",
-    category: "WRAPS",
-    localPath: "/assets/menu/products/beef-wrap.jpg",
-  },
-  "MYGD-DN-BOX": {
-    sku: "MYGD-DN-BOX",
-    name: "Döner Box with Fries",
-    category: "BOWLS",
-    localPath: "/assets/menu/products/doener-bowl.jpg",
-  },
-  "MYGD-BOWL-DOENER": {
-    sku: "MYGD-BOWL-DOENER",
-    name: "Döner Rice Bowl",
-    category: "BOWLS",
-    localPath: "/assets/menu/products/doener-bowl.jpg",
-  },
-  "MYGD-CR-FRIES": {
-    sku: "MYGD-CR-FRIES",
-    name: "Crispy Berlin Fries",
-    category: "SIDES",
-    localPath: "/assets/menu/upgrade/fries.jpg",
-  },
-  "MYGD-GER-BEER": {
-    sku: "MYGD-GER-BEER",
-    name: "German Pilsner Beer (500ml)",
-    category: "DRINKS",
-    localPath: "/assets/menu/upgrade/drink.jpg",
-  },
-  "MYGD-UPGRADE-COMBO": {
-    sku: "MYGD-UPGRADE-COMBO",
-    name: "Make It A Menu Combo",
-    category: "SIDES",
-    localPath: "/assets/menu/upgrade/combo.jpg",
-  },
-};
+/** One entry per menu item, derived from the single menu source — nothing is listed by hand. */
+export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = Object.fromEntries(
+  allMenuItems().map((item): [string, MenuAssetDefinition] => [
+    item.sku,
+    {
+      sku: item.sku,
+      name: item.name,
+      category: item.sectionSlug,
+      localPath: "/assets/menu/placeholder.svg",
+      remoteFallbackUrl: item.imageUrl,
+    },
+  ]),
+);
 
 export const BRAND_ASSETS: Record<string, string> = {
   LOGO_PRIMARY: "/assets/brand/logo.svg",
@@ -118,11 +65,11 @@ export function generateVectorPlaceholder(title: string, category: string = "DÖ
  * Returns a valid image URL for a menu item.
  * Tries local path, falls back to remote image, or generates an inline SVG vector placeholder.
  */
-export function getMenuAsset(skuOrName: string, category: string = "DOENER"): string {
+export function getMenuAsset(skuOrName: string, category: string = "MENU"): string {
   // Check exact SKU in registry
   const entry = MENU_ASSET_REGISTRY[skuOrName];
   if (entry) {
-    return entry.localPath || entry.remoteFallbackUrl || BRAND_ASSETS.PLACEHOLDER_MENU;
+    return entry.remoteFallbackUrl || entry.localPath || BRAND_ASSETS.PLACEHOLDER_MENU;
   }
 
   // Find by partial name
@@ -130,7 +77,7 @@ export function getMenuAsset(skuOrName: string, category: string = "DOENER"): st
     item.name.toLowerCase().includes(skuOrName.toLowerCase())
   );
   if (matched) {
-    return matched.localPath || matched.remoteFallbackUrl || BRAND_ASSETS.PLACEHOLDER_MENU;
+    return matched.remoteFallbackUrl || matched.localPath || BRAND_ASSETS.PLACEHOLDER_MENU;
   }
 
   // Generate vector placeholder as clean zero-broken-link fallback

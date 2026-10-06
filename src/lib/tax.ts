@@ -1,17 +1,29 @@
 // MY GERMAN DÖNER — Cyprus VAT & Fiscal Engine (WU 1.1)
-// EU / Cyprus Value Added Tax Compliance:
-// - Food & Non-Alcoholic Beverages: 9% VAT (Reduced Rate)
-// - Alcoholic Beverages & Standard Goods: 19% VAT (Standard Rate)
+//
+// [ADR] Context: the owner confirmed VAT is 5% on everything sold (food, soft drinks, beer, wine),
+// and the rate had been copied into the till, the order service, BI, the locales and the seed.
+// Decision: this file is the only place a rate is written. Everything else imports it. The
+// ALCOHOL category is kept (at 5% today) so a different rate for it is a one-line change here.
+// Consequence: change CYPRUS_VAT_RATES and the till, receipts, reports and seed follow.
+// - Food, soft drinks, beer, wine: 5% VAT
 // - Zero Rated / Exempt: 0% VAT
 // Note: In compliance with European consumer protection laws, all displayed and catalog prices are GROSS (VAT-inclusive).
 
 export type VatCategory = 'FOOD_BEV' | 'ALCOHOL' | 'ZERO';
 
 export const CYPRUS_VAT_RATES: Record<VatCategory, number> = {
-  FOOD_BEV: 0.09, // 9% Cyprus reduced rate for food and catering/restaurant services
-  ALCOHOL: 0.19,  // 19% Cyprus standard rate for beer, wine, and spirits
-  ZERO: 0.00,     // 0% for zero-rated items
+  FOOD_BEV: 0.05, // food and non-alcoholic drinks
+  ALCOHOL: 0.05,  // beer and wine (same rate as food, see ADR above)
+  ZERO: 0.0,      // zero-rated items
 };
+
+/** Rate applied when a line has no explicit category (everything on the menu today). */
+export const DEFAULT_VAT_RATE = CYPRUS_VAT_RATES.FOOD_BEV;
+
+/** "5%" — for labels on the till, reports and menu admin. */
+export function formatVatPercent(rate: number = DEFAULT_VAT_RATE): string {
+  return `${Math.round(rate * 10000) / 100}%`;
+}
 
 export interface ReverseVatResult {
   gross: number;

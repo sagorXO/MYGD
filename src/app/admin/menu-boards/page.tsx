@@ -32,6 +32,8 @@ import {
   DaypartType,
 } from "@/lib/menuboard-engine";
 import { generateVectorPlaceholder } from "@/lib/menu-assets";
+import { LivePriceBoard } from "@/modules/signage/components/LivePriceBoard";
+import { toSignageItem } from "@/lib/menu/boards";
 
 export default function MobileOwnerMenuBoardsCMS() {
   const [configs, setConfigs] = useState<Record<number, MenuBoardScreenConfig>>(CANONICAL_SCREEN_CONFIGS);
@@ -132,7 +134,7 @@ export default function MobileOwnerMenuBoardsCMS() {
   const startEditItem = (idx: number, item: MenuBoardItem) => {
     setEditingItemIdx(idx);
     setEditName(item.name);
-    setEditPrice(item.price ? item.price.toFixed(2) : "7.50");
+    setEditPrice(item.price ? item.price.toFixed(2) : "0.00");
     setEditBadge(item.badge || "");
   };
 
@@ -261,13 +263,25 @@ export default function MobileOwnerMenuBoardsCMS() {
         </div>
       </header>
 
+      {/* The overhead TVs run from ScreenyPro (uploaded menu images), not from this editor. */}
+      <div role="status" className="mx-4 mt-3 rounded-xl border border-[#E5A93C]/50 bg-[#E5A93C]/10 px-3 py-2.5 text-xs text-[#E5A93C]">
+        <p className="font-bold uppercase tracking-wider">The overhead screens now run from ScreenyPro</p>
+        <p className="mt-0.5 text-zinc-300">
+          Changes made here do <strong>not</strong> reach the TVs. To change what the screens show, upload new menu images in the{" "}
+          <a href="https://screenypro.com/dashboard" target="_blank" rel="noopener noreferrer" className="underline">
+            ScreenyPro dashboard
+          </a>
+          . This editor only affects the old in-app board.
+        </p>
+      </div>
+
       {/* Main Content Area */}
       <main className="px-4 py-4 max-w-xl mx-auto space-y-4">
         {/* Official 4K Menu Board Preview */}
         <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-3 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono text-[#00FCED] uppercase tracking-wider font-bold">
-              Official Graphic Signage Preview
+              Live Signage Preview
             </span>
             <Link
               href="/boards"
@@ -278,32 +292,10 @@ export default function MobileOwnerMenuBoardsCMS() {
               <ExternalLink size={10} />
             </Link>
           </div>
-          <div className="h-44 w-full rounded-xl overflow-hidden bg-black border border-[#2B2B2E] relative flex items-center justify-center">
-            <img
-              src={
-                currentConfig?.boardImageUrl ||
-                `/assets/boards/board-${
-                  selectedScreenNum === 1
-                    ? "1-doener-wraps-bigs-bowls"
-                    : selectedScreenNum === 2
-                    ? "2-burgers-pizzas-doezza"
-                    : selectedScreenNum === 3
-                    ? "3-loaded-fries-nuggets-wings-meatballs"
-                    : selectedScreenNum === 4
-                    ? "4-drinks-beers-smoothies-coffee"
-                    : selectedScreenNum === 5
-                    ? "5-sides-fries-kids-meal"
-                    : selectedScreenNum === 6
-                    ? "6-smoothies-shakes-kombucha"
-                    : "7-sauces-showcase"
-                }.jpg`
-              }
-              alt={`Screen ${selectedScreenNum} Board`}
-              className="h-full w-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = generateVectorPlaceholder(`Screen ${selectedScreenNum}`, "MYGD 4K BOARD");
-              }}
-            />
+          <div className="h-72 w-full rounded-xl overflow-hidden bg-black border border-[#2B2B2E] relative">
+            <div className="absolute inset-0 overflow-y-auto">
+              <LivePriceBoard items={(currentConfig?.items ?? []).map(toSignageItem)} />
+            </div>
           </div>
         </div>
 

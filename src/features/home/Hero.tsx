@@ -11,7 +11,7 @@ export function Hero() {
       <div>
         <StoreStatus store={store} />
         <p className="mt-4 text-sm font-medium text-text-secondary">The first real German döner in Cyprus</p>
-        <h1 className="mt-4 font-display text-[clamp(3.25rem,8vw,6.5rem)] font-bold uppercase leading-[0.9] text-[#E5067E]">
+        <h1 className="mt-4 font-display text-[clamp(3.25rem,8vw,6.5rem)] font-bold uppercase leading-[0.9] text-[#E50C7E]">
           Bite the hype.
         </h1>
         <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-text-secondary">

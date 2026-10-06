@@ -6,6 +6,9 @@ import { cn } from "@/lib/cn";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 import { generateVectorPlaceholder } from "@/lib/menu-assets";
 import { CANONICAL_4K_SCREENS } from "../signage.engine";
+import { LivePriceBoard } from "./LivePriceBoard";
+import { toSignageItem } from "@/lib/menu/boards";
+import { MYGD_MODIFIER_GROUPS } from "@/lib/menu/mygd-menu";
 import { SignageScreenConfig } from "../signage.schema";
 
 // TV menu board. The stage is a fixed 1920x1080 canvas scaled to fit any display.
@@ -20,10 +23,14 @@ const STAGE_H = 1080;
 const ctlBtn =
   "h-14 rounded-md border-2 border-border bg-surface px-5 font-display text-xl font-semibold uppercase tracking-wide text-text hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
+const MENU_PRICES = (MYGD_MODIFIER_GROUPS.find((g) => g.slug === "make-it-a-menu")?.options ?? [])
+  .map((o) => `${o.name.replace(" Menu", "")} +€${o.price.toFixed(2)}`)
+  .join(" · ");
+
 export const MenuBoard4K: React.FC = () => {
   const [screenNo, setScreenNo] = useState(1);
-  // TODO(phase-6): /boards renders the hard-coded CANONICAL_4K_SCREENS and never fetches.
-  // Load from GET /api/menuboards instead (route exists, DB-backed); keep SSE for live updates.
+  // Starts from the offline fallback (derived from the menu source) and is replaced by the
+  // database screens from GET /api/menuboards as soon as they load; SSE keeps it live afterwards.
   const [configs, setConfigs] = useState<Record<number, SignageScreenConfig>>(CANONICAL_4K_SCREENS);
   const [viewMode, setViewMode] = useState<"GRID" | "GRAPHIC">("GRID");
   const [auto, setAuto] = useState(true);
@@ -52,10 +59,46 @@ export const MenuBoard4K: React.FC = () => {
     hideTimer.current = setTimeout(() => setControls(false), CONTROLS_MS);
   }, []);
 
+  const applyRemoteScreen = useCallback((raw: any) => {
+    const screenNumber = Number(raw?.screenNumber);
+    if (!Number.isInteger(screenNumber) || !Array.isArray(raw?.items)) return;
+    setConfigs((prev) => ({
+      ...prev,
+      [screenNumber]: {
+        ...(prev[screenNumber] ?? CANONICAL_4K_SCREENS[screenNumber]),
+        screenNumber,
+        title: raw.title ?? prev[screenNumber]?.title ?? `SCREEN ${screenNumber}`,
+        layoutType: raw.layoutType ?? prev[screenNumber]?.layoutType ?? "PRICE_MATRIX",
+        updatedAt: new Date().toISOString(),
+        items: raw.items.map(toSignageItem),
+      },
+    }));
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch("/api/menuboards", { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        for (const screen of data.configs ?? []) applyRemoteScreen(screen);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          console.warn("[MenuBoard4K] Could not load screens from the database; showing the offline copy.", err);
+        }
+      }
+    })();
+    return () => controller.abort();
+  }, [applyRemoteScreen]);
+
+
   const { isConnected, connectionTier } = useRealtimeEvents({
     channel: "boards",
     onEvent: (type, data: any) => {
-      if (type === "STOCK_CHANGED" && data?.productId) {
+      if (type === "MENU_BOARD_UPDATED" && data?.config) {
+        applyRemoteScreen(data.config);
+      } else if (type === "STOCK_CHANGED" && data?.productId) {
         setConfigs((prev) => {
           const next: Record<number, SignageScreenConfig> = {};
           for (const key of Object.keys(prev)) {
@@ -161,15 +204,7 @@ export const MenuBoard4K: React.FC = () => {
 
           {viewMode === "GRAPHIC" ? (
             <div className="relative flex min-h-0 items-center justify-center overflow-hidden rounded-xl border-2 border-border bg-canvas">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={cfg.boardImageUrl || `/assets/boards/board-${screenNo}-doener-wraps-bigs-bowls.jpg`}
-                alt={cfg.title}
-                className="max-h-full max-w-full object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = generateVectorPlaceholder(cfg.title, "MYGD 4K BOARD");
-                }}
-              />
+              <LivePriceBoard items={cfg.items} banner={cfg.bannerMessage} />
               {soldOut > 0 && (
                 <div className="absolute right-4 top-4 rounded-pill bg-danger-subtle px-5 py-2 font-display text-2xl font-semibold uppercase tracking-wide text-danger">
                   {soldOut} sold out
@@ -231,8 +266,8 @@ export const MenuBoard4K: React.FC = () => {
 
         <footer className="flex items-center gap-8 border-t-2 border-border bg-surface px-14">
           <div>
-            <h3 className="font-display text-[40px] font-bold uppercase leading-none">Make it a menu · +€3.00</h3>
-            <p className="mt-1 text-[22px] text-text-secondary">Fries or rice + 0.4L drink · Medium +€3.50 · Large +€4.50</p>
+            <h3 className="font-display text-[40px] font-bold uppercase leading-none">Make it a menu</h3>
+            <p className="mt-1 text-[22px] text-text-secondary">Fries or rice + 0.4L drink · {MENU_PRICES}</p>
           </div>
           <div className="ml-auto text-right font-display text-2xl font-medium uppercase leading-tight tracking-[0.1em] text-warning">
             Emba · Paphos
