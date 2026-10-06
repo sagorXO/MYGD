@@ -16,32 +16,31 @@ datasource db {
 // ---------------------------------------------------------
 
 model Location {
-  id          String   @id @default(cuid())
-  slug        String   @unique // e.g. "EMBA", "LIMASSOL"
-  name        String   // "MY GERMAN DÖNER — Emba (Paphos)"
-  nameDE      String?
-  nameGR      String?
-  address     String
-  city        String   @default("Paphos")
-  country     String   @default("CY")
-  currency    String   @default("EUR")
-  vatRate     Float    @default(0.05) // 5% VAT (see src/lib/tax.ts)
-  phone       String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  slug      String   @unique // e.g. "EMBA", "LIMASSOL"
+  name      String // "MY GERMAN DÖNER — Emba (Paphos)"
+  nameDE    String?
+  nameGR    String?
+  address   String
+  city      String   @default("Paphos")
+  country   String   @default("CY")
+  currency  String   @default("EUR")
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  terminals       Terminal[]
-  locationPrices  LocationPrice[]
-  orders          Order[]
-  auditLogs       AuditLog[]
-  inventoryItems  InventoryItem[]
-  checklistLogs   ChecklistLog[]
-  haccpLogs       HaccpLog[]
-  shiftSchedules  ShiftSchedule[]
-  timeLogs        TimeLog[]
-  staffShifts     StaffShift[]
-  supplierOrders  SupplierOrder[]
+  terminals      Terminal[]
+  locationPrices LocationPrice[]
+  orders         Order[]
+  auditLogs      AuditLog[]
+  inventoryItems InventoryItem[]
+  checklistLogs  ChecklistLog[]
+  haccpLogs      HaccpLog[]
+  shiftSchedules ShiftSchedule[]
+  timeLogs       TimeLog[]
+  staffShifts    StaffShift[]
+  supplierOrders SupplierOrder[]
 
   @@index([slug])
   @@index([isActive])
@@ -50,7 +49,7 @@ model Location {
 model Terminal {
   id              String       @id @default(cuid())
   locationId      String
-  terminalCode    String       // e.g. "KIOSK-01", "POS-01", "KDS-01", "DISPLAY-01"
+  terminalCode    String // e.g. "KIOSK-01", "POS-01", "KDS-01", "DISPLAY-01"
   terminalType    TerminalType @default(KIOSK)
   ipAddress       String?
   macAddress      String?
@@ -95,9 +94,9 @@ enum PrinterType {
 model Category {
   id          String   @id @default(cuid())
   slug        String   @unique // "doner-kebab", "doner-box", "durum-wraps", "sides", "drinks"
-  name        String   // English
-  nameDE      String   // German
-  nameGR      String   // Greek
+  name        String // English
+  nameDE      String // German
+  nameGR      String // Greek
   description String?
   iconSvg     String?
   imageUrl    String?
@@ -113,20 +112,20 @@ model Category {
 }
 
 model Product {
-  id               String   @id @default(cuid())
+  id               String      @id @default(cuid())
   categoryId       String
-  sku              String   @unique // e.g. "MYGD-CL-DONER"
+  sku              String      @unique // e.g. "MYGD-CL-DONER"
   name             String
   nameDE           String?
   nameGR           String?
   description      String?
   descriptionDE    String?
   descriptionGR    String?
-  basePrice        Float    // Default EUR base price (e.g. 7.50)
+  basePrice        Decimal     @db.Decimal(10, 2) // Default EUR base price (e.g. 7.50)
   imageUrl         String?
-  badge            String?  // "POPULAR", "NEW", "VEGGIE", "SPICY", "CHEF_CHOICE"
+  badge            String? // "POPULAR", "NEW", "VEGGIE", "SPICY", "CHEF_CHOICE"
   calories         Int?
-  allergens        String?  // JSON array: ["Gluten", "Dairy", "Sesame"]
+  allergens        String? // JSON array: ["Gluten", "Dairy", "Sesame"]
   vatCategory      VatCategory @default(FOOD_BEV)
   isVeggie         Boolean     @default(false)
   isSpicy          Boolean     @default(false)
@@ -153,7 +152,7 @@ model LocationPrice {
   id          String   @id @default(cuid())
   locationId  String
   productId   String
-  price       Float    // Location-specific price override
+  price       Decimal  @db.Decimal(10, 2) // Location-specific price override
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -196,7 +195,7 @@ model Modifier {
   name            String
   nameDE          String?
   nameGR          String?
-  priceAdjustment Float    @default(0.00)
+  priceAdjustment Decimal  @default(0.00) @db.Decimal(10, 2)
   isDefault       Boolean  @default(false)
   isAvailable     Boolean  @default(true)
   calories        Int?
@@ -237,7 +236,7 @@ model Ingredient {
   sku            String   @unique // "ING-BEEF-SPIT", "ING-FLADENBROT"
   name           String
   unit           String   @default("GRAMS") // "GRAMS", "PIECES", "MILLILITERS"
-  costPerUnitEUR Float    @default(0.00)
+  costPerUnitEUR Decimal  @default(0.0000) @db.Decimal(10, 4)
   supplierId     String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -251,13 +250,13 @@ model Ingredient {
 }
 
 model Recipe {
-  id          String   @id @default(cuid())
-  productId   String
-  variantName String   @default("STANDARD_150G")
-  yieldServings Int    @default(1)
-  prepTimeSec Int      @default(180)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  productId     String
+  variantName   String   @default("STANDARD_150G")
+  yieldServings Int      @default(1)
+  prepTimeSec   Int      @default(180)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   product     Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   ingredients RecipeIngredient[]
@@ -269,7 +268,7 @@ model RecipeIngredient {
   id           String   @id @default(cuid())
   recipeId     String
   ingredientId String
-  amountUnits  Float    // e.g. 150.0 grams of meat, 1.0 piece of bread
+  amountUnits  Float // e.g. 150.0 grams of meat, 1.0 piece of bread
   isOptional   Boolean  @default(false)
   createdAt    DateTime @default(now())
 
@@ -285,7 +284,7 @@ model RecipeBOM {
   id           String   @id @default(cuid())
   productId    String
   ingredientId String
-  amountGrams  Float    // Gram-level portion weight (e.g. 150.0g spit meat)
+  amountGrams  Float // Gram-level portion weight (e.g. 150.0g spit meat)
   isOptional   Boolean  @default(false)
   createdAt    DateTime @default(now())
 
@@ -298,14 +297,14 @@ model RecipeBOM {
 }
 
 model InventoryItem {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   locationId       String
   ingredientId     String
-  currentStock     Float    @default(0.0)
-  minThreshold     Float    @default(5000.0) // In unit (e.g. 5000g = 5kg)
-  reorderBatchSize Float    @default(20000.0)
+  currentStock     Float     @default(0.0)
+  minThreshold     Float     @default(5000.0) // In unit (e.g. 5000g = 5kg)
+  reorderBatchSize Float     @default(20000.0)
   lastRestockedAt  DateTime?
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime  @updatedAt
 
   location   Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
   ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
@@ -320,15 +319,15 @@ model InventoryItem {
 // ---------------------------------------------------------
 
 model RecipeStep {
-  id           String   @id @default(cuid())
-  productId    String
-  stepNumber   Int
-  instruction  String
+  id            String   @id @default(cuid())
+  productId     String
+  stepNumber    Int
+  instruction   String
   instructionDE String?
-  imageUrl     String?
-  targetSec    Int      @default(30)
-  qualityCheck String?  // e.g. "Ensure internal meat temp > 75°C"
-  createdAt    DateTime @default(now())
+  imageUrl      String?
+  targetSec     Int      @default(30)
+  qualityCheck  String? // e.g. "Ensure internal meat temp > 75°C"
+  createdAt     DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -341,15 +340,15 @@ model RecipeStep {
 // ---------------------------------------------------------
 
 model Supplier {
-  id           String   @id @default(cuid())
-  name         String   // "Berlin Döner Fleischerei GmbH", "Paphos Fresh Bakery"
-  category     String   // "MEAT", "BAKERY", "PRODUCE", "SAUCES", "PACKAGING"
-  contactName  String?
-  whatsApp     String   // e.g. "+35799112233"
-  email        String
-  leadTimeHours Int     @default(24)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  name          String // "Berlin Döner Fleischerei GmbH", "Paphos Fresh Bakery"
+  category      String // "MEAT", "BAKERY", "PRODUCE", "SAUCES", "PACKAGING"
+  contactName   String?
+  whatsApp      String // e.g. "+35799112233"
+  email         String
+  leadTimeHours Int      @default(24)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
 
   ingredients    Ingredient[]
   supplierOrders SupplierOrder[]
@@ -358,18 +357,18 @@ model Supplier {
 }
 
 model SupplierOrder {
-  id            String      @id @default(cuid())
-  locationId    String
-  supplierId    String
-  orderNumber   String      @unique // e.g. "SUP-EMBA-20260820-001"
-  status        String      @default("PENDING") // PENDING, SENT_WHATSAPP, CONFIRMED, DELIVERED
-  totalEUR         Float       @default(0.0)
-  itemsJson        String      // JSON snapshot of ordered quantities and SKUs
-  pinApprovalToken String?     // Token generated when >€250 approval is required
-  approvedByPin    String?     // 4-digit PIN of owner (Rico / Oliver)
+  id               String    @id @default(cuid())
+  locationId       String
+  supplierId       String
+  orderNumber      String    @unique // e.g. "SUP-EMBA-20260820-001"
+  status           String    @default("PENDING") // PENDING, SENT_WHATSAPP, CONFIRMED, DELIVERED
+  totalEUR         Decimal   @default(0.00) @db.Decimal(10, 2)
+  itemsJson        String // JSON snapshot of ordered quantities and SKUs
+  pinApprovalToken String? // Token generated when >€250 approval is required
+  approvedByPin    String? // 4-digit PIN of owner (Rico / Oliver)
   dispatchedAt     DateTime?
   expectedDelivery DateTime?
-  createdAt     DateTime    @default(now())
+  createdAt        DateTime  @default(now())
 
   location Location @relation(fields: [locationId], references: [id])
   supplier Supplier @relation(fields: [supplierId], references: [id])
@@ -383,21 +382,21 @@ model SupplierOrder {
 // ---------------------------------------------------------
 
 model ChecklistTemplate {
-  id          String   @id @default(cuid())
-  title       String   // "Morning Opening SOP", "HACCP Temperature Audit", "Night Closing"
-  shiftType   String   // "OPENING", "MID_DAY", "CLOSING", "HACCP"
-  tasksJson   String   // JSON list of required checks and temperature targets
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  title     String // "Morning Opening SOP", "HACCP Temperature Audit", "Night Closing"
+  shiftType String // "OPENING", "MID_DAY", "CLOSING", "HACCP"
+  tasksJson String // JSON list of required checks and temperature targets
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 model ChecklistLog {
   id          String   @id @default(cuid())
   locationId  String
   shiftType   String
-  completedBy String   // Staff name or ID
+  completedBy String // Staff name or ID
   isCompliant Boolean  @default(true)
-  logsJson    String   // Recorded values, temperature logs, photos
+  logsJson    String // Recorded values, temperature logs, photos
   notes       String?
   createdAt   DateTime @default(now())
 
@@ -409,12 +408,12 @@ model ChecklistLog {
 model HaccpLog {
   id               String   @id @default(cuid())
   locationId       String
-  equipmentName    String   // "Walk-in Fridge 1", "Deep Freezer", "Rotisserie Spit"
-  targetType       String   // "CHILLED" (0-5°C), "FROZEN" (-18 to -22°C), "HOT_HOLDING" (>=63°C)
-  temperature      Float    // Recorded temperature in Celsius
-  isCompliant      Boolean  // True if within statutory limits
-  correctiveAction String?  // Mandatory explanation if in Danger Zone (5°C - 63°C)
-  loggedBy         String   // Staff name or PIN
+  equipmentName    String // "Walk-in Fridge 1", "Deep Freezer", "Rotisserie Spit"
+  targetType       String // "CHILLED" (0-5°C), "FROZEN" (-18 to -22°C), "HOT_HOLDING" (>=63°C)
+  temperature      Float // Recorded temperature in Celsius
+  isCompliant      Boolean // True if within statutory limits
+  correctiveAction String? // Mandatory explanation if in Danger Zone (5°C - 63°C)
+  loggedBy         String // Staff name or PIN
   createdAt        DateTime @default(now())
 
   location Location @relation(fields: [locationId], references: [id])
@@ -432,7 +431,7 @@ model ShiftSchedule {
   locationId  String
   staffId     String
   staffName   String
-  role        String   // "CASHIER", "GRILL_MASTER", "ASSEMBLER", "MANAGER"
+  role        String // "CASHIER", "GRILL_MASTER", "ASSEMBLER", "MANAGER"
   startTime   DateTime
   endTime     DateTime
   isPublished Boolean  @default(true)
@@ -444,15 +443,15 @@ model ShiftSchedule {
 }
 
 model TimeLog {
-  id          String    @id @default(cuid())
-  locationId  String
-  staffId     String
-  staffName   String
-  role        String
-  clockIn     DateTime  @default(now())
-  clockOut    DateTime?
+  id           String    @id @default(cuid())
+  locationId   String
+  staffId      String
+  staffName    String
+  role         String
+  clockIn      DateTime  @default(now())
+  clockOut     DateTime?
   totalMinutes Int?
-  isApproved  Boolean   @default(false)
+  isApproved   Boolean   @default(false)
 
   location Location @relation(fields: [locationId], references: [id])
 
@@ -465,8 +464,8 @@ model StaffShift {
   locationId   String
   staffId      String
   staffName    String
-  role         String    // "CASHIER", "GRILL_MASTER", "ASSEMBLER", "MANAGER"
-  pin          String?   // 4-digit PIN used for timeclock
+  role         String // "CASHIER", "GRILL_MASTER", "ASSEMBLER", "MANAGER"
+  pin          String? // 4-digit PIN used for timeclock
   clockIn      DateTime  @default(now())
   clockOut     DateTime?
   totalMinutes Int?
@@ -485,32 +484,31 @@ model StaffShift {
 // ---------------------------------------------------------
 
 model Order {
-  id              String        @id @default(cuid())
-  orderNumber     String        @unique // e.g. "EMBA-20260820-1423-047"
-  dailySequence   Int
-  locationId      String
-  terminalId      String
-  orderType       OrderType     @default(DINE_IN)
-  orderStatus     OrderStatus   @default(PENDING_PAYMENT)
-  paymentMethod   PaymentMethod @default(CARD)
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentRef      String?
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique // e.g. "EMBA-20260820-1423-047"
+  dailySequence Int
+  locationId    String
+  terminalId    String
+  orderType     OrderType     @default(DINE_IN)
+  orderStatus   OrderStatus   @default(PENDING_PAYMENT)
+  paymentMethod PaymentMethod @default(CARD)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentRef    String?
 
-  subtotal        Float
-  vatRate         Float         @default(0.05)
-  vatAmount       Float
-  totalAmount     Float
-  discountAmount  Float         @default(0.00) // promotions + voucher + staff discount (already deducted from totalAmount)
-  voucherCode     String?
-  promotionCodes  String?       // JSON array of applied automatic promotion codes
+  subtotal       Decimal       @db.Decimal(10, 2)
+  vatAmount      Decimal       @db.Decimal(10, 2)
+  totalAmount    Decimal       @db.Decimal(10, 2)
+  discountAmount Decimal       @default(0.00) @db.Decimal(10, 2) // promotions + voucher + staff discount (already deducted from totalAmount)
+  voucherCode    String?
+  promotionCodes String?       // JSON array of applied automatic promotion codes
 
-  customerNote    String?
-  locale          String        @default("en")
+  customerNote String?
+  locale       String  @default("en")
 
-  createdAt       DateTime      @default(now())
-  paidAt          DateTime?
-  completedAt     DateTime?
-  cancelledAt     DateTime?
+  createdAt          DateTime  @default(now())
+  paidAt             DateTime?
+  completedAt        DateTime?
+  cancelledAt        DateTime?
   cancellationReason String?
 
   location       Location        @relation(fields: [locationId], references: [id])
@@ -561,22 +559,25 @@ enum PaymentStatus {
 }
 
 model OrderItem {
-  id             String   @id @default(cuid())
+  id             String      @id @default(cuid())
   orderId        String
   productId      String
   productName    String
   productSku     String
-  basePrice      Float
+  basePrice      Decimal     @db.Decimal(10, 2)
   quantity       Int         @default(1)
   spiceLevel     Int         @default(1)
   vatCategory    VatCategory @default(FOOD_BEV)
+  vatRate        Decimal     @db.Decimal(5, 4)
+  netAmount      Decimal     @db.Decimal(10, 2)
+  vatAmount      Decimal     @db.Decimal(10, 2)
   isMealBundle   Boolean     @default(false)
   mealDrinkName  String?
   mealSideName   String?
-  mealPriceAddon Float    @default(0.00)
+  mealPriceAddon Decimal     @default(0.00) @db.Decimal(10, 2)
   itemNotes      String?
-  totalPrice     Float
-  createdAt      DateTime @default(now())
+  totalPrice     Decimal     @db.Decimal(10, 2)
+  createdAt      DateTime    @default(now())
 
   order     Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product             @relation(fields: [productId], references: [id])
@@ -592,7 +593,7 @@ model OrderItemModifier {
   modifierId      String
   groupName       String
   modifierName    String
-  priceAdjustment Float    @default(0.00)
+  priceAdjustment Decimal  @default(0.00) @db.Decimal(10, 2)
   createdAt       DateTime @default(now())
 
   orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
@@ -608,7 +609,7 @@ model KitchenTicket {
   orderNumber   String
   orderType     OrderType
   station       String       @default("ALL") // "ALL", "GRILL", "ASSEMBLY", "FRYER"
-  ticketData    String       // JSON payload
+  ticketData    String // JSON payload
   ticketStatus  TicketStatus @default(QUEUED)
   claimedBy     String?
   printedAt     DateTime?
@@ -642,15 +643,15 @@ enum TicketStatus {
 // ---------------------------------------------------------
 
 model MenuBoardConfig {
-  id           String   @id @default(cuid())
-  screenNumber Int      @unique // 1 to 7
-  title        String   // e.g. "Screen 2: Döner Selection"
-  layoutType   String   // "PROMO_HERO", "PRICE_MATRIX", "SPLIT_COMBO"
-  activeDaypart String  @default("AUTO") // "AUTO", "LUNCH", "DINNER"
-  itemsJson    String   // Configured products, badges, and promos
-  isOnline     Boolean  @default(true)
-  lastPing     DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  screenNumber  Int      @unique // 1 to 7
+  title         String // e.g. "Screen 2: Döner Selection"
+  layoutType    String // "PROMO_HERO", "PRICE_MATRIX", "SPLIT_COMBO"
+  activeDaypart String   @default("AUTO") // "AUTO", "LUNCH", "DINNER"
+  itemsJson     String // Configured products, badges, and promos
+  isOnline      Boolean  @default(true)
+  lastPing      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // ---------------------------------------------------------
@@ -660,7 +661,7 @@ model MenuBoardConfig {
 model AdminUser {
   id             String    @id @default(cuid())
   username       String    @unique
-  pinHash        String    // Bcrypt hashed 4-6 digit staff PIN
+  pinHash        String // Bcrypt hashed 4-6 digit staff PIN
   role           AdminRole @default(STORE_STAFF)
   isActive       Boolean   @default(true)
   failedAttempts Int       @default(0)
@@ -732,6 +733,20 @@ enum VatCategory {
   ZERO
 }
 
+/// VAT rate per category with history (PRD M11.4). Prices are VAT-inclusive; rates are never hard-coded.
+/// The rate in force on a date is the row with the latest validFrom <= date and validTo null or > date.
+model VatRate {
+  id        String      @id @default(cuid())
+  category  VatCategory
+  rate      Decimal     @db.Decimal(5, 4) // fraction: 0.0900 means 9%
+  validFrom DateTime
+  validTo   DateTime?
+  note      String? // legal basis, e.g. contract clause
+  createdAt DateTime    @default(now())
+
+  @@unique([category, validFrom])
+  @@index([category, validFrom])
+}
 
 // ---------------------------------------------------------
 // DISCOUNTS: AUTOMATIC PROMOTIONS & VOUCHERS / GIFT CARDS
@@ -759,13 +774,13 @@ model Voucher {
   id             String      @id @default(cuid())
   code           String      @unique // stored upper-case
   kind           VoucherKind
-  value          Float       @default(0)
-  minSubtotal    Float       @default(0)
+  value          Decimal     @default(0.00) @db.Decimal(10, 2)
+  minSubtotal    Decimal     @default(0.00) @db.Decimal(10, 2)
   validFrom      DateTime?
   validUntil     DateTime?
   maxRedemptions Int?        // null = unlimited
   redemptions    Int         @default(0)
-  balance        Float?      // GIFT_CARD only
+  balance        Decimal?    @db.Decimal(10, 2) // GIFT_CARD only
   isActive       Boolean     @default(true)
   note           String?
   createdAt      DateTime    @default(now())
@@ -780,7 +795,7 @@ model VoucherRedemption {
   id        String   @id @default(cuid())
   voucherId String
   orderId   String
-  amount    Float
+  amount    Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
 
   voucher Voucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)

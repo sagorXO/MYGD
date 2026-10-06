@@ -23,11 +23,12 @@ export function prismaCatalogStore(tx: Prisma.TransactionClient): CatalogStore {
         });
         return { id: created.id, change: "created", previousPrice: null };
       }
-      const same = cur.name === p.name && cur.basePrice === p.basePrice && cur.vatCategory === p.vatCategory && cur.categoryId === categoryId;
-      if (same) return { id: cur.id, change: "unchanged", previousPrice: cur.basePrice };
+      const curBasePrice = Number(cur.basePrice);
+      const same = cur.name === p.name && curBasePrice === p.basePrice && cur.vatCategory === p.vatCategory && cur.categoryId === categoryId;
+      if (same) return { id: cur.id, change: "unchanged", previousPrice: curBasePrice };
       // isAvailable (sold-out state) is operational data: never overwritten by an import.
       await tx.product.update({ where: { id: cur.id }, data: { name: p.name, basePrice: p.basePrice, vatCategory: p.vatCategory, categoryId } });
-      return { id: cur.id, change: "updated", previousPrice: cur.basePrice };
+      return { id: cur.id, change: "updated", previousPrice: curBasePrice };
     },
     async upsertModifierGroup(g) {
       const cur = await tx.modifierGroup.findUnique({ where: { slug: g.slug } });
@@ -42,7 +43,7 @@ export function prismaCatalogStore(tx: Prisma.TransactionClient): CatalogStore {
       const cur = await tx.modifier.findUnique({ where: { modifierGroupId_slug: { modifierGroupId, slug: m.slug } } });
       const data = { name: m.name, priceAdjustment: m.priceAdjustment, sortOrder: m.sortOrder };
       if (!cur) return { id: (await tx.modifier.create({ data: { modifierGroupId, slug: m.slug, ...data } })).id, change: "created" };
-      if (cur.name === data.name && cur.priceAdjustment === data.priceAdjustment && cur.sortOrder === data.sortOrder) {
+      if (cur.name === data.name && Number(cur.priceAdjustment) === data.priceAdjustment && cur.sortOrder === data.sortOrder) {
         return { id: cur.id, change: "unchanged" };
       }
       await tx.modifier.update({ where: { id: cur.id }, data });

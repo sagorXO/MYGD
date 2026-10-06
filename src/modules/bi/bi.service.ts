@@ -24,20 +24,20 @@ export class BIService {
       });
 
       const orderCount = orders.length;
-      const grossRevenueEUR = Number(orders.reduce((sum, o) => sum + o.totalAmount, 0).toFixed(2));
+      const grossRevenueEUR = Number(orders.reduce((sum, o) => sum + Number(o.totalAmount), 0).toFixed(2));
       const { net: netRevenueEUR, vatAmount: vatAmountEUR } = calculateReverseVat(grossRevenueEUR);
 
       const cardRevenueEUR = Number(
         orders
           .filter((o) => o.paymentMethod === "CARD" || o.paymentMethod === "NFC_WALLET")
-          .reduce((sum, o) => sum + o.totalAmount, 0)
+          .reduce((sum, o) => sum + Number(o.totalAmount), 0)
           .toFixed(2)
       );
 
       const cashRevenueEUR = Number(
         orders
           .filter((o) => o.paymentMethod === "CASH")
-          .reduce((sum, o) => sum + o.totalAmount, 0)
+          .reduce((sum, o) => sum + Number(o.totalAmount), 0)
           .toFixed(2)
       );
 

@@ -5,7 +5,9 @@ import { POSOrderTender, POSOrderTenderSchema, Link4PayTerminalResponse } from "
 import { tcpPrintSpooler } from "../printer/tcp-spooler";
 import { ThermalChitPayload } from "../printer/printer.schema";
 import { deductOrderBOMAsync } from "../inventory/bom-decrement.engine";
-import { calculateReverseVat, DEFAULT_VAT_RATE } from "@/lib/tax";
+import { getVatRates } from "@/lib/vat-rates.db";
+import { bpToRate, splitGross, type VatCategory } from "@/lib/tax";
+import { centsToDecimalString, fromCents, toCents } from "@/lib/money";
 import { priceCart, type CartLine } from "@/lib/discounts/engine";
 import { findVoucher, loadActivePromotions, voucherToInput } from "@/lib/discounts/store";
 
@@ -37,9 +39,11 @@ export class POSService {
     // 1-2. Price the cart server-side: automatic promotions -> voucher / gift card -> staff percent.
     const products = await prisma.product.findMany({
       where: { id: { in: validated.lines.map((l) => l.productId) } },
-      select: { id: true, category: { select: { slug: true } } },
+      select: { id: true, vatCategory: true, category: { select: { slug: true } } },
     });
     const sectionByProduct = new Map(products.map((p) => [p.id, p.category.slug]));
+    const vatCategoryByProduct = new Map(products.map((p) => [p.id, p.vatCategory]));
+
     const cartLines: CartLine[] = validated.lines.map((l) => ({
       sku: l.sku,
       sectionSlug: sectionByProduct.get(l.productId) ?? "",
@@ -51,22 +55,52 @@ export class POSService {
     if (validated.voucherCode && !voucherRow) {
       throw new Error(`Voucher ${validated.voucherCode.toUpperCase()} does not exist`);
     }
-    const priced = priceCart({
+    const pricedDiscounts = priceCart({
       lines: cartLines,
       promotions: await loadActivePromotions(prisma),
       voucher: voucherRow ? voucherToInput(voucherRow) : undefined,
       manualPercent: validated.discountPercent,
     });
-    if (priced.voucher?.rejectedReason) {
-      throw new Error(`Voucher ${priced.voucher.code} cannot be used: ${priced.voucher.rejectedReason}`);
+    if (pricedDiscounts.voucher?.rejectedReason) {
+      throw new Error(`Voucher ${pricedDiscounts.voucher.code} cannot be used: ${pricedDiscounts.voucher.rejectedReason}`);
     }
-    const grossSubtotal = priced.subtotal;
-    const discountAmount = priced.discountTotal;
-    const finalTotal = priced.total;
-    const voucherAmount = priced.voucher?.amount ?? 0;
+    const grossSubtotal = pricedDiscounts.subtotal;
+    const discountAmount = pricedDiscounts.discountTotal;
+    const finalTotal = pricedDiscounts.total;
+    const voucherAmount = pricedDiscounts.voucher?.amount ?? 0;
 
-    // 3. VAT is included in the consumer price: net = gross / (1 + rate), vat = gross - net
-    const { net: netSubtotal, vatAmount } = calculateReverseVat(finalTotal);
+    // 3. Load VAT rates & calculate exact line-by-line net and VAT
+    const rates = await getVatRates();
+    const grossSubtotalCents = toCents(grossSubtotal);
+    const totalDiscountCents = toCents(discountAmount);
+    const finalTotalCents = toCents(finalTotal);
+
+    let allocatedDiscountCents = 0;
+    const pricedLines = validated.lines.map((l, index) => {
+      const lineListCents = toCents(l.totalPrice);
+      const isLast = index === validated.lines.length - 1;
+      const lineDiscount = isLast
+        ? totalDiscountCents - allocatedDiscountCents
+        : Math.round((totalDiscountCents * lineListCents) / (grossSubtotalCents || 1));
+      allocatedDiscountCents += lineDiscount;
+      const lineGrossCents = Math.max(0, lineListCents - lineDiscount);
+
+      const category = (vatCategoryByProduct.get(l.productId) ?? "FOOD_BEV") as VatCategory;
+      const rateBp = rates[category] ?? 500;
+      const split = splitGross(lineGrossCents, rateBp);
+
+      return {
+        baseUnitCents: toCents(l.basePrice),
+        vatCategory: category,
+        rateBp,
+        grossCents: lineGrossCents,
+        netCents: split.netCents,
+        vatCents: split.vatCents,
+      };
+    });
+
+    const totalNetCents = pricedLines.reduce((sum, l) => sum + l.netCents, 0);
+    const totalVatCents = pricedLines.reduce((sum, l) => sum + l.vatCents, 0);
 
     // 4. Cash change calculation
     let changeDue = 0;
@@ -90,15 +124,20 @@ export class POSService {
     }
 
     // Get sequence count for today
-    const countToday = await prisma.order.count({
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const todayOrdersCount = await prisma.order.count({
       where: {
         locationId: location.id,
         createdAt: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          gte: startOfDay,
+          lte: endOfDay,
         },
       },
     });
-    const dailySeq = countToday + 1;
+
+    const dailySeq = todayOrdersCount + 1;
     const orderNumber = `${validated.locationSlug}-${datePrefix}-${String(dailySeq).padStart(3, "0")}`;
 
     // Find or create terminal
@@ -123,77 +162,80 @@ export class POSService {
 
     // 6. Persist Order, Items and the voucher redemption atomically
     const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.order.create({
-      data: {
-        orderNumber,
-        dailySequence: dailySeq,
-        locationId: location.id,
-        terminalId: terminal.id,
-        orderType: validated.orderType,
-        orderStatus: "PREPARING",
-        paymentMethod: validated.paymentMethod,
-        paymentStatus: "CAPTURED",
-        subtotal: netSubtotal,
-        vatRate: DEFAULT_VAT_RATE,
-        vatAmount,
-        totalAmount: finalTotal,
-        discountAmount,
-        voucherCode: voucherRow?.code ?? null,
-        promotionCodes: priced.discounts.length ? JSON.stringify(priced.discounts.map((d) => d.code)) : null,
-        customerNote: validated.customerNote,
-        items: {
-          create: validated.lines.map((l) => ({
-            productId: l.productId,
-            productName: l.name,
-            productSku: l.sku,
-            basePrice: l.basePrice,
-            quantity: l.quantity,
-            spiceLevel: l.spiceLevel,
-            totalPrice: l.totalPrice,
-            itemNotes: [
-              l.breadType ? `Bread: ${l.breadType}` : "",
-              l.selectedSauces.length ? `Sauces: ${l.selectedSauces.join(", ")}` : "",
-              l.selectedAdditions.length ? `Add: ${l.selectedAdditions.map((a) => a.name).join(", ")}` : "",
-              l.selectedOmissions.length ? `No: ${l.selectedOmissions.join(", ")}` : "",
-              l.notes || "",
-            ]
-              .filter(Boolean)
-              .join(" | "),
-          })),
-        },
-        kitchenTickets: {
-          create: {
-            orderNumber,
-            orderType: validated.orderType,
-            station: "ALL",
-            ticketData: JSON.stringify(validated.lines),
-            ticketStatus: "QUEUED",
+      const created = await tx.order.create({
+        data: {
+          orderNumber,
+          dailySequence: dailySeq,
+          locationId: location.id,
+          terminalId: terminal.id,
+          orderType: validated.orderType,
+          orderStatus: "PREPARING",
+          paymentMethod: validated.paymentMethod,
+          paymentStatus: "CAPTURED",
+          subtotal: centsToDecimalString(totalNetCents),
+          vatAmount: centsToDecimalString(totalVatCents),
+          totalAmount: centsToDecimalString(finalTotalCents),
+          discountAmount: centsToDecimalString(totalDiscountCents),
+          voucherCode: voucherRow?.code ?? null,
+          promotionCodes: pricedDiscounts.discounts.length ? JSON.stringify(pricedDiscounts.discounts.map((d) => d.code)) : null,
+          customerNote: validated.customerNote,
+          items: {
+            create: validated.lines.map((l, index) => ({
+              productId: l.productId,
+              productName: l.name,
+              productSku: l.sku,
+              basePrice: centsToDecimalString(pricedLines[index].baseUnitCents),
+              quantity: l.quantity,
+              spiceLevel: l.spiceLevel,
+              vatCategory: pricedLines[index].vatCategory,
+              vatRate: bpToRate(pricedLines[index].rateBp),
+              netAmount: centsToDecimalString(pricedLines[index].netCents),
+              vatAmount: centsToDecimalString(pricedLines[index].vatCents),
+              totalPrice: centsToDecimalString(pricedLines[index].grossCents),
+              itemNotes: [
+                l.breadType ? `Bread: ${l.breadType}` : "",
+                l.selectedSauces.length ? `Sauces: ${l.selectedSauces.join(", ")}` : "",
+                l.selectedAdditions.length ? `Add: ${l.selectedAdditions.map((a) => a.name).join(", ")}` : "",
+                l.selectedOmissions.length ? `No: ${l.selectedOmissions.join(", ")}` : "",
+                l.notes || "",
+              ]
+                .filter(Boolean)
+                .join(" | "),
+            })),
+          },
+          kitchenTickets: {
+            create: {
+              orderNumber,
+              orderType: validated.orderType,
+              station: "ALL",
+              ticketData: JSON.stringify(validated.lines),
+              ticketStatus: "QUEUED",
+            },
           },
         },
-      },
-      include: {
-        items: true,
-        kitchenTickets: true,
-      },
-    });
-
-    if (voucherRow && voucherAmount > 0) {
-      // Optimistic guard: only succeeds if nobody redeemed this voucher since we read it.
-      const claimed = await tx.voucher.updateMany({
-        where: { id: voucherRow.id, redemptions: voucherRow.redemptions },
-        data: {
-          redemptions: { increment: 1 },
-          ...(voucherRow.kind === "GIFT_CARD" ? { balance: priced.voucher?.balanceAfter ?? 0 } : {}),
+        include: {
+          items: true,
+          kitchenTickets: true,
         },
       });
-      if (claimed.count !== 1) {
-        throw new Error(`Voucher ${voucherRow.code} was just used on another till — try again`);
+
+      if (voucherRow && voucherAmount > 0) {
+        // Optimistic guard: only succeeds if nobody redeemed this voucher since we read it.
+        const claimed = await tx.voucher.updateMany({
+          where: { id: voucherRow.id, redemptions: voucherRow.redemptions },
+          data: {
+            redemptions: { increment: 1 },
+            ...(voucherRow.kind === "GIFT_CARD" ? { balance: pricedDiscounts.voucher?.balanceAfter ?? 0 } : {}),
+          },
+        });
+        if (claimed.count !== 1) {
+          throw new Error(`Voucher ${voucherRow.code} was just used on another till — try again`);
+        }
+        await tx.voucherRedemption.create({
+          data: { voucherId: voucherRow.id, orderId: created.id, amount: voucherAmount },
+        });
       }
-      await tx.voucherRedemption.create({
-        data: { voucherId: voucherRow.id, orderId: created.id, amount: voucherAmount },
-      });
-    }
-    return created;
+      return created;
     });
 
     // 7. Atomic BOM Inventory Decrement
@@ -258,10 +300,10 @@ export class POSService {
       dailySequence: dailySeq,
       subtotal: grossSubtotal,
       discountAmount,
-      appliedPromotions: priced.discounts.map((d) => ({ ...d })),
+      appliedPromotions: pricedDiscounts.discounts.map((d) => ({ ...d })),
       voucherAmount,
-      taxableSubtotal: netSubtotal,
-      vatAmount,
+      taxableSubtotal: fromCents(totalNetCents),
+      vatAmount: fromCents(totalVatCents),
       totalAmount: finalTotal,
       changeDue: changeDue > 0 ? changeDue : undefined,
       paymentRef: `LP-${Date.now().toString().slice(-6)}`,

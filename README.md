@@ -1,11 +1,18 @@
 ---
 stale-refs:
+  - source: docs/PRD.md
+    changed_at: "2026-10-06T06:51:30"
+    sections_changed: [⚙️ Configuration catalogue (v1.1)]
+    summary: "Added: Every value below is **a setting or a table row, never a literal in code** (P.8). Scope: **G** global, **L** per location, **C** per channel. \"Initial\" is the value to seed; where the source is an open question the value is not guessed and the setting is required before the feature is enabled. Editors: **O** owner, **M** manager. Every change is audited.; | Key | Meaning | Scope | Initial / default | Editor | Source |; |---|---|---|---|---|---| (+34 more)"
+  - source: docs/open-questions.md
+    changed_at: "2026-10-06T06:51:51"
+    sections_changed: ["PRD v1.1 additions (2026-10-06): order channels and day close", Legacy data (added 2026-10-03)]
+    summary: "Added: Source: `docs/gladius-feature-extraction.md`. None of these may be guessed in code; each is a setting or a marked TODO (PRD P.8).; **Order channels (M12)**; - **Q-FOODY-1 (OPEN, blocking M12)** Does Foody (and Bolt, Wolt) give MYGD a direct API or webhook, or is the Softech bridge the only route? Who owns the credentials, and are platform orders paid to the platform (assumed) or sometimes collected in cash? (+19 more)"
   - source: DESIGN.md
     changed_at: "2026-10-06T00:37:14"
     sections_changed: []
     summary: externally modified
 ---
-
 
 # MY GERMAN DÖNER (MYGD) — Operations System
 
@@ -25,12 +32,14 @@ Our own PostgreSQL database is the single source of truth. Self-order kiosks are
 
 | Document | What it is |
 |---|---|
-| [`docs/PRD.md`](docs/PRD.md) | Master product requirements, grouped by module (M1–M12) |
+| [`docs/PRD.md`](docs/PRD.md) | Master product requirements, grouped by module (M1–M13). **Draft v1.1** (v1.0 approved 2026-10-03): order channel intake, day close, configuration rules |
+| [`docs/hardcoded-values-register.md`](docs/hardcoded-values-register.md) | Hard-coded values found in the code and how each is fixed (PRD P.8) |
 | [`docs/TRD.md`](docs/TRD.md) | Technical requirements: architecture, stack, schema (current + proposed), API, security |
 | [`docs/open-questions.md`](docs/open-questions.md) | Everything unknown; code uses config values or marked TODOs for these |
 | [`docs/contract-alignment.md`](docs/contract-alignment.md) | Signed contract vs current plan (variances needing client confirmation) |
 | [`docs/audit-phase0.md`](docs/audit-phase0.md) | Phase 0 audit of the codebase (2026-10-01 snapshot) |
 | [`docs/printing-inventory.md`](docs/printing-inventory.md) | Which print code the till uses |
+| [`docs/gladius-feature-extraction.md`](docs/gladius-feature-extraction.md) | Everything usable from the old Gladius till: features with modern designs, Z-report layout, reference data, hardware facts, data model, switch-off checklist |
 | [`DESIGN.md`](DESIGN.md) | Design system (tokens live in `src/ui/tokens.css`) |
 | `Documents/` | Signed contract, Rev 3.1 (MSA, SOW, payment schedule, prerequisites) and issued invoices |
 | `Requirements/` | Client's original developer brief (4 Aug 2026) |

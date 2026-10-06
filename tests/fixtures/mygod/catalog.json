@@ -1,0 +1,81 @@
+{
+  "success": true,
+  "schema_version": "dm.sagar.v1",
+  "group": "mygermandoener",
+  "store_id": "576712",
+  "environment": "test",
+  "generated_at": "2026-10-03T09:00:00Z",
+  "catalog_revision": "synthetic-catalog-1",
+  "currency": "EUR",
+  "catalog": {
+    "products": [
+      {
+        "id": "P001",
+        "name": "Synthetic Wrap",
+        "price": 8.5,
+        "available": true,
+        "options": [
+          {
+            "id": "O01",
+            "product_id_option_id": "P001_O01",
+            "title": "Sauce",
+            "type": "single",
+            "is_require": false,
+            "min_selected": 0,
+            "max_selected": 1,
+            "choices": [
+              { "id": "C01", "option_id_choice_id": "P001_O01_C01", "title": "Synthetic Garlic", "is_preselected": true, "price": 0, "available": true }
+            ]
+          },
+          {
+            "id": "O02",
+            "product_id_option_id": "P001_O02",
+            "title": "Extras",
+            "type": "multi",
+            "is_require": false,
+            "min_selected": 0,
+            "max_selected": 3,
+            "choices": [
+              { "id": "C02", "option_id_choice_id": "P001_O02_C02", "title": "Synthetic Cheese", "is_preselected": false, "price": 0.5, "available": true }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "P002",
+        "name": "Synthetic Döner",
+        "price": 6.9,
+        "available": null,
+        "options": [
+          {
+            "id": "O01",
+            "product_id_option_id": "P002_O01",
+            "title": "Sauce",
+            "type": "single",
+            "is_require": true,
+            "min_selected": 1,
+            "max_selected": 1,
+            "choices": [
+              { "id": "C01", "option_id_choice_id": "P002_O01_C01", "title": "Synthetic Garlic", "is_preselected": false, "price": null, "available": null }
+            ]
+          },
+          {
+            "id": "O03",
+            "product_id_option_id": "P002_O03",
+            "title": "Name on bag",
+            "type": "text",
+            "is_require": false,
+            "min_selected": null,
+            "max_selected": null,
+            "choices": []
+          }
+        ]
+      },
+      { "id": "P003", "name": "Synthetic Wrap", "price": 9, "available": true, "options": [] }
+    ],
+    "categories": [
+      { "id": "CAT001", "name": "Synthetic Test Menu", "products": ["P001", "P002", "P003"] }
+    ]
+  },
+  "request_id": "fixture-catalog-request"
+}

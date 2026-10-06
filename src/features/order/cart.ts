@@ -1,8 +1,10 @@
 // Pure cart logic for the mobile pre-order page. All money is integer cents.
 // Catalogue prices are VAT-inclusive (see src/lib/tax.ts), so VAT is extracted, not added.
 
+import { DEFAULT_VAT_RATE } from "../../lib/tax";
+
 export const MENU_UPGRADE_CENTS = 300;
-export const VAT_RATE = 0.09;
+export const VAT_RATE = DEFAULT_VAT_RATE;
 export const MIN_VEHICLE_CHARS = 3;
 
 export interface CartLine {

@@ -25,13 +25,13 @@ test("setQty to zero removes the line", () => {
   assert.equal(l.length, 0);
 });
 
-test("totals extract 9% VAT from gross prices", () => {
+test("totals extract VAT from gross prices", () => {
   const l = c.setQty(c.addLine([], doener), "ord-1", 2);
   const t = c.totals(l);
   assert.equal(t.count, 2);
   assert.equal(t.totalCents, 1380);
   assert.equal(t.netCents + t.vatCents, t.totalCents);
-  assert.equal(t.vatCents, 114);
+  assert.equal(t.vatCents, 66);
 });
 
 test("vehicle is required only for drive-through", () => {

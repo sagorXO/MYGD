@@ -9,7 +9,7 @@ Status: **DRAFT, awaiting approval. No code written.** Date: 2026-10-05. Branch:
 | **MyGOD / MYGD** | The store: My German Döner. DM store `group=mygermandoener`, `store_id=576712`. |
 | **DM (Delivery Manager)** | The vendor behind this integration (portal on bridges.gr). Owns the catalog and the kiosk/online order services. Contract `dm.sagar.v1`, doc release 0.2.3. |
 | **"Sagar"** (in the vendor docs) | Us: the destination POS = this codebase. |
-| **DM Soft** | A *different* company (sold the GoKiosk kiosk). The TRD/PRD items M12 / Q-DM-* / `/api/integrations/dmsoft/orders` describe that supplier. This work does **not** reuse those names. |
+| **DM Soft** | **Same vendor as DM** (confirmed by Sagar 2026-10-06; portal header: "Owner: DM Integrations → DM SOFT IKE"). DM Soft sold the GoKiosk kiosk and runs the bridge portal. The TRD/PRD items M12 / Q-DM-* / `/api/integrations/dmsoft/orders` are **superseded** by the `dm.sagar.v1` contract in this plan; the route is `/api/webhooks/mygod/orders`. |
 
 ## 1. What the vendor docs say (source: portal handbook 0.2.3, pasted 2026-10-05)
 
@@ -162,7 +162,7 @@ Repo has a `Dockerfile` only (no compose, no cloud config). I will **not** inven
 ## 5. Config (names only)
 
 Secrets (env only): `MYGOD_CATALOG_API_TOKEN`, `MYGOD_WEBHOOK_RECEIVER_TOKEN`, later `MYGOD_STATUS_API_TOKEN`.
-Non-secret: `MYGOD_CATALOG_API_BASE_URL`, `MYGOD_STATUS_API_BASE_URL` (if different), `MYGOD_STORE_GROUP=mygermandoener`, `MYGOD_STORE_ID=576712`, `MYGOD_ENVIRONMENT=test`.
+Non-secret: `MYGOD_CATALOG_API_BASE_URL=https://elueplanqhnqogfzahzdknthgu0iyfdg.lambda-url.eu-west-1.on.aws` (from the portal's catalog page; catalog-only, verified 2026-10-04), `MYGOD_STATUS_API_BASE_URL` (**not the catalog host**: DM's rehearsal templates use a non-live host and the catalog deployment answers 403 to callbacks; value still to come from DM), `MYGOD_STORE_GROUP=mygermandoener`, `MYGOD_STORE_ID=576712`, `MYGOD_ENVIRONMENT=test`.
 
 ## 6. Open questions
 
@@ -178,7 +178,7 @@ Non-secret: `MYGOD_CATALOG_API_BASE_URL`, `MYGOD_STATUS_API_BASE_URL` (if differ
 
 **For DM (vendor)**
 - **V-1** Full `sagar-v1.json`, `integration-manifest.json`, `catalog-access.txt` and `payloads/*`: needed to build schemas (the handbook prose is not enough for field-level types).
-- **V-2** Is the `/status` API base the same Lambda URL as the catalog base? When is the `orders:status` grant issued?
+- **V-2** *(partly answered 2026-10-06: the status base is NOT the catalog Lambda; callbacks there return 403 and must not be sent.)* What is the status API base URL, and when is the `orders:status` grant issued?
 - **V-3** Exact error body/status for "same key, different bytes" and for receiver rejections; DM's retry count/interval and DLQ behaviour; do they publish egress IPs?
 - **V-4** Payment method and VAT fields in the order (VAT is "included"; is a per-line/rate breakdown sent?). Our MSA says 9% food / 19% alcohol.
 - **V-5** Can DM trigger a **synthetic test delivery** to our staging URL before the joint window (the docs say real forwarding is disabled)?
@@ -186,3 +186,25 @@ Non-secret: `MYGOD_CATALOG_API_BASE_URL`, `MYGOD_STATUS_API_BASE_URL` (if differ
 ## 7. Security note
 
 The portal password and catalog token were pasted into this chat. The vendor handbook says not to give credentials to an AI prompt. I did not use them. Ask DM to rotate both once the work is done, and put the token in `.env.local` yourself.
+
+## 8. Findings from the full OpenAPI (0.2.3, read 2026-10-06; copy at `vendor/openapi.json`)
+
+**Schema facts that change the build**
+1. **Every object is `additionalProperties:false`.** Zod schemas are `.strict()`, pinned to `schema_version = dm.sagar.v1`.
+2. **Money arrives as JSON numbers (floats).** Convert to integer cents at the boundary (round, then verify the float was within 1e-6 of a 2-decimal value, else `invalid_order`) and store `Decimal(10,2)`. The **content hash is taken over the raw request bytes**, never a re-serialised object.
+3. **Only identities the spec states are enforced:** `grand_total = items_total + delivery_fee + service_fee + bag_fee + packaging_fee + tip_total − discount_total`; `items_total = Σ line_total`; `line_total = base_line_total + modifiers_total`; `tip_total = delivery_tip_total + waiter_tip_total`; `paid_amount + amount_due = grand_total`; `paid ⇒ amount_due = 0`. Per-line `unit_price × quantity` is *not* asserted (V-10).
+4. **Fulfilment maps 1:1:** `delivery | takeaway | dinein` ↔ our `DELIVERY | TAKE_AWAY | DINE_IN`. Delivery requires `customer.phone`; takeaway/dinein allow `customer = null`. `table_id` is a string. Payment: method `cash | credit_card | other`, status `paid | pay_on_fulfillment`.
+5. **Modifiers:** `selected` is always `true`; `selection_type` is `selected | removed | default_included`. A `removed` default is an explicit removal (price may be 0 or negative). `quantity` is across the whole line. `bundle_parent_line_id` must reference a `line_id` in the same order, no cycles. `text_options[]` keyed by `product_id_option_id`.
+6. **`unresolved` and `flags.contains_unresolved_items` are `const false`**: `true` is schema-invalid.
+7. **Idempotency:** `Idempotency-Key` header is required. Uniqueness is on scope + `order_uid` *independent of revision*; a different `export_revision` for a known `order_uid` is a **409 `revision_conflict`**, never a second sale.
+
+**Receiver replies (only these are documented):** `200/202 {success,order_uid,export_revision}`, `401`, `409`, `422`, `429`, `500`, `503`. Error body is the DM envelope `{success:false, comment_id, message, next_steps[≥1], request_id, retriable}`. Our mapping: 401→`invalid_auth`, 409→`revision_conflict`, 422→`invalid_params`, 429→`rate_limit_exceeded`, 503→`orders_unavailable`, 500→`internal_error`. **This supersedes plan rows R3/R4:** wrong store/environment → **401** (matches DM's own API), bad shape/oversize/wrong content type → **422**, not 403/413/415.
+
+**Callback (`/status`):** `received {export_revision, sagar_order_id, registered_at?}` → 200 with `already_applied`; `rejected {export_revision, issue{code,message,unmapped_ids[]}}` → 200 with `sagar_order_id:null`. 404 = not in our scope (stop and escalate, do not probe); 409 = reconcile; 422 = repair body; 401/403 = credential/grant.
+
+**New questions for DM**
+- **V-6** Unmapped lines: reply 200/202 and later send `rejected` (handbook; our recommendation), or reply 422 at the webhook (the OpenAPI 422 text says "Invalid order or missing mapping")?
+- **V-7** The schema also allows deliveries with `import_state: "blocked"` + `issue`. What do they mean? Default until answered: store, acknowledge receipt, never import, show to the operator.
+- **V-8** `selection_type` description lists `unknown`, the enum does not. Will it ever be sent?
+- **V-9** Which status for wrong store/environment, oversize body and wrong content type (only 401/409/422/429/500/503 are documented for the receiver)? We use 401 and 422.
+- **V-10** Does `base_line_total = unit_price × quantity` always hold? Are discounts only order-level?
