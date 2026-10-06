@@ -1,3 +1,12 @@
+---
+stale-refs:
+  - source: DESIGN.md
+    changed_at: "2026-10-06T00:37:14"
+    sections_changed: []
+    summary: externally modified
+---
+
+
 # MY GERMAN DÖNER (MYGD) — Operations System
 
 A connected operations system for the MY GERMAN DÖNER restaurants in Cyprus (Emba / Paphos; Limassol Marina to follow):

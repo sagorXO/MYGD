@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
+import { SurfaceRoot } from "@/ui";
 
 interface SupplierInfo {
   id: string;
@@ -72,10 +73,10 @@ export default function BackofficeAdminPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#121214] text-white font-sans p-6 sm:p-10 space-y-8">
+    <SurfaceRoot surface="admin" className="min-h-screen bg-[#F7F7F8] text-[#171719] font-sans p-6 sm:p-10 space-y-8">
       {/* ⚠️ GLOBAL SYSTEM-WIDE LOW INVENTORY WARNING BANNER */}
       {shortItems.length > 0 && (
-        <div className="bg-[#EF4444]/15 border-2 border-[#EF4444] rounded-3xl p-5 shadow-2xl relative overflow-hidden animate-pulse">
+        <div className="bg-red-50 border-2 border-red-500 rounded-3xl p-5 shadow-lg relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <div className="w-12 h-12 rounded-2xl bg-[#EF4444] flex items-center justify-center text-white shadow-lg shrink-0">
@@ -86,13 +87,13 @@ export default function BackofficeAdminPage() {
                   <span className="px-2 py-0.5 rounded bg-[#EF4444] text-white font-mono text-[10px] font-black uppercase tracking-wider">
                     SYSTEM ALERT
                   </span>
-                  <span className="text-xs font-mono text-[#EF4444] uppercase tracking-widest font-black">
+                  <span className="text-xs font-mono text-red-600 uppercase tracking-widest font-black">
                     {shortItems.length} INGREDIENT(S) SHORT IN STORE 01 INVENTORY
                   </span>
                 </div>
-                <h3 className="font-display font-black text-xl text-white uppercase tracking-tight mt-0.5">
+                <h3 className="font-display font-black text-xl text-zinc-900 uppercase tracking-tight mt-0.5">
                   CRITICAL LOW STOCK WARNING:{" "}
-                  <span className="text-[#00FCED]">
+                  <span className="text-[#E50D7E]">
                     {shortItems.map((i) => i.name).join(", ")}
                   </span>
                 </h3>
@@ -106,7 +107,7 @@ export default function BackofficeAdminPage() {
                   <button
                     key={item.id}
                     onClick={() => setContactSupplier(item.supplier!)}
-                    className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-lg transition-all hover:scale-105"
+                    className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-md transition-all hover:scale-105"
                   >
                     <MessageSquare size={13} className="fill-black" />
                     <span>Contact {item.supplier.name}</span>
@@ -119,16 +120,16 @@ export default function BackofficeAdminPage() {
       )}
 
       {/* Top Header Navigation */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-2 border-[#3A3A3E] pb-6">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#DFDFE3] pb-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#E50D7E] flex items-center justify-center font-display font-black text-white text-2xl shadow-xl">
+          <div className="w-12 h-12 rounded-2xl bg-[#E50D7E] flex items-center justify-center font-display font-black text-white text-2xl shadow-md">
             GD
           </div>
           <div>
-            <h1 className="font-display font-black text-2xl sm:text-3xl text-white uppercase tracking-tight leading-none">
+            <h1 className="font-display font-black text-2xl sm:text-3xl text-[#171719] uppercase tracking-tight leading-none">
               MY GERMAN DÖNER · HQ OPERATIONS PORTAL
             </h1>
-            <span className="text-xs font-mono font-bold text-[#E5A93C] uppercase tracking-widest mt-1 block">
+            <span className="text-xs font-mono font-bold text-[#E50D7E] uppercase tracking-widest mt-1 block">
               MULTI-LOCATION OPERATIONS CONTROL: EMBA (PAPHOS) & LIMASSOL MARINA
             </span>
           </div>
@@ -138,21 +139,21 @@ export default function BackofficeAdminPage() {
         <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
           <Link
             href="/pos"
-            className="px-3 py-2 rounded-xl bg-[#2B2B2E] hover:bg-[#343438] text-white border border-[#3A3A3E] flex items-center gap-1.5"
+            className="px-3 py-2 rounded-xl bg-white hover:bg-zinc-100 text-zinc-800 border border-[#DFDFE3] shadow-sm flex items-center gap-1.5"
           >
-            <ShoppingBag size={14} className="text-[#E5A93C]" />
+            <ShoppingBag size={14} className="text-[#E50D7E]" />
             <span>Counter POS</span>
           </Link>
           <Link
             href="/boards"
-            className="px-3 py-2 rounded-xl bg-[#2B2B2E] hover:bg-[#343438] text-white border border-[#3A3A3E] flex items-center gap-1.5"
+            className="px-3 py-2 rounded-xl bg-white hover:bg-zinc-100 text-zinc-800 border border-[#DFDFE3] shadow-sm flex items-center gap-1.5"
           >
-            <Tv size={14} className="text-[#00FCED]" />
+            <Tv size={14} className="text-[#00B4D8]" />
             <span>4K Signage</span>
           </Link>
           <Link
             href="/display"
-            className="px-3 py-2 rounded-xl bg-[#2B2B2E] hover:bg-[#343438] text-white border border-[#3A3A3E] flex items-center gap-1.5"
+            className="px-3 py-2 rounded-xl bg-white hover:bg-zinc-100 text-zinc-800 border border-[#DFDFE3] shadow-sm flex items-center gap-1.5"
           >
             <Tv size={14} className="text-[#10B981]" />
             <span>CX Wait TV</span>
@@ -161,13 +162,13 @@ export default function BackofficeAdminPage() {
       </header>
 
       {/* Main Module Switcher (4 Unified Pillars) */}
-      <nav className="flex items-center bg-[#1F1F21] p-1.5 rounded-2xl border border-[#3A3A3E] max-w-4xl text-xs font-display font-black flex-wrap sm:flex-nowrap gap-1">
+      <nav className="flex items-center bg-white p-1.5 rounded-2xl border border-[#DFDFE3] shadow-sm max-w-4xl text-xs font-display font-black flex-wrap sm:flex-nowrap gap-1">
         <button
           onClick={() => setActiveTab("BI")}
           className={`flex-1 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 text-center whitespace-nowrap ${
             activeTab === "BI"
-              ? "bg-[#E50D7E] text-white shadow-lg shadow-magenta-950/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-[#E50D7E] text-white shadow-md"
+              : "text-zinc-600 hover:text-zinc-900"
           }`}
         >
           <TrendingUp size={16} />
@@ -178,8 +179,8 @@ export default function BackofficeAdminPage() {
           onClick={() => setActiveTab("MENU")}
           className={`flex-1 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 text-center whitespace-nowrap ${
             activeTab === "MENU"
-              ? "bg-[#E50D7E] text-white shadow-lg shadow-magenta-950/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-[#E50D7E] text-white shadow-md"
+              : "text-zinc-600 hover:text-zinc-900"
           }`}
         >
           <UtensilsCrossed size={16} />
@@ -190,8 +191,8 @@ export default function BackofficeAdminPage() {
           onClick={() => setActiveTab("INVENTORY")}
           className={`flex-1 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 text-center whitespace-nowrap relative ${
             activeTab === "INVENTORY"
-              ? "bg-[#E50D7E] text-white shadow-lg shadow-magenta-950/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-[#E50D7E] text-white shadow-md"
+              : "text-zinc-600 hover:text-zinc-900"
           }`}
         >
           <PackageCheck size={16} />
@@ -205,8 +206,8 @@ export default function BackofficeAdminPage() {
           onClick={() => setActiveTab("STAFF")}
           className={`flex-1 py-3 px-2 rounded-xl transition-all flex items-center justify-center gap-2 text-center whitespace-nowrap ${
             activeTab === "STAFF"
-              ? "bg-[#E50D7E] text-white shadow-lg shadow-magenta-950/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-[#E50D7E] text-white shadow-md"
+              : "text-zinc-600 hover:text-zinc-900"
           }`}
         >
           <ShieldCheck size={16} />
@@ -226,11 +227,11 @@ export default function BackofficeAdminPage() {
       {/* QUICK SUPPLIER CONTACT MODAL                                 */}
       {/* ============================================================ */}
       {contactSupplier && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#1F1F21] border-2 border-[#25D366] rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-[#25D366] rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative text-zinc-900">
             <button
               onClick={() => setContactSupplier(null)}
-              className="absolute top-5 right-5 p-2 rounded-xl bg-[#2B2B2E] hover:bg-[#3A3A3E] text-zinc-400 hover:text-white"
+              className="absolute top-5 right-5 p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900"
             >
               <X size={18} />
             </button>
@@ -240,19 +241,19 @@ export default function BackofficeAdminPage() {
                 <MessageSquare size={24} className="fill-[#25D366]" />
               </div>
               <div>
-                <span className="text-[10px] font-mono text-[#25D366] uppercase tracking-widest font-black">
+                <span className="text-[10px] font-mono text-emerald-700 uppercase tracking-widest font-black">
                   OFFICIAL SUPPLIER CONTACT
                 </span>
-                <h3 className="font-display font-black text-xl text-white uppercase tracking-tight">
+                <h3 className="font-display font-black text-xl text-zinc-900 uppercase tracking-tight">
                   {contactSupplier.name}
                 </h3>
               </div>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
-              <div className="bg-[#2B2B2E] p-3 rounded-xl border border-[#3A3A3E] space-y-1">
-                <span className="text-zinc-400 text-[11px] block">Contact Representative:</span>
-                <span className="text-white font-bold text-sm block">
+              <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 space-y-1">
+                <span className="text-zinc-500 text-[11px] block">Contact Representative:</span>
+                <span className="text-zinc-900 font-bold text-sm block">
                   {contactSupplier.contactName || "Commercial Orders Desk"}
                 </span>
               </div>
@@ -264,7 +265,7 @@ export default function BackofficeAdminPage() {
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40 transition-all hover:scale-[1.02]"
+                className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.02]"
               >
                 <MessageSquare size={18} className="fill-black" />
                 <span>WhatsApp: {contactSupplier.whatsApp}</span>
@@ -273,9 +274,9 @@ export default function BackofficeAdminPage() {
               {/* Direct Phone Call Button */}
               <a
                 href={`tel:${contactSupplier.whatsApp}`}
-                className="w-full py-3 px-4 rounded-xl bg-[#2B2B2E] hover:bg-[#38383D] border border-[#3A3A3E] text-white font-display font-black text-sm uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-900 font-display font-black text-sm uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
               >
-                <Phone size={16} className="text-[#00FCED]" />
+                <Phone size={16} className="text-[#00B4D8]" />
                 <span>Call Phone: {contactSupplier.whatsApp}</span>
               </a>
 
@@ -285,9 +286,9 @@ export default function BackofficeAdminPage() {
                   href={`mailto:${contactSupplier.email}?subject=${encodeURIComponent(
                     "MY GERMAN DÖNER - Urgent Inventory Restock Purchase Order"
                   )}`}
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#2B2B2E] hover:bg-[#38383D] border border-[#3A3A3E] text-zinc-300 font-mono text-xs flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-2.5 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-800 font-mono text-xs flex items-center justify-center gap-2 transition-all"
                 >
-                  <Mail size={14} className="text-zinc-400" />
+                  <Mail size={14} className="text-zinc-500" />
                   <span>Email: {contactSupplier.email}</span>
                 </a>
               )}
@@ -296,7 +297,7 @@ export default function BackofficeAdminPage() {
             <div className="pt-2">
               <button
                 onClick={() => setContactSupplier(null)}
-                className="w-full py-2 rounded-xl bg-[#2B2B2E] hover:bg-[#3A3A3E] text-zinc-400 hover:text-white font-mono text-xs"
+                className="w-full py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 font-mono text-xs"
               >
                 Dismiss
               </button>
@@ -304,6 +305,6 @@ export default function BackofficeAdminPage() {
           </div>
         </div>
       )}
-    </div>
+    </SurfaceRoot>
   );
 }

@@ -4,6 +4,9 @@ export interface StoreLocation {
   area: string;
   address: string;
   hours: string;
+  /** Local (Cyprus) opening and closing time, 24h `HH:MM`; drives the open-now status. */
+  opens: string;
+  closes: string;
   phone: string;
   phoneHref: string;
   mapsHref: string;
@@ -20,6 +23,8 @@ export const LOCATIONS: StoreLocation[] = [
     area: "Paphos",
     address: "Pavlides Court, Agíou Stefánou Street 134, 8260 Emba",
     hours: "Daily 11:00 – 22:00",
+    opens: "11:00",
+    closes: "22:00",
     phone: "+357 99 531198",
     phoneHref: "tel:+35799531198",
     mapsHref: "https://maps.google.com/?q=Pavlides+Court+Agiou+Stefanou+134+Emba+Paphos",
@@ -31,6 +36,8 @@ export const LOCATIONS: StoreLocation[] = [
     area: "Limassol",
     address: "Limassol Marina, Commercial Promenade, 3042 Limassol",
     hours: "Daily 11:00 – 22:00",
+    opens: "11:00",
+    closes: "22:00",
     phone: "+357 99 654321",
     phoneHref: "tel:+35799654321",
     mapsHref: "https://maps.google.com/?q=Limassol+Marina+Commercial+Promenade",

@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
         badge: badge || null,
         calories: calories ? parseInt(calories.toString(), 10) : null,
         allergens: allergens ? (typeof allergens === "string" ? allergens : JSON.stringify(allergens)) : null,
-        imageUrl: imageUrl || "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+        imageUrl: imageUrl || "/assets/menu/products/hamburg-doener.jpg",
         isVeggie: Boolean(isVeggie),
         isSpicy: Boolean(isSpicy),
         isAvailable: true,

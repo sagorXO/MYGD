@@ -34,7 +34,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
       meatWeight: "150g Sliced Rotisserie Meat",
       breadType: "Crispy Turkish Fladenbrot",
       sauceSequence: "Bottom: Knoblauch (Garlic) ➔ Top: Kräuter (Herb) + Optional Scharf (Chili)",
-      imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       sortOrder: 1,
     },
     steps: [
@@ -44,7 +44,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Fladenbrot 45s im Kontaktgrill toasten.",
         targetSec: 45,
         qualityCheck: "Golden grill marks, bread warmth > 60°C.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 2,
@@ -52,7 +52,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "20g Knoblauchsauce auf dem Brotinnenboden verstreichen.",
         targetSec: 15,
         qualityCheck: "Even edge-to-edge coat, no bare bread corners.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 3,
@@ -60,7 +60,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "40g Rotkohl und Eisbergsalat gleichmäßig verteilen.",
         targetSec: 15,
         qualityCheck: "Crisp texture, cabbage drained of excess moisture.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 4,
@@ -68,7 +68,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Genau 150g heißes Fleisch auf Waage abwiegen (> 75°C).",
         targetSec: 30,
         qualityCheck: "Zero meat clumps, steam rising, strictly 150g ± 5g.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 5,
@@ -76,7 +76,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "3 Tomatenscheiben, Gurken und frische Petersilie einlegen.",
         targetSec: 15,
         qualityCheck: "Vibrant color distribution edge-to-edge.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 6,
@@ -84,7 +84,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Kräutersauce und Scharf-Gewürz nach Kundenwunsch dosieren.",
         targetSec: 10,
         qualityCheck: "Uniform sauce drizzle along top crest.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
       {
         stepNumber: 7,
@@ -92,7 +92,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Döner in MYGD Papiertasche stecken.",
         targetSec: 10,
         qualityCheck: "Upright presentation, clean sleeve exterior with no sauce smudges.",
-        imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+        imageUrl: "/assets/menu/products/hamburg-doener.jpg",
       },
     ],
   },
@@ -105,7 +105,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
       meatWeight: "150g Sliced Rotisserie Meat",
       breadType: "Warm Thin Lavash Flatbread",
       sauceSequence: "Even stripe of Kräuter & Knoblauch down center line",
-      imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/beef-wrap.jpg",
       sortOrder: 2,
     },
     steps: [
@@ -115,7 +115,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Lavash-Brot 15s auf dem Kontaktgrill erwärmen.",
         targetSec: 15,
         qualityCheck: "Warm and flexible, zero tearing.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
       {
         stepNumber: 2,
@@ -123,7 +123,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Saucen gleichmäßig auf dem mittleren Drittel verteilen.",
         targetSec: 10,
         qualityCheck: "Uniform sauce stripe, clean borders.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
       {
         stepNumber: 3,
@@ -131,7 +131,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "150g frisch geschnittenes Fleisch mittig auflegen.",
         targetSec: 25,
         qualityCheck: "Meat temperature > 75°C, exact 150g portion.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
       {
         stepNumber: 4,
@@ -139,7 +139,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Mit Kraut, Tomaten, Zwiebeln und Kräutern belegen.",
         targetSec: 15,
         qualityCheck: "Fresh crisp salad, evenly proportioned.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
       {
         stepNumber: 5,
@@ -147,7 +147,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Boden einschlagen, fest rollen und 20s anknuspern.",
         targetSec: 20,
         qualityCheck: "Tight structural roll, light grill marks.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
       {
         stepNumber: 6,
@@ -155,7 +155,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Untere Hälfte in MYGD Alufolie wickeln.",
         targetSec: 10,
         qualityCheck: "Clean exterior presentation, no sauce leakage.",
-        imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800",
+        imageUrl: "/assets/menu/products/beef-wrap.jpg",
       },
     ],
   },
@@ -168,7 +168,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
       meatWeight: "150g Sliced Meat",
       breadType: "No Bread (Base: 150g Berlin Fries)",
       sauceSequence: "Double drizzle over fries + top meat layer",
-      imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/doener-bowl.jpg",
       sortOrder: 3,
     },
     steps: [
@@ -178,7 +178,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Frische Berliner Pommes bis zur Hälfte in die Box füllen.",
         targetSec: 15,
         qualityCheck: "Golden crispy fries, properly drained of oil.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
       {
         stepNumber: 2,
@@ -186,7 +186,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Pommes mit Paprika-Gewürzsalz bestreuen.",
         targetSec: 5,
         qualityCheck: "Even seasoning distribution.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
       {
         stepNumber: 3,
@@ -194,7 +194,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "1 Portion Knoblauch- oder Cocktailsauce auf die Pommes geben.",
         targetSec: 10,
         qualityCheck: "Even sauce coat over fry layer.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
       {
         stepNumber: 4,
@@ -202,7 +202,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "150g heißes Fleisch auf die Pommes schichten.",
         targetSec: 25,
         qualityCheck: "Meat temp > 75°C, exact 150g portion.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
       {
         stepNumber: 5,
@@ -210,7 +210,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Seitlich Rotkraut- und Tomatensalat anrichten.",
         targetSec: 10,
         qualityCheck: "Vibrant visual appeal and crisp texture.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
       {
         stepNumber: 6,
@@ -218,7 +218,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Mit Obersauce garnieren und Holzgabel beilegen.",
         targetSec: 10,
         qualityCheck: "Clean box rim, no drips, fork inserted upright.",
-        imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        imageUrl: "/assets/menu/products/doener-bowl.jpg",
       },
     ],
   },
@@ -231,7 +231,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
       meatWeight: "No Meat (Vegetarian Loaded Side)",
       breadType: "No Bread (Base: 250g Berlin Fries)",
       sauceSequence: "Black Truffle Mayo zigzag drizzle",
-      imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800&auto=format&fit=crop&q=85",
+      imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       sortOrder: 4,
     },
     steps: [
@@ -241,7 +241,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "250g Pommes bei 175°C 3:30 Min. frittieren.",
         targetSec: 210,
         qualityCheck: "Golden color, internal temperature > 85°C.",
-        imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800",
+        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       },
       {
         stepNumber: 2,
@@ -249,7 +249,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "In Edelstahlschüssel mit Meersalz und Pfeffer schwenken.",
         targetSec: 10,
         qualityCheck: "Even seasoning distribution.",
-        imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800",
+        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       },
       {
         stepNumber: 3,
@@ -257,7 +257,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Pommes in MYGD Snack-Box füllen.",
         targetSec: 5,
         qualityCheck: "Centered pile, zero spilling.",
-        imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800",
+        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       },
       {
         stepNumber: 4,
@@ -265,7 +265,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "30g Trüffelmayo im Zickzack-Muster auftragen.",
         targetSec: 10,
         qualityCheck: "Even drizzle coverage from end to end.",
-        imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800",
+        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       },
       {
         stepNumber: 5,
@@ -273,7 +273,7 @@ export const CANONICAL_BUILD_SHEETS: CanonicalBuildSheetData[] = [
         instructionDE: "Mit 15g gehobeltem Parmesan und Petersilie bestreuen.",
         targetSec: 10,
         qualityCheck: "Gourmet visual finish, vibrant green accents.",
-        imageUrl: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=800",
+        imageUrl: "/assets/menu/products/loaded-jalapeno.webp",
       },
     ],
   },

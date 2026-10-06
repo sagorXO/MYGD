@@ -3,7 +3,76 @@
    Components use the semantic --color-* tokens (via Tailwind), never the primitives. */
 
 :root {
-  /* Magenta ramp — 500 is the brand primary from the badge logo */
+  /* MYGD Design System v1.0 — Brand Foundation */
+  --mygd-brand-50: #FFF0F7;
+  --mygd-brand-100: #FFD9EB;
+  --mygd-brand-200: #FFB3D7;
+  --mygd-brand-300: #FF7EBC;
+  --mygd-brand-400: #F63A9D;
+  --mygd-brand-500: #E6007E;
+  --mygd-brand-600: #C9006E;
+  --mygd-brand-700: #A7005B;
+  --mygd-brand-800: #820047;
+  --mygd-brand-900: #590031;
+
+  /* MYGD Design System v1.0 — Neutral Palette */
+  --mygd-neutral-0: #FFFFFF;
+  --mygd-neutral-25: #FCFCFD;
+  --mygd-neutral-50: #F7F7F8;
+  --mygd-neutral-100: #EEEEF0;
+  --mygd-neutral-200: #DFDFE3;
+  --mygd-neutral-300: #C8C8CF;
+  --mygd-neutral-400: #9D9DA7;
+  --mygd-neutral-500: #73737E;
+  --mygd-neutral-600: #56565F;
+  --mygd-neutral-700: #38383F;
+  --mygd-neutral-800: #242428;
+  --mygd-neutral-900: #171719;
+  --mygd-neutral-950: #0B0B0D;
+
+  /* MYGD Design System v1.0 — Semantic Colors */
+  --mygd-semantic-success: #16865C;
+  --mygd-semantic-success-bg: #EAF8F2;
+  --mygd-semantic-warning: #D98216;
+  --mygd-semantic-warning-bg: #FFF4E2;
+  --mygd-semantic-danger: #D63C45;
+  --mygd-semantic-danger-bg: #FDECEE;
+  --mygd-semantic-info: #2867C7;
+  --mygd-semantic-info-bg: #EBF3FF;
+  --mygd-semantic-offline: #6E7580;
+  --mygd-semantic-offline-bg: #F1F3F5;
+  --mygd-semantic-late: #C23C2C;
+  --mygd-semantic-late-bg: #FCEBE9;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Additional Radii Scale */
+  --radius-xs: 4px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* Operational Control Standards */
+  --mygd-control-admin: 44px;
+  --mygd-control-touch: 56px;
+  --mygd-control-kds: 64px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.20);
+
+  /* Legacy Magenta ramp — preserved for backward compatibility */
   --mygd-magenta-50: #FDE7F2;
   --mygd-magenta-100: #FBCFE5;
   --mygd-magenta-200: #F7A0CB;

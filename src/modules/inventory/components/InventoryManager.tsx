@@ -120,25 +120,25 @@ export const InventoryManager: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 font-sans text-white">
+    <div className="space-y-6 font-sans text-[#171719]">
       {/* ⚠️ CRITICAL LOW STOCK WARNING BANNER */}
       {lowStockItems.length > 0 && (
-        <div className="bg-[#EF4444]/15 border-2 border-[#EF4444] rounded-3xl p-5 shadow-2xl relative overflow-hidden animate-pulse">
+        <div className="bg-red-50 border-2 border-red-500 rounded-3xl p-5 shadow-sm relative overflow-hidden">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#EF4444]/30 border border-[#EF4444] flex items-center justify-center text-[#EF4444] shadow-lg">
-                <AlertTriangle size={26} className="text-white" />
+              <div className="w-12 h-12 rounded-2xl bg-red-100 border border-red-300 flex items-center justify-center text-red-600 shadow-sm">
+                <AlertTriangle size={26} className="text-red-600" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-[#EF4444] text-white font-mono text-[10px] font-black uppercase tracking-wider">
+                  <span className="px-2 py-0.5 rounded bg-red-600 text-white font-mono text-[10px] font-black uppercase tracking-wider">
                     CRITICAL WARNING
                   </span>
-                  <span className="text-xs font-mono text-[#EF4444] uppercase tracking-widest font-black">
+                  <span className="text-xs font-mono text-red-600 uppercase tracking-widest font-black">
                     {lowStockItems.length} INGREDIENT(S) SHORT IN INVENTORY!
                   </span>
                 </div>
-                <h3 className="font-display font-black text-xl text-white uppercase tracking-tight mt-0.5">
+                <h3 className="font-display font-black text-xl text-zinc-900 uppercase tracking-tight mt-0.5">
                   LOW STOCK DETECTED — REPLENISH TO PREVENT MENU DISRUPTIONS
                 </h3>
               </div>
@@ -150,41 +150,41 @@ export const InventoryManager: React.FC = () => {
             {lowStockItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#1F1F21] border border-[#EF4444]/60 rounded-2xl p-4 flex flex-col justify-between gap-3 shadow-lg"
+                className="bg-white border-2 border-red-200 rounded-2xl p-4 flex flex-col justify-between gap-3 shadow-sm"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-display font-black text-white text-base block">
+                    <span className="font-display font-black text-zinc-900 text-base block">
                       {item.name}
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400 block mt-0.5">
+                    <span className="text-[11px] font-mono text-zinc-500 block mt-0.5">
                       Current Stock:{" "}
-                      <strong className="text-[#EF4444] font-black text-sm">
+                      <strong className="text-red-600 font-black text-sm">
                         {item.currentStock.toLocaleString()} {item.unit}
                       </strong>{" "}
                       (Min: {item.minThreshold.toLocaleString()} {item.unit})
                     </span>
                   </div>
-                  <span className="px-2 py-0.5 rounded bg-red-950 border border-red-700 text-red-300 font-mono text-[10px] font-black uppercase">
+                  <span className="px-2 py-0.5 rounded bg-red-100 border border-red-300 text-red-700 font-mono text-[10px] font-black uppercase">
                     {item.isDepleted ? "DEPLETED" : "SHORT"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-2.5 border-t border-[#3A3A3E]">
-                  <div className="text-[11px] font-mono text-zinc-300 truncate max-w-[140px]">
+                <div className="flex items-center justify-between pt-2.5 border-t border-zinc-200">
+                  <div className="text-[11px] font-mono text-zinc-700 truncate max-w-[140px]">
                     <span className="text-[10px] text-zinc-500 block uppercase">Supplier:</span>
                     <span className="font-bold">{item.supplier?.name || "Unassigned"}</span>
                   </div>
                   {item.supplier ? (
                     <button
                       onClick={() => setContactSupplierItem(item)}
-                      className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-lg shadow-emerald-950/40 transition-all hover:scale-105"
+                      className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-black font-display font-black text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-sm transition-all hover:scale-105"
                     >
                       <MessageSquare size={14} className="fill-black" />
                       <span>Contact Supplier</span>
                     </button>
                   ) : (
-                    <span className="text-[10px] font-mono text-zinc-500 italic">No Supplier</span>
+                    <span className="text-[10px] font-mono text-zinc-400 italic">No Supplier</span>
                   )}
                 </div>
               </div>
@@ -194,25 +194,25 @@ export const InventoryManager: React.FC = () => {
       )}
 
       {/* Top Banner: Store Toggle & Spit Status */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#1F1F21] border border-[#3A3A3E] p-4 rounded-2xl shadow-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-[#DFDFE3] p-4 rounded-2xl shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <PackageCheck size={20} className="text-[#00FCED]" />
-            <h2 className="font-display font-black text-lg text-white uppercase tracking-tight">
+            <PackageCheck size={20} className="text-[#E50D7E]" />
+            <h2 className="font-display font-black text-lg text-zinc-900 uppercase tracking-tight">
               RECIPE INVENTORY & BOM CORE (M3)
             </h2>
           </div>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-500 mt-0.5">
             Gram-precision recipe deduction • Spit meat balance • Supplier contact triggers
           </p>
         </div>
 
         {/* Store Toggle */}
-        <div className="flex items-center bg-[#2B2B2E] p-1 rounded-xl border border-[#3A3A3E] text-xs font-mono font-bold">
+        <div className="flex items-center bg-zinc-100 p-1 rounded-xl border border-zinc-200 text-xs font-mono font-bold">
           <button
             onClick={() => setLocationSlug("EMBA")}
             className={`px-3 py-1.5 rounded-lg transition-all ${
-              locationSlug === "EMBA" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-400 hover:text-white"
+              locationSlug === "EMBA" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
             STORE 01 (EMBA)
@@ -220,7 +220,7 @@ export const InventoryManager: React.FC = () => {
           <button
             onClick={() => setLocationSlug("LIMASSOL")}
             className={`px-3 py-1.5 rounded-lg transition-all ${
-              locationSlug === "LIMASSOL" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-400 hover:text-white"
+              locationSlug === "LIMASSOL" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
             STORE 02 (LIMASSOL)
@@ -229,22 +229,22 @@ export const InventoryManager: React.FC = () => {
       </div>
 
       {/* Spit-Mount Rotisserie Counter Widget */}
-      <div className="bg-[#1F1F21] border-2 border-[#3A3A3E] rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+      <div className="bg-white border border-[#DFDFE3] rounded-3xl p-5 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#E5A93C]/10 border border-[#E5A93C]/30 flex items-center justify-center text-[#E5A93C]">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
               <Flame size={24} className="text-[#FF5722]" />
             </div>
             <div>
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest font-bold">
                 Outdoor Charcoal Rotisserie Spit Counter
               </span>
-              <h3 className="font-display font-black text-2xl text-white uppercase tracking-tight">
+              <h3 className="font-display font-black text-2xl text-zinc-900 uppercase tracking-tight">
                 ACTIVE SPIT:{" "}
-                <span className={spit.remainingWeightKg <= 3 ? "text-[#EF4444]" : "text-[#E5A93C]"}>
+                <span className={spit.remainingWeightKg <= 3 ? "text-red-600" : "text-amber-700"}>
                   {spit.remainingWeightKg} KG REMAINING
                 </span>
-                <span className="text-sm font-mono text-zinc-400 ml-2">
+                <span className="text-sm font-mono text-zinc-500 ml-2">
                   (Initial {spit.initialWeightKg}kg • {spit.carvedGrams}g carved)
                 </span>
               </h3>
@@ -253,12 +253,12 @@ export const InventoryManager: React.FC = () => {
 
           {/* Quick Mount Buttons */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-400 font-bold hidden lg:inline">Mount New Spit:</span>
+            <span className="text-xs font-mono text-zinc-600 font-bold hidden lg:inline">Mount New Spit:</span>
             {[20, 25, 30].map((kg) => (
               <button
                 key={kg}
                 onClick={() => handleMountSpit(kg)}
-                className="px-3 py-1.5 rounded-xl bg-[#2B2B2E] hover:bg-[#38383C] border border-[#3A3A3E] text-xs font-mono font-bold text-white transition-all"
+                className="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-xs font-mono font-bold text-zinc-800 transition-all"
               >
                 +{kg}KG
               </button>
@@ -267,19 +267,19 @@ export const InventoryManager: React.FC = () => {
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-[#2B2B2E] rounded-full h-3 mt-4 overflow-hidden border border-[#3A3A3E]">
+        <div className="w-full bg-zinc-100 rounded-full h-3 mt-4 overflow-hidden border border-zinc-200">
           <div
             className={`h-full transition-all duration-500 ${
               spitPercentRemaining <= 15
-                ? "bg-[#EF4444]"
+                ? "bg-red-500"
                 : spitPercentRemaining <= 35
-                ? "bg-[#E5A93C]"
-                : "bg-gradient-to-r from-[#10B981] to-[#00FCED]"
+                ? "bg-amber-500"
+                : "bg-emerald-500"
             }`}
             style={{ width: `${spitPercentRemaining}%` }}
           />
         </div>
-        <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400 mt-1.5">
+        <div className="flex justify-between items-center text-[10px] font-mono text-zinc-500 mt-1.5">
           <span>Mounted: {new Date(spit.mountedAt).toLocaleTimeString("en-GB")}</span>
           <span>{spitPercentRemaining}% Spit Volume Remaining</span>
         </div>

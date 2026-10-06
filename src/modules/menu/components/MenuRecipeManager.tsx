@@ -111,7 +111,7 @@ export const MenuRecipeManager: React.FC = () => {
     badge: "",
     calories: 550,
     allergens: "Gluten, Dairy, Sesame",
-    imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
     isVeggie: false,
     isSpicy: false,
   });
@@ -288,7 +288,7 @@ export const MenuRecipeManager: React.FC = () => {
           badge: "",
           calories: 550,
           allergens: "Gluten, Dairy, Sesame",
-          imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+          imageUrl: "/assets/menu/products/hamburg-doener.jpg",
           isVeggie: false,
           isSpicy: false,
         });
@@ -403,7 +403,7 @@ export const MenuRecipeManager: React.FC = () => {
                 badge: "",
                 calories: 550,
                 allergens: "Gluten, Dairy, Sesame",
-                imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
+                imageUrl: "/assets/menu/products/hamburg-doener.jpg",
                 isVeggie: false,
                 isSpicy: false,
               });
@@ -966,7 +966,7 @@ export const MenuRecipeManager: React.FC = () => {
                     type="text"
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="/assets/menu/products/..."
                     className="w-full px-3 py-2 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl text-white focus:outline-none focus:border-[#E50D7E]"
                   />
                   {formData.imageUrl && (

@@ -1,63 +1,71 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatEuro } from "@/lib/i18n";
-import {
-  Sparkles,
-  Flame,
-  Clock,
-  Radio,
-  Maximize2,
-  Minimize2,
-  AlertOctagon,
-  Image as ImageIcon,
-  Grid,
-  Play,
-  Pause,
-  ChevronLeft,
-  ChevronRight,
-  Leaf,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/cn";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
+import { generateVectorPlaceholder } from "@/lib/menu-assets";
 import { CANONICAL_4K_SCREENS } from "../signage.engine";
 import { SignageScreenConfig } from "../signage.schema";
-import { generateVectorPlaceholder } from "@/lib/menu-assets";
+
+// TV menu board. The stage is a fixed 1920x1080 canvas scaled to fit any display.
+// TV mode shows no operator chrome: controls appear on pointer move or key press and fade after 4s.
+
+const SCREEN_COUNT = 7;
+const CYCLE_MS = 12000;
+const CONTROLS_MS = 4000;
+const STAGE_W = 1920;
+const STAGE_H = 1080;
+
+const ctlBtn =
+  "h-14 rounded-md border-2 border-border bg-surface px-5 font-display text-xl font-semibold uppercase tracking-wide text-text hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 export const MenuBoard4K: React.FC = () => {
-  const [selectedScreenNumber, setSelectedScreenNumber] = useState<number>(1);
+  const [screenNo, setScreenNo] = useState(1);
   // TODO(phase-6): /boards renders the hard-coded CANONICAL_4K_SCREENS and never fetches.
   // Load from GET /api/menuboards instead (route exists, DB-backed); keep SSE for live updates.
   const [configs, setConfigs] = useState<Record<number, SignageScreenConfig>>(CANONICAL_4K_SCREENS);
-  const [viewMode, setViewMode] = useState<"GRAPHIC" | "GRID">("GRAPHIC");
-  const [isAutoCycle, setIsAutoCycle] = useState<boolean>(false);
-  const [is4KFullscreen, setIs4KFullscreen] = useState<boolean>(false);
-  const [time, setTime] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"GRID" | "GRAPHIC">("GRID");
+  const [auto, setAuto] = useState(true);
+  const [controls, setControls] = useState(false);
+  const [time, setTime] = useState("");
+  const [scale, setScale] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cycleStart = useRef(0);
 
-  const activeConfig = configs[selectedScreenNumber] || configs[1];
+  const cfg = configs[screenNo] || configs[1];
+  const soldOut = cfg.items.filter((i) => !i.isAvailable).length;
 
-  // Auto-cycle through the 7 screens every 12 seconds when enabled
-  useEffect(() => {
-    if (!isAutoCycle) return;
-    const interval = setInterval(() => {
-      setSelectedScreenNumber((prev) => (prev % 7) + 1);
-    }, 12000);
-    return () => clearInterval(interval);
-  }, [isAutoCycle]);
+  const go = useCallback((delta: number) => {
+    setScreenNo((n) => ((n - 1 + delta + SCREEN_COUNT) % SCREEN_COUNT) + 1);
+  }, []);
 
-  // Real-time synchronization for stock changes
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen().catch(() => {});
+  }, []);
+
+  const reveal = useCallback(() => {
+    setControls(true);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setControls(false), CONTROLS_MS);
+  }, []);
+
   const { isConnected, connectionTier } = useRealtimeEvents({
     channel: "boards",
     onEvent: (type, data: any) => {
       if (type === "STOCK_CHANGED" && data?.productId) {
         setConfigs((prev) => {
-          const next = { ...prev };
-          for (const sNum in next) {
-            next[sNum].items = next[sNum].items.map((item) =>
-              item.id === data.productId || item.sku === data.sku
-                ? { ...item, isAvailable: data.isAvailable }
-                : item
-            );
+          const next: Record<number, SignageScreenConfig> = {};
+          for (const key of Object.keys(prev)) {
+            const n = Number(key);
+            next[n] = {
+              ...prev[n],
+              items: prev[n].items.map((item) =>
+                item.id === data.productId || item.sku === data.sku ? { ...item, isAvailable: data.isAvailable } : item,
+              ),
+            };
           }
           return next;
         });
@@ -65,358 +73,216 @@ export const MenuBoard4K: React.FC = () => {
     },
   });
 
-  // Live Digital Clock
+  // Fit the 1920x1080 stage to the display.
   useEffect(() => {
-    const updateClock = () => {
+    const fit = () => setScale(Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H));
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
+
+  // Clock in store time.
+  useEffect(() => {
+    const tick = () =>
       setTime(
-        new Date().toLocaleTimeString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
+        new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Asia/Nicosia" }),
       );
-    };
-    updateClock();
-    const interval = setInterval(updateClock, 1000);
-    return () => clearInterval(interval);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
-  // Keyboard navigation: Arrow keys to switch screen, F for fullscreen, V to toggle view
+  // Auto-cycle with a progress line. Restarts whenever the screen changes.
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        setSelectedScreenNumber((prev) => (prev % 7) + 1);
-      } else if (e.key === "ArrowLeft") {
-        setSelectedScreenNumber((prev) => (prev === 1 ? 7 : prev - 1));
-      } else if (e.key === "f" || e.key === "F") {
-        toggleFullscreen();
-      } else if (e.key === "v" || e.key === "V") {
-        setViewMode((m) => (m === "GRAPHIC" ? "GRID" : "GRAPHIC"));
-      }
+    cycleStart.current = performance.now();
+    setProgress(0);
+    if (!auto) return;
+    const id = setInterval(() => {
+      const p = (performance.now() - cycleStart.current) / CYCLE_MS;
+      if (p >= 1) go(1);
+      else setProgress(p);
+    }, 100);
+    return () => clearInterval(id);
+  }, [auto, screenNo, go]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      reveal();
+      if (e.key === "ArrowRight") go(1);
+      else if (e.key === "ArrowLeft") go(-1);
+      else if (e.key === "a" || e.key === "A") setAuto((v) => !v);
+      else if (e.key === "f" || e.key === "F") toggleFullscreen();
+      else if (e.key === "v" || e.key === "V") setViewMode((m) => (m === "GRID" ? "GRAPHIC" : "GRID"));
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("mousemove", reveal);
+    window.addEventListener("touchstart", reveal);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("mousemove", reveal);
+      window.removeEventListener("touchstart", reveal);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+    };
+  }, [go, reveal, toggleFullscreen]);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-      setIs4KFullscreen(true);
-    } else {
-      document.exitFullscreen().catch(() => {});
-      setIs4KFullscreen(false);
-    }
-  };
-
-  const soldOutCount = activeConfig.items.filter((i) => !i.isAvailable).length;
+  const link = connectionTier === "EDGE" ? "LAN edge" : isConnected ? "Live" : "Offline";
 
   return (
-    <div className="min-h-screen w-screen bg-[#0B0B0C] text-white flex flex-col justify-between font-sans select-none overflow-hidden p-4 sm:p-6">
-      {/* Top Header Signage Bar */}
-      <header className="flex items-center justify-between border-b border-[#2B2B2E] pb-3 mb-3">
-        {/* Left: Brand Identity */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#E50D7E] flex items-center justify-center font-display font-black text-white text-lg shadow-xl shadow-pink-950/40">
-            GD
+    <div className="fixed inset-0 grid place-items-center overflow-hidden bg-canvas text-text select-none">
+      <div
+        className="relative grid shrink-0 grid-rows-[84px_1fr_108px] overflow-hidden bg-canvas"
+        style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
+      >
+        <header className="flex items-center gap-6 border-b-2 border-border px-14">
+          <div className="font-display text-[40px] font-bold uppercase leading-none tracking-wide">
+            My German <span className="text-accent-text">Döner</span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-display font-black text-2xl text-white uppercase tracking-tight leading-none">
-                MY GERMAN <span className="text-[#E50D7E]">DÖNER</span>
-              </h1>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1F1F21] border border-[#3A3A3E] text-[#00FCED] font-bold">
-                4K UHD SIGNAGE
-              </span>
+          <div className="font-display text-[26px] font-medium uppercase leading-none tracking-[0.12em] text-warning">
+            Screen {cfg.screenNumber} of {SCREEN_COUNT}
+          </div>
+          <div className="ml-auto flex items-center gap-7 tabular-nums">
+            <div className={cn("flex items-center gap-2.5 text-[22px] font-semibold", isConnected ? "text-success" : "text-warning")}>
+              <span aria-hidden className="h-3 w-3 rounded-full bg-current" />
+              {link}
             </div>
-            <span className="text-xs font-mono font-bold text-[#E5A93C] uppercase tracking-widest mt-0.5 block">
-              SCREEN {activeConfig.screenNumber}: {activeConfig.title}
-            </span>
+            <div className="font-display text-[40px] font-semibold leading-none tracking-wider">{time || "--:--:--"}</div>
           </div>
-        </div>
+        </header>
 
-        {/* Center: Screen Switcher & View Mode Toggle */}
-        <div className="flex items-center gap-2">
-          {/* Screen Selection Buttons (1 to 7) */}
-          <div className="flex items-center bg-[#1F1F21] p-1 rounded-xl border border-[#3A3A3E] text-xs font-display font-bold overflow-x-auto">
-            {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-              <button
-                key={num}
-                onClick={() => setSelectedScreenNumber(num)}
-                className={`px-2.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-                  selectedScreenNumber === num
-                    ? "bg-[#E50D7E] text-white shadow-lg shadow-pink-950/40"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Screen {num}
-              </button>
-            ))}
+        <main className="grid min-h-0 grid-rows-[auto_1fr] gap-6 px-14 pb-5 pt-9">
+          <div>
+            <h1 className="font-display text-[72px] font-bold uppercase leading-none">{cfg.title}</h1>
+            {cfg.subtitle && (
+              <p className="mt-2 font-display text-[26px] font-medium uppercase leading-none tracking-[0.14em] text-accent-text">
+                {cfg.subtitle}
+              </p>
+            )}
           </div>
 
-          {/* View Mode Switcher: Graphic Visual Board vs Digital Grid */}
-          <div className="flex items-center bg-[#1F1F21] p-1 rounded-xl border border-[#3A3A3E] text-xs font-mono">
-            <button
-              onClick={() => setViewMode("GRAPHIC")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                viewMode === "GRAPHIC"
-                  ? "bg-[#00FCED] text-black font-black"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-              title="Official Graphic 4K Visual Board"
-            >
-              <ImageIcon size={13} />
-              <span>Official Board</span>
-            </button>
-            <button
-              onClick={() => setViewMode("GRID")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                viewMode === "GRID"
-                  ? "bg-[#00FCED] text-black font-black"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-              title="Interactive Card Grid View"
-            >
-              <Grid size={13} />
-              <span>Digital Grid</span>
-            </button>
-          </div>
-
-          {/* Auto-cycle toggle */}
-          <button
-            onClick={() => setIsAutoCycle((c) => !c)}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono transition-all ${
-              isAutoCycle
-                ? "bg-emerald-950/60 border-emerald-700 text-emerald-400"
-                : "bg-[#1F1F21] border-[#3A3A3E] text-zinc-400 hover:text-white"
-            }`}
-            title="Auto-Cycle Screens Every 12s"
-          >
-            {isAutoCycle ? <Pause size={12} /> : <Play size={12} />}
-            <span>Auto</span>
-          </button>
-        </div>
-
-        {/* Right: Telemetry, Clock & Fullscreen */}
-        <div className="flex items-center gap-2.5">
-          <div
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border font-mono text-xs font-bold ${
-              isConnected
-                ? "bg-green-950/60 border-green-700 text-green-400"
-                : "bg-amber-950/60 border-amber-700 text-amber-400"
-            }`}
-          >
-            <Radio size={13} className={isConnected ? "animate-pulse" : ""} />
-            <span>{connectionTier === "EDGE" ? "LAN EDGE" : isConnected ? "CMS LIVE" : "OFFLINE"}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-[#1F1F21] border border-[#3A3A3E] px-3 py-1.5 rounded-xl">
-            <Clock size={14} className="text-[#00FCED]" />
-            <span className="font-mono font-black text-sm text-white tracking-wider">
-              {time || "12:00:00"}
-            </span>
-          </div>
-
-          <button
-            onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-[#1F1F21] border border-[#3A3A3E] text-zinc-400 hover:text-white transition-all"
-            title="Toggle 4K Fullscreen (F)"
-          >
-            {is4KFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
-          </button>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex items-center justify-center relative overflow-hidden my-1">
-        <AnimatePresence mode="wait">
           {viewMode === "GRAPHIC" ? (
-            /* ============================================================ */
-            /* VIEW MODE A: OFFICIAL 4K VISUAL GRAPHIC BOARD                */
-            /* ============================================================ */
-            <motion.div
-              key={`graphic-${selectedScreenNumber}`}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.01 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full h-[78vh] flex items-center justify-center rounded-3xl overflow-hidden border-2 border-[#2B2B2E] shadow-2xl bg-black"
-            >
+            <div className="relative flex min-h-0 items-center justify-center overflow-hidden rounded-xl border-2 border-border bg-canvas">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={activeConfig.boardImageUrl || `/assets/boards/board-${selectedScreenNumber}-doener-wraps-bigs-bowls.jpg`}
-                alt={activeConfig.title}
-                className="max-h-full max-w-full object-contain mx-auto shadow-2xl"
+                src={cfg.boardImageUrl || `/assets/boards/board-${screenNo}-doener-wraps-bigs-bowls.jpg`}
+                alt={cfg.title}
+                className="max-h-full max-w-full object-contain"
                 onError={(e) => {
-                  e.currentTarget.src = generateVectorPlaceholder(activeConfig.title, "MYGD 4K BOARD");
+                  e.currentTarget.src = generateVectorPlaceholder(cfg.title, "MYGD 4K BOARD");
                 }}
               />
-
-              {/* Dynamic Sold Out Floating Indicator if items are unavailable */}
-              {soldOutCount > 0 && (
-                <div className="absolute top-4 right-4 bg-red-950/90 border-2 border-red-600 rounded-2xl p-3 shadow-2xl backdrop-blur-md flex items-center gap-2.5 animate-pulse">
-                  <AlertOctagon size={20} className="text-red-500" />
-                  <div className="font-mono text-xs text-left">
-                    <span className="font-black text-red-300 block uppercase">
-                      {soldOutCount} Item(s) Out of Stock
-                    </span>
-                    <span className="text-[10px] text-zinc-400">
-                      Restock in progress
-                    </span>
-                  </div>
+              {soldOut > 0 && (
+                <div className="absolute right-4 top-4 rounded-pill bg-danger-subtle px-5 py-2 font-display text-2xl font-semibold uppercase tracking-wide text-danger">
+                  {soldOut} sold out
                 </div>
               )}
-
-              {/* Prev / Next Screen Floaters */}
-              <button
-                onClick={() => setSelectedScreenNumber((prev) => (prev === 1 ? 7 : prev - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-[#E50D7E] text-white border border-white/20 backdrop-blur-md transition-all shadow-xl"
-                title="Previous Screen"
-              >
-                <ChevronLeft size={22} />
-              </button>
-              <button
-                onClick={() => setSelectedScreenNumber((prev) => (prev % 7) + 1)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-[#E50D7E] text-white border border-white/20 backdrop-blur-md transition-all shadow-xl"
-                title="Next Screen"
-              >
-                <ChevronRight size={22} />
-              </button>
-            </motion.div>
+            </div>
           ) : (
-            /* ============================================================ */
-            /* VIEW MODE B: INTERACTIVE DIGITAL CARDS GRID WITH FOOD PHOTOS */
-            /* ============================================================ */
-            <motion.div
-              key={`grid-${selectedScreenNumber}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch overflow-y-auto pr-1"
-            >
-              {activeConfig.items.map((item) => (
-                <div
+            <div className="grid min-h-0 auto-rows-fr grid-cols-3 gap-6">
+              {cfg.items.slice(0, 9).map((item) => (
+                <article
                   key={item.id}
-                  className={`bg-[#18181A] border-2 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between relative transition-all group ${
-                    item.isAvailable
-                      ? "border-[#2B2B2E] hover:border-[#E50D7E]/70"
-                      : "border-red-900/60 opacity-60"
-                  }`}
+                  className="relative grid grid-cols-[230px_1fr] overflow-hidden rounded-xl border-2 border-border bg-surface"
                 >
-                  {/* Food Photography Area */}
-                  <div className="relative h-44 w-full bg-zinc-900 overflow-hidden">
-                    <img
-                      src={item.imageUrl || generateVectorPlaceholder(item.name, "MYGD MENU")}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        e.currentTarget.src = generateVectorPlaceholder(item.name, "MYGD MENU");
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#18181A] via-transparent to-black/40" />
-
-                    {/* Top Badges */}
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      {item.badge && (
-                        <span className="px-2.5 py-1 rounded-xl bg-[#E50D7E] text-white font-mono text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
-                          <Sparkles size={11} />
-                          <span>{item.badge.replace("_", " ")}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.imageUrl || generateVectorPlaceholder(item.name, "MYGD MENU")}
+                    alt=""
+                    className={cn("h-full w-full object-cover", !item.isAvailable && "opacity-35 grayscale")}
+                    onError={(e) => {
+                      e.currentTarget.src = generateVectorPlaceholder(item.name, "MYGD MENU");
+                    }}
+                  />
+                  {item.badge && (
+                    <span className="absolute left-3.5 top-3.5 h-[34px] rounded-pill bg-accent px-3.5 font-display text-lg font-semibold uppercase leading-[34px] tracking-wider text-on-accent">
+                      {item.badge.replace("_", " ")}
+                    </span>
+                  )}
+                  <div className={cn("grid min-w-0 content-between gap-2 px-6 py-5", !item.isAvailable && "opacity-55")}>
+                    <div>
+                      <h2 className="font-display text-4xl font-bold uppercase leading-[1.05]">{item.name}</h2>
+                      {item.description && (
+                        <p className="mt-1.5 line-clamp-3 text-xl leading-snug text-text-secondary">{item.description}</p>
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "flex items-baseline gap-4 font-display text-[54px] font-bold leading-none tabular-nums",
+                        !item.isAvailable && "line-through decoration-4",
+                      )}
+                    >
+                      {formatEuro(item.priceEUR)}
+                      {item.largePriceEUR && (
+                        <span className="font-body text-[22px] font-medium text-text-secondary">
+                          Large {formatEuro(item.largePriceEUR)}
                         </span>
                       )}
                     </div>
-
-                    {/* Price Tag (Top Right) */}
-                    <div className="absolute top-3 right-3 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-[#00FCED] font-mono font-black text-lg shadow-xl">
-                      {formatEuro(item.priceEUR)}
-                    </div>
                   </div>
-
-                  {/* Body Content */}
-                  <div className="p-4 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-[10px] font-mono text-zinc-500">{item.sku}</span>
-                        {item.largePriceEUR && (
-                          <span className="text-[11px] font-mono text-zinc-400">
-                            Lrg: <strong className="text-[#00FCED]">{formatEuro(item.largePriceEUR)}</strong>
-                          </span>
-                        )}
-                      </div>
-
-                      <h3 className="font-display font-black text-xl text-white uppercase tracking-tight mt-1 leading-tight">
-                        {item.name}
-                      </h3>
-                      {item.nameDE && (
-                        <span className="text-xs text-zinc-400 italic block mt-0.5">{item.nameDE}</span>
-                      )}
-
-                      {item.description && (
-                        <p className="text-xs text-zinc-300 mt-2 line-clamp-2 leading-relaxed">
-                          {item.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {item.modifiers && item.modifiers.length > 0 && (
-                      <div className="mt-3 pt-2.5 border-t border-[#2B2B2E] flex flex-wrap gap-1">
-                        {item.modifiers.map((mod, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-0.5 rounded-lg bg-[#2B2B2E] text-[10px] font-mono font-semibold text-[#00FCED]"
-                          >
-                            {mod}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Sold Out Overlay */}
                   {!item.isAvailable && (
-                    <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
-                      <AlertOctagon size={40} className="text-[#EF4444] mb-2 animate-bounce" />
-                      <span className="font-display font-black text-xl text-white uppercase tracking-wider">
-                        SOLD OUT / AUSVERKAUFT
-                      </span>
-                      <span className="text-[11px] font-mono text-zinc-400 mt-1">
-                        Ingredient restock in progress
-                      </span>
-                    </div>
+                    <span className="absolute right-5 top-4 rounded-pill bg-danger-subtle px-4 py-2 font-display text-2xl font-semibold uppercase leading-none tracking-wide text-danger">
+                      Sold out · Ausverkauft
+                    </span>
                   )}
-                </div>
+                </article>
               ))}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </main>
+        </main>
 
-      {/* Bottom One-Tap Combo Upsell Bar */}
-      <footer className="bg-[#18181A] border border-[#2B2B2E] rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xl mt-2">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#00FCED]/10 border border-[#00FCED]/40 flex items-center justify-center text-[#00FCED]">
-            <Sparkles size={18} />
+        <footer className="flex items-center gap-8 border-t-2 border-border bg-surface px-14">
+          <div>
+            <h3 className="font-display text-[40px] font-bold uppercase leading-none">Make it a menu · +€3.00</h3>
+            <p className="mt-1 text-[22px] text-text-secondary">Fries or rice + 0.4L drink · Medium +€3.50 · Large +€4.50</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center -space-x-2">
-              <img src="/assets/menu/upgrade/fries.jpg" alt="Fries" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
-              <img src="/assets/menu/upgrade/rice.jpg" alt="Rice" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
-              <img src="/assets/menu/upgrade/drink.jpg" alt="Drink" className="w-8 h-8 rounded-lg object-cover border border-[#2B2B2E]" />
-            </div>
-            <div>
-              <h4 className="font-display font-black text-sm uppercase text-white leading-none">
-                MAKE IT A MENU (+€3.00)
-              </h4>
-              <span className="text-[11px] text-zinc-400 font-sans">
-                Fries or Steamed Rice + 0.4L Drink (Regular +€3.00 • Medium +€3.50 • Large +€4.50)
-              </span>
-            </div>
+          <div className="ml-auto text-right font-display text-2xl font-medium uppercase leading-tight tracking-[0.1em] text-warning">
+            Emba · Paphos
+            <br />
+            Limassol
           </div>
+        </footer>
+
+        {/* Cycle progress and screen dots */}
+        <div aria-hidden className="absolute inset-x-0 bottom-[108px] h-1.5 bg-border">
+          <div className="h-full bg-accent" style={{ width: auto ? `${progress * 100}%` : 0 }} />
+        </div>
+        <div aria-hidden className="absolute bottom-[124px] right-14 flex gap-2.5">
+          {Array.from({ length: SCREEN_COUNT }, (_, i) => (
+            <span key={i} className={cn("h-4 w-4 rounded-full", i + 1 === screenNo ? "bg-accent" : "bg-border")} />
+          ))}
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
-          <span className="hidden md:inline">Hotkeys: [←/→] Switch Screen • [V] Toggle Graphic/Grid • [F] Fullscreen</span>
-          <span className="text-[#E5A93C] font-bold">STORE 01 EMBA & STORE 02 LIMASSOL</span>
+        {/* Operator controls: hidden until the pointer moves or a key is pressed */}
+        <div
+          role="toolbar"
+          aria-label="Board controls"
+          className={cn(
+            "absolute left-1/2 top-24 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-xl border-2 border-border bg-canvas p-2.5 transition-opacity duration-300",
+            controls ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <button type="button" className={ctlBtn} aria-label="Previous screen" onClick={() => go(-1)}>
+            ←
+          </button>
+          <span className="px-3 font-display text-xl font-semibold tabular-nums">
+            {screenNo} / {SCREEN_COUNT}
+          </span>
+          <button type="button" className={ctlBtn} aria-label="Next screen" onClick={() => go(1)}>
+            →
+          </button>
+          <button type="button" className={cn(ctlBtn, auto && "border-accent bg-accent text-on-accent hover:bg-accent-hover")} aria-pressed={auto} onClick={() => setAuto((v) => !v)}>
+            Auto-cycle
+          </button>
+          <button type="button" className={ctlBtn} onClick={() => setViewMode((m) => (m === "GRID" ? "GRAPHIC" : "GRID"))}>
+            {viewMode === "GRID" ? "Official board" : "Digital grid"}
+          </button>
+          <button type="button" className={ctlBtn} onClick={toggleFullscreen}>
+            Fullscreen
+          </button>
         </div>
-      </footer>
+        <p className={cn("absolute bottom-[124px] left-14 text-xl text-text-secondary transition-opacity duration-300", controls ? "opacity-100" : "opacity-0")}>
+          ← → switch · A auto-cycle · V view · F fullscreen
+        </p>
+      </div>
     </div>
   );
 };

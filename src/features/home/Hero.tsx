@@ -1,6 +1,7 @@
 "use client";
 
 import { buttonClasses } from "@/ui";
+import { StoreStatus } from "./StoreStatus";
 import { useStore } from "./StoreContext";
 
 export function Hero() {
@@ -8,8 +9,9 @@ export function Hero() {
   return (
     <section id="top" className="mx-auto grid max-w-6xl gap-10 px-5 pb-16 pt-10 md:grid-cols-[1.05fr_1fr] md:items-center md:gap-14 md:px-8 md:pb-24 md:pt-16">
       <div>
-        <p className="text-sm font-medium text-text-secondary">The first real German döner in Cyprus</p>
-        <h1 className="mt-4 font-display text-[clamp(3.25rem,8vw,6.5rem)] font-bold uppercase leading-[0.9] text-[var(--brand-black)]">
+        <StoreStatus store={store} />
+        <p className="mt-4 text-sm font-medium text-text-secondary">The first real German döner in Cyprus</p>
+        <h1 className="mt-4 font-display text-[clamp(3.25rem,8vw,6.5rem)] font-bold uppercase leading-[0.9] text-[#E5067E]">
           Bite the hype.
         </h1>
         <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-text-secondary">

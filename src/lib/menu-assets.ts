@@ -15,7 +15,6 @@ export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
     name: "Original German Döner (150g)",
     category: "DOENER",
     localPath: "/assets/menu/products/hamburg-doener.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-DOENER-HAMBURG": {
     sku: "MYGD-DOENER-HAMBURG",
@@ -28,21 +27,18 @@ export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
     name: "Steak Döner (100% Beef)",
     category: "DOENER",
     localPath: "/assets/menu/products/beef-wrap.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-CK-DONER": {
     sku: "MYGD-CK-DONER",
     name: "Crispy Chicken Döner",
     category: "DOENER",
     localPath: "/assets/menu/products/chicken-doener-pizza.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-ST-DURUM": {
     sku: "MYGD-ST-DURUM",
     name: "Standard Dürüm Wrap",
     category: "WRAPS",
     localPath: "/assets/menu/products/beef-wrap.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-WRAP-BEEF": {
     sku: "MYGD-WRAP-BEEF",
@@ -55,7 +51,6 @@ export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
     name: "Döner Box with Fries",
     category: "BOWLS",
     localPath: "/assets/menu/products/doener-bowl.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-BOWL-DOENER": {
     sku: "MYGD-BOWL-DOENER",
@@ -68,14 +63,12 @@ export const MENU_ASSET_REGISTRY: Record<string, MenuAssetDefinition> = {
     name: "Crispy Berlin Fries",
     category: "SIDES",
     localPath: "/assets/menu/upgrade/fries.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-GER-BEER": {
     sku: "MYGD-GER-BEER",
     name: "German Pilsner Beer (500ml)",
     category: "DRINKS",
     localPath: "/assets/menu/upgrade/drink.jpg",
-    remoteFallbackUrl: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&auto=format&fit=crop&q=85",
   },
   "MYGD-UPGRADE-COMBO": {
     sku: "MYGD-UPGRADE-COMBO",

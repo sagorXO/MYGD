@@ -217,7 +217,7 @@ export default function PublicBrandWebsite() {
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-3xl overflow-hidden border-2 border-[#E50D7E]/40 shadow-2xl glow-magenta aspect-square bg-[#1F1F21]">
               <img
-                src="https://images.unsplash.com/photo-1561651823-34feb02250e4?w=1200&auto=format&fit=crop&q=85"
+                src="/assets/menu/products/hamburg-doener.jpg"
                 alt="Classic Berlin German Döner"
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
               />

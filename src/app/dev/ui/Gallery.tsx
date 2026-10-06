@@ -7,6 +7,7 @@ import {
   ErrorState, Filters, IconButton, IndexTable, Kbd, Layout, LayoutSection, Menu, Modal, Page, PriceTag, ProgressBar, Radio,
   SearchField, SegmentedControl, Select, Sheet, Skeleton, Spinner, Stat, SurfaceRoot, Switch, Tabs, TextField, Textarea,
   Thumbnail, ToastProvider, Tooltip, useToast, type Column, type SortState, type Surface, type Tone,
+  StatusBadge, ProductTile, NumericKeypad, OrderTicket, OfflineBanner, HACCPReading, PrinterStatus,
 } from "@/ui";
 
 const SURFACES: Surface[] = ["admin", "pos", "staff", "kds", "order", "kiosk", "display", "board"];
@@ -67,6 +68,7 @@ function Showcase() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortState>({ columnId: "id", direction: "asc" });
   const [loadingTable, setLoadingTable] = useState(false);
+  const [keypadInput, setKeypadInput] = useState("18.70");
 
   const visible = sortOrders(ORDERS.filter((o) => o.id.toLowerCase().includes(query.toLowerCase())), sort);
 
@@ -220,6 +222,108 @@ function Showcase() {
                 <Spinner label="Syncing" />
               </div>
             </CardSection>
+          </Card>
+          <OfflineBanner mode="local-mode" queuedCount={3} lastSync="14:02:11" />
+          <Card>
+            <CardHeader title="Operations Domain Components (v1.0)" description="FOH, KDS, HACCP & Peripherals" />
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Status Badges</h4>
+                <div className="flex flex-wrap gap-2">
+                  <StatusBadge status="online" />
+                  <StatusBadge status="ready" />
+                  <StatusBadge status="paid" />
+                  <StatusBadge status="preparing" />
+                  <StatusBadge status="waiting" />
+                  <StatusBadge status="low-stock" />
+                  <StatusBadge status="late" />
+                  <StatusBadge status="failed" />
+                  <StatusBadge status="offline" />
+                  <StatusBadge status="sold-out" />
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Product Tiles (POS)</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <ProductTile title="Classic German Döner" price={7.5} availability="available" description="Spit-roasted chicken/beef, red cabbage, garlic sauce" />
+                  <ProductTile title="Halloumi Dürüm Box" price={8.2} availability="low-stock" stockCount={4} description="Crisp flatbread, grilled halloumi, herb salad" />
+                  <ProductTile title="Truffle Special Döner" price={9.9} availability="sold-out" description="Seasonal special with black truffle cream" />
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Kitchen Tickets & 72px Keypad</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                  <div className="space-y-3">
+                    <OrderTicket
+                      orderNumber="147"
+                      channel="takeaway"
+                      elapsedSeconds={140}
+                      items={[
+                        { name: "Classic Döner", quantity: 2, modifiers: ["NO ONION", "EXTRA GARLIC"] },
+                        { name: "Crispy Fries", quantity: 1 },
+                      ]}
+                      onBump={() => {}}
+                    />
+                    <OrderTicket
+                      orderNumber="142"
+                      channel="dine-in"
+                      elapsedSeconds={510}
+                      items={[
+                        { name: "Dürüm Plate", quantity: 1, modifiers: ["MILD SAUCE"] },
+                        { name: "Ayran 250ml", quantity: 2 },
+                      ]}
+                      onBump={() => {}}
+                    />
+                  </div>
+                  <div>
+                    <NumericKeypad
+                      value={keypadInput}
+                      onDigit={(d) => setKeypadInput((prev) => (prev === "0" ? d : prev + d))}
+                      onBackspace={() => setKeypadInput((prev) => (prev.length > 1 ? prev.slice(0, -1) : ""))}
+                      onClear={() => setKeypadInput("")}
+                      onSubmit={() => {}}
+                      submitLabel="Tender Cash"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Statutory HACCP & Network Printers</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <HACCPReading
+                    category="cold_storage"
+                    temperature={3.2}
+                    locationName="Walk-in Cold Room #1"
+                    recordedBy="A. Müller"
+                    timestamp="Today 14:15"
+                  />
+                  <HACCPReading
+                    category="cooked_holding"
+                    temperature={58.5}
+                    locationName="Steam Table Hot Well"
+                    recordedBy="M. Fischer"
+                    timestamp="Today 14:10"
+                    onCorrectiveAction={() => {}}
+                  />
+                  <PrinterStatus
+                    name="Indoor Kitchen Thermal"
+                    ipAddress="192.168.1.77"
+                    port={9100}
+                    status="online"
+                    onTestPrint={() => {}}
+                  />
+                  <PrinterStatus
+                    name="Outdoor Grill Receipt"
+                    ipAddress="192.168.1.78"
+                    port={9100}
+                    status="offline"
+                  />
+                </div>
+              </div>
+            </div>
           </Card>
           <Card>
             <CardHeader title="Overlays" />

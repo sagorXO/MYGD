@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { ProductDTO } from "@/types";
-import { Badge, Sheet, buttonClasses } from "@/ui";
+import { Badge, Sheet, Switch, buttonClasses } from "@/ui";
 import { formatEuro } from "@/lib/i18n";
 import { productBadges } from "./menuModel";
 import { useStore } from "./StoreContext";
@@ -12,6 +13,8 @@ function normalizeAllergens(raw: ProductDTO["allergens"]): string[] {
   return [];
 }
 
+const MENU_UPGRADE = 3;
+
 interface ItemSheetProps {
   product: ProductDTO | null;
   onClose: () => void;
@@ -19,7 +22,10 @@ interface ItemSheetProps {
 
 export function ItemSheet({ product, onClose }: ItemSheetProps) {
   const { store } = useStore();
+  const [asMenu, setAsMenu] = useState(false);
+  useEffect(() => setAsMenu(false), [product?.id]);
   if (!product) return null;
+  const total = product.basePrice + (asMenu && product.allowMealUpgrade ? MENU_UPGRADE : 0);
 
   const badges = productBadges(product);
   const allergens = normalizeAllergens(product.allergens);
@@ -33,6 +39,10 @@ export function ItemSheet({ product, onClose }: ItemSheetProps) {
       side="right"
       footer={
         <div className="w-full">
+          <p className="mb-3 flex items-baseline justify-between text-text">
+            <span className="text-sm text-text-secondary">Total</span>
+            <span className="text-2xl font-semibold tabular-nums">{formatEuro(total)}</span>
+          </p>
           <a href={store.delivery.href} target="_blank" rel="noopener noreferrer" className={buttonClasses({ variant: "primary", size: "lg", fullWidth: true })}>
             {store.delivery.label}
           </a>
@@ -59,8 +69,9 @@ export function ItemSheet({ product, onClose }: ItemSheetProps) {
 
       {product.allowMealUpgrade && (
         <div className="mt-6 rounded-md border border-border-subtle p-4">
-          <p className="font-medium text-text">Make it a menu</p>
-          <p className="mt-1 text-sm text-text-secondary">Add fries or rice and a 0.4 L drink, from {formatEuro(3)}.</p>
+          <p className="font-medium text-text">Make it a menu (+{formatEuro(MENU_UPGRADE)})</p>
+          <p className="mt-1 text-sm text-text-secondary">Fries or rice, plus a 0.4 L drink.</p>
+          <Switch id="make-it-a-menu" label={asMenu ? "Menu included" : "Add the menu"} checked={asMenu} onChange={setAsMenu} className="mt-2" />
         </div>
       )}
 
