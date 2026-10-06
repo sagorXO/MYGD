@@ -17,7 +17,7 @@ const mockClassicDonerProduct = {
   meatWeight: "150g Sliced Rotisserie Meat",
   breadType: "Crispy Turkish Fladenbrot",
   sauceSequence: "Bottom: Knoblauch (Garlic) ➔ Top: Kräuter (Herb) + Optional Scharf (Chili)",
-  imageUrl: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=800",
+  imageUrl: "/assets/menu/products/hamburg-doener.jpg",
 };
 
 const mockRecipeStepsUnordered = [
@@ -27,7 +27,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "Genau 150g heißes Fleisch auf Waage abwiegen (> 75°C).",
     targetSec: 30,
     qualityCheck: "Zero meat clumps, steam rising, strictly 150g ± 5g.",
-    imageUrl: "https://images.unsplash.com/photo-meat-slice.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 1,
@@ -35,7 +35,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "Fladenbrot 45s im Kontaktgrill toasten.",
     targetSec: 45,
     qualityCheck: "Golden grill marks, bread warmth > 60°C.",
-    imageUrl: "https://images.unsplash.com/photo-bread-toast.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 5,
@@ -43,7 +43,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "3 Tomatenscheiben, Gurken und frische Petersilie einlegen.",
     targetSec: 15,
     qualityCheck: "Vibrant color distribution edge-to-edge.",
-    imageUrl: "https://images.unsplash.com/photo-salad-layer.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 2,
@@ -51,7 +51,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "20g Knoblauchsauce auf dem Brotinnenboden verstreichen.",
     targetSec: 15,
     qualityCheck: "Even edge-to-edge coat, no bare bread corners.",
-    imageUrl: "https://images.unsplash.com/photo-sauce-base.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 6,
@@ -59,7 +59,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "Kräutersauce und Scharf-Gewürz nach Kundenwunsch dosieren.",
     targetSec: 10,
     qualityCheck: "Uniform sauce drizzle along top crest.",
-    imageUrl: "https://images.unsplash.com/photo-sauce-top.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 3,
@@ -67,7 +67,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "40g Rotkohl und Eisbergsalat gleichmäßig verteilen.",
     targetSec: 15,
     qualityCheck: "Crisp texture, cabbage drained of excess moisture.",
-    imageUrl: "https://images.unsplash.com/photo-cabbage.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
   {
     stepNumber: 7,
@@ -75,7 +75,7 @@ const mockRecipeStepsUnordered = [
     instructionDE: "Döner in MYGD Papiertasche stecken.",
     targetSec: 10,
     qualityCheck: "Upright presentation, clean sleeve exterior with no sauce smudges.",
-    imageUrl: "https://images.unsplash.com/photo-final-wrap.jpg",
+    imageUrl: "/assets/menu/products/hamburg-doener.jpg",
   },
 ];
 

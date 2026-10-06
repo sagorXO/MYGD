@@ -123,7 +123,7 @@ export async function GET(request: Request) {
             slug: location.slug,
             name: location.name,
             currency: location.currency,
-            vatRate: location.vatRate,
+            vatRate: DEFAULT_VAT_RATE,
           },
           categories: formattedCategories,
         });

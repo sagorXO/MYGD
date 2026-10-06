@@ -132,27 +132,27 @@ export const StaffHaccpHub: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 font-sans text-white">
+    <div className="space-y-6 font-sans text-[#171719]">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#1F1F21] border border-[#3A3A3E] p-4 rounded-2xl shadow-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-[#DFDFE3] p-4 rounded-2xl shadow-sm">
         <div>
           <div className="flex items-center gap-2">
             <ShieldCheck size={20} className="text-[#10B981]" />
-            <h2 className="font-display font-black text-lg text-white uppercase tracking-tight">
+            <h2 className="font-display font-black text-lg text-zinc-900 uppercase tracking-tight">
               STAFF OPERATIONS & HACCP CONTROL (M1 / M7)
             </h2>
           </div>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-500 mt-0.5">
             EU Regulation (EC) 852/2004 temperature compliance • PIN timeclock
           </p>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center bg-[#2B2B2E] p-1 rounded-xl border border-[#3A3A3E] text-xs font-mono font-bold">
+        <div className="flex items-center bg-zinc-100 p-1 rounded-xl border border-zinc-200 text-xs font-mono font-bold">
           <button
             onClick={() => setActiveTab("TIMECLOCK")}
             className={`px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === "TIMECLOCK" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-400 hover:text-white"
+              activeTab === "TIMECLOCK" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
             PIN TIMECLOCK
@@ -160,7 +160,7 @@ export const StaffHaccpHub: React.FC = () => {
           <button
             onClick={() => setActiveTab("HACCP")}
             className={`px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === "HACCP" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-400 hover:text-white"
+              activeTab === "HACCP" ? "bg-[#E50D7E] text-white shadow" : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
             HACCP AUDIT
@@ -172,14 +172,14 @@ export const StaffHaccpHub: React.FC = () => {
       {activeTab === "TIMECLOCK" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* PIN Pad */}
-          <div className="bg-[#1F1F21] border-2 border-[#3A3A3E] rounded-3xl p-6 shadow-2xl flex flex-col items-center">
-            <h3 className="font-display font-black text-lg uppercase mb-2">Staff 4-Digit PIN Punch</h3>
-            <p className="text-xs text-zinc-400 mb-4">Enter your personal PIN — it identifies you</p>
+          <div className="bg-white border border-[#DFDFE3] rounded-3xl p-6 shadow-sm flex flex-col items-center">
+            <h3 className="font-display font-black text-lg uppercase mb-2 text-zinc-900">Staff 4-Digit PIN Punch</h3>
+            <p className="text-xs text-zinc-500 mb-4">Enter your personal PIN — it identifies you</p>
 
             <select
               value={staffId}
               onChange={(e) => setStaffId(e.target.value)}
-              className="w-full max-w-xs bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl px-4 py-2 text-xs font-mono text-white mb-4 focus:outline-none focus:border-[#E50D7E]"
+              className="w-full max-w-xs bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2 text-xs font-mono text-zinc-900 mb-4 focus:outline-none focus:border-[#E50D7E]"
             >
               <option value="Alex">Alex (Shift Supervisor / Line)</option>
               <option value="Kostas">Kostas (Outdoor Grill Master)</option>
@@ -195,7 +195,7 @@ export const StaffHaccpHub: React.FC = () => {
                   className={`w-4 h-4 rounded-full border-2 transition-all ${
                     pin.length > idx
                       ? "bg-[#E50D7E] border-[#E50D7E] scale-110 shadow"
-                      : "border-zinc-600 bg-[#2B2B2E]"
+                      : "border-zinc-300 bg-zinc-100"
                   }`}
                 />
               ))}
@@ -207,20 +207,20 @@ export const StaffHaccpHub: React.FC = () => {
                 <button
                   key={num}
                   onClick={() => handlePinDigit(String(num))}
-                  className="py-3 rounded-2xl bg-[#2B2B2E] hover:bg-[#343438] active:scale-95 text-white font-mono font-black text-lg border border-[#3A3A3E] shadow transition-all"
+                  className="py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 active:scale-95 text-zinc-900 font-mono font-black text-lg border border-zinc-200 shadow-sm transition-all"
                 >
                   {num}
                 </button>
               ))}
               <button
                 onClick={handleClearPin}
-                className="py-3 rounded-2xl bg-[#2B2B2E] hover:bg-red-950/40 text-red-400 font-mono font-bold text-xs border border-[#3A3A3E]"
+                className="py-3 rounded-2xl bg-zinc-100 hover:bg-red-50 text-red-600 font-mono font-bold text-xs border border-zinc-200"
               >
                 CLEAR
               </button>
               <button
                 onClick={() => handlePinDigit("0")}
-                className="py-3 rounded-2xl bg-[#2B2B2E] hover:bg-[#343438] active:scale-95 text-white font-mono font-black text-lg border border-[#3A3A3E]"
+                className="py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 active:scale-95 text-zinc-900 font-mono font-black text-lg border border-zinc-200 shadow-sm transition-all"
               >
                 0
               </button>
@@ -231,7 +231,7 @@ export const StaffHaccpHub: React.FC = () => {
             <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-5">
               <button
                 onClick={handleClockIn}
-                className="py-3 rounded-xl bg-[#10B981] hover:bg-[#0ea372] text-black font-display font-black text-xs uppercase flex items-center justify-center gap-1.5 shadow"
+                className="py-3 rounded-xl bg-[#10B981] hover:bg-[#0ea372] text-white font-display font-black text-xs uppercase flex items-center justify-center gap-1.5 shadow"
               >
                 <LogIn size={14} /> CLOCK IN
               </button>
@@ -244,40 +244,40 @@ export const StaffHaccpHub: React.FC = () => {
             </div>
 
             {clockMessage && (
-              <span className="text-xs font-mono font-bold text-[#00FCED] mt-4 block">
+              <span className="text-xs font-mono font-bold text-emerald-700 mt-4 block">
                 {clockMessage}
               </span>
             )}
           </div>
 
           {/* Shift Schedule Info */}
-          <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-3xl p-6 shadow-xl space-y-4">
-            <h3 className="font-display font-black text-base uppercase text-white">Today&apos;s Shift Roster</h3>
+          <div className="bg-white border border-[#DFDFE3] rounded-3xl p-6 shadow-sm space-y-4">
+            <h3 className="font-display font-black text-base uppercase text-zinc-900">Today&apos;s Shift Roster</h3>
             <div className="space-y-2 font-mono text-xs">
-              <div className="p-3 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-white block">Alex (Supervisor)</span>
-                  <span className="text-[10px] text-zinc-400">10:00 - 18:00 • Assembly</span>
+                  <span className="font-bold text-zinc-900 block">Alex (Supervisor)</span>
+                  <span className="text-[10px] text-zinc-500">10:00 - 18:00 • Assembly</span>
                 </div>
-                <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                   ACTIVE
                 </span>
               </div>
-              <div className="p-3 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-white block">Kostas (Grill Master)</span>
-                  <span className="text-[10px] text-zinc-400">11:00 - 23:00 • Charcoal Rotisserie</span>
+                  <span className="font-bold text-zinc-900 block">Kostas (Grill Master)</span>
+                  <span className="text-[10px] text-zinc-500">11:00 - 23:00 • Charcoal Rotisserie</span>
                 </div>
-                <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                   ACTIVE
                 </span>
               </div>
-              <div className="p-3 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-white block">Elena (Cashier)</span>
-                  <span className="text-[10px] text-zinc-400">12:00 - 20:00 • Counter POS</span>
+                  <span className="font-bold text-zinc-900 block">Elena (Cashier)</span>
+                  <span className="text-[10px] text-zinc-500">12:00 - 20:00 • Counter POS</span>
                 </div>
-                <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-zinc-200 text-zinc-600 text-[10px] font-bold">
                   SCHEDULED
                 </span>
               </div>
@@ -286,11 +286,11 @@ export const StaffHaccpHub: React.FC = () => {
         </div>
       ) : (
         /* HACCP Audit View */
-        <div className="bg-[#1F1F21] border-2 border-[#3A3A3E] rounded-3xl p-6 shadow-2xl space-y-6">
-          <div className="flex items-center justify-between border-b border-[#3A3A3E] pb-3">
+        <div className="bg-white border border-[#DFDFE3] rounded-3xl p-6 shadow-sm space-y-6">
+          <div className="flex items-center justify-between border-b border-[#DFDFE3] pb-3">
             <div>
-              <h3 className="font-display font-black text-xl uppercase">Statutory Temperature Audit (EU Reg 852/2004)</h3>
-              <p className="text-xs text-zinc-400">
+              <h3 className="font-display font-black text-xl uppercase text-zinc-900">Statutory Temperature Audit (EU Reg 852/2004)</h3>
+              <p className="text-xs text-zinc-500">
                 Log critical storage points: Chilled (0–5°C), Frozen (≤ -18°C), Hot-holding rotisserie (≥ 63°C)
               </p>
             </div>
@@ -299,11 +299,11 @@ export const StaffHaccpHub: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Equipment Selection */}
             <div>
-              <label className="text-xs font-mono text-zinc-400 uppercase block mb-1.5">Equipment / Station</label>
+              <label className="text-xs font-mono text-zinc-500 uppercase block mb-1.5">Equipment / Station</label>
               <select
                 value={equipment}
                 onChange={(e) => setEquipment(e.target.value)}
-                className="w-full bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#E50D7E]"
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs font-mono text-zinc-900 focus:outline-none focus:border-[#E50D7E]"
               >
                 <option value="Walk-in Fridge #1">Walk-in Fridge #1 (Chilled 0–5°C)</option>
                 <option value="Counter Prep Fridge">Counter Prep Fridge (Chilled 0–5°C)</option>
@@ -314,11 +314,11 @@ export const StaffHaccpHub: React.FC = () => {
 
             {/* Target Standard */}
             <div>
-              <label className="text-xs font-mono text-zinc-400 uppercase block mb-1.5">Standard Type</label>
+              <label className="text-xs font-mono text-zinc-500 uppercase block mb-1.5">Standard Type</label>
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value as any)}
-                className="w-full bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#E50D7E]"
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs font-mono text-zinc-900 focus:outline-none focus:border-[#E50D7E]"
               >
                 <option value="CHILLED">Chilled Storage (0°C – 5°C)</option>
                 <option value="FROZEN">Frozen Storage (≤ -18°C)</option>
@@ -328,14 +328,14 @@ export const StaffHaccpHub: React.FC = () => {
 
             {/* Temperature Input */}
             <div>
-              <label className="text-xs font-mono text-zinc-400 uppercase block mb-1.5">Recorded Temperature (°C)</label>
+              <label className="text-xs font-mono text-zinc-500 uppercase block mb-1.5">Recorded Temperature (°C)</label>
               <div className="flex gap-2">
                 <input
                   type="number"
                   step="0.1"
                   value={tempInput}
                   onChange={(e) => setTempInput(e.target.value)}
-                  className="w-full bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl px-4 py-2.5 text-sm font-mono font-black text-white focus:outline-none focus:border-[#E50D7E]"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm font-mono font-black text-zinc-900 focus:outline-none focus:border-[#E50D7E]"
                 />
                 <button
                   onClick={handleSaveHaccp}
@@ -349,7 +349,7 @@ export const StaffHaccpHub: React.FC = () => {
 
           {/* Corrective Action Area (Mandatory if in Danger Zone) */}
           <div>
-            <label className="text-xs font-mono text-amber-400 uppercase block mb-1.5">
+            <label className="text-xs font-mono text-amber-700 uppercase block mb-1.5">
               Corrective Action Note (Mandatory if temperature in Danger Zone 5°C–63°C):
             </label>
             <input
@@ -357,7 +357,7 @@ export const StaffHaccpHub: React.FC = () => {
               placeholder="e.g. Adjusted thermostat dial to 3.0°C; checked seal gasket on fridge door..."
               value={correctiveAction}
               onChange={(e) => setCorrectiveAction(e.target.value)}
-              className="w-full bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl px-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50D7E]"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-[#E50D7E]"
             />
           </div>
         </div>

@@ -39,24 +39,24 @@ export const BIDashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="space-y-6 font-sans text-white">
+    <div className="space-y-6 font-sans text-[#171719]">
       {/* Top Banner */}
-      <div className="flex items-center justify-between bg-[#1F1F21] border border-[#3A3A3E] p-4 rounded-2xl shadow-lg">
+      <div className="flex items-center justify-between bg-white border border-[#DFDFE3] p-4 rounded-2xl shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp size={20} className="text-[#00FCED]" />
-            <h2 className="font-display font-black text-lg uppercase tracking-tight">
+            <TrendingUp size={20} className="text-[#E50D7E]" />
+            <h2 className="font-display font-black text-lg text-zinc-900 uppercase tracking-tight">
               EXECUTIVE BUSINESS INTELLIGENCE & CROSS-STORE CORE (M8 / M9)
             </h2>
           </div>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-500 mt-0.5">
             VAT fiscal audit • Card vs Cash split • Speed of service analytics
           </p>
         </div>
 
         <button
           onClick={fetchBI}
-          className="p-2 rounded-xl bg-[#2B2B2E] border border-[#3A3A3E] text-zinc-400 hover:text-white"
+          className="p-2 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900"
         >
           <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
         </button>
@@ -66,8 +66,8 @@ export const BIDashboard: React.FC = () => {
         <>
           {/* 4 Metric Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-4 shadow">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold block">
+            <div className="bg-white border border-[#DFDFE3] rounded-2xl p-4 shadow-sm">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">
                 Total Gross Revenue
               </span>
               <span className="font-mono font-black text-2xl text-[#E50D7E] block mt-1">
@@ -78,11 +78,11 @@ export const BIDashboard: React.FC = () => {
               </span>
             </div>
 
-            <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-4 shadow">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold block">
+            <div className="bg-white border border-[#DFDFE3] rounded-2xl p-4 shadow-sm">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">
                 VAT ({formatVatPercent()})
               </span>
-              <span className="font-mono font-black text-2xl text-[#00FCED] block mt-1">
+              <span className="font-mono font-black text-2xl text-cyan-700 block mt-1">
                 {formatEuro(report.totalVatEUR)}
               </span>
               <span className="text-[10px] text-zinc-500 font-mono mt-0.5 block">
@@ -90,23 +90,23 @@ export const BIDashboard: React.FC = () => {
               </span>
             </div>
 
-            <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-4 shadow">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold block">
+            <div className="bg-white border border-[#DFDFE3] rounded-2xl p-4 shadow-sm">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">
                 Total Orders Placed
               </span>
-              <span className="font-mono font-black text-2xl text-white block mt-1">
+              <span className="font-mono font-black text-2xl text-zinc-900 block mt-1">
                 {report.totalOrders}
               </span>
-              <span className="text-[10px] text-[#E5A93C] font-mono mt-0.5 block">
+              <span className="text-[10px] text-amber-700 font-mono mt-0.5 block">
                 Avg Ticket: {formatEuro(report.totalOrders > 0 ? report.totalGrossEUR / report.totalOrders : 0)}
               </span>
             </div>
 
-            <div className="bg-[#1F1F21] border border-[#3A3A3E] rounded-2xl p-4 shadow">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold block">
+            <div className="bg-white border border-[#DFDFE3] rounded-2xl p-4 shadow-sm">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">
                 Speed of Service (Avg)
               </span>
-              <span className="font-mono font-black text-2xl text-[#10B981] block mt-1">
+              <span className="font-mono font-black text-2xl text-emerald-700 block mt-1">
                 ~{report.overallAvgTurnaroundMinutes}m
               </span>
               <span className="text-[10px] text-zinc-500 font-mono mt-0.5 block">
@@ -120,59 +120,59 @@ export const BIDashboard: React.FC = () => {
             {report.stores.map((store) => (
               <div
                 key={store.locationSlug}
-                className="bg-[#1F1F21] border-2 border-[#3A3A3E] rounded-3xl p-5 shadow-2xl space-y-4"
+                className="bg-white border border-[#DFDFE3] rounded-3xl p-5 shadow-sm space-y-4"
               >
-                <div className="flex items-center justify-between border-b border-[#3A3A3E] pb-3">
+                <div className="flex items-center justify-between border-b border-[#DFDFE3] pb-3">
                   <div className="flex items-center gap-2">
-                    <Store size={18} className="text-[#E5A93C]" />
-                    <h3 className="font-display font-black text-base uppercase">
+                    <Store size={18} className="text-[#E50D7E]" />
+                    <h3 className="font-display font-black text-base text-zinc-900 uppercase">
                       {store.storeName}
                     </h3>
                   </div>
-                  <span className="font-mono text-xs text-[#00FCED] font-bold">
+                  <span className="font-mono text-xs text-cyan-700 font-bold">
                     {store.orderCount} Orders
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-                  <div className="p-3 bg-[#2B2B2E] rounded-xl border border-[#3A3A3E]">
-                    <span className="text-[10px] text-zinc-400 block">Gross Sales</span>
-                    <span className="font-black text-base text-white">
+                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                    <span className="text-[10px] text-zinc-500 block">Gross Sales</span>
+                    <span className="font-black text-base text-zinc-900">
                       {formatEuro(store.grossRevenueEUR)}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-[#2B2B2E] rounded-xl border border-[#3A3A3E]">
-                    <span className="text-[10px] text-zinc-400 block">{formatVatPercent()} VAT Collected</span>
-                    <span className="font-black text-base text-[#00FCED]">
+                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                    <span className="text-[10px] text-zinc-500 block">{formatVatPercent()} VAT Collected</span>
+                    <span className="font-black text-base text-cyan-700">
                       {formatEuro(store.vatAmountEUR)}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-[#2B2B2E] rounded-xl border border-[#3A3A3E] flex items-center justify-between">
+                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-zinc-400 block">Link4Pay Card/NFC</span>
-                      <span className="font-black text-white">
+                      <span className="text-[10px] text-zinc-500 block">Link4Pay Card/NFC</span>
+                      <span className="font-black text-zinc-900">
                         {formatEuro(store.cardRevenueEUR)}
                       </span>
                     </div>
-                    <CreditCard size={16} className="text-[#00FCED]" />
+                    <CreditCard size={16} className="text-cyan-700" />
                   </div>
 
-                  <div className="p-3 bg-[#2B2B2E] rounded-xl border border-[#3A3A3E] flex items-center justify-between">
+                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-zinc-400 block">Cash Tendered</span>
-                      <span className="font-black text-white">
+                      <span className="text-[10px] text-zinc-500 block">Cash Tendered</span>
+                      <span className="font-black text-zinc-900">
                         {formatEuro(store.cashRevenueEUR)}
                       </span>
                     </div>
-                    <Banknote size={16} className="text-[#10B981]" />
+                    <Banknote size={16} className="text-emerald-700" />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs font-mono pt-2 border-t border-[#3A3A3E] text-zinc-400">
+                <div className="flex items-center justify-between text-xs font-mono pt-2 border-t border-[#DFDFE3] text-zinc-500">
                   <span>Speed of Service Turnaround:</span>
-                  <span className="text-[#10B981] font-bold">
+                  <span className="text-emerald-700 font-bold">
                     ~{store.avgSpeedOfServiceMinutes} mins/ticket
                   </span>
                 </div>

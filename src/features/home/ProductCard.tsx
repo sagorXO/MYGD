@@ -26,6 +26,30 @@ export function ProductCard({ product }: { product: MenuProduct }) {
         )}
         <h3 className="font-semibold text-text">{product.name}</h3>
         {product.description && <p className="line-clamp-2 text-sm text-text-secondary">{product.description}</p>}
+        {product.allowMealUpgrade && (
+          <div className="mt-2 rounded-lg border border-border bg-surface-subtle p-2">
+            <div className="flex items-center justify-between text-xs font-semibold text-text">
+              <span className="text-accent-text font-bold">Make it a Menu (+€3.00)</span>
+              <span className="text-[10px] font-medium text-text-secondary">Fries/Rice + 0.4L Drink</span>
+            </div>
+            <div className="mt-1.5 flex items-center gap-1.5">
+              <div className="overflow-hidden rounded border border-border/80" title="Crispy Golden Fries">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/menu/upgrade/fries.jpg" alt="Crispy Fries" className="h-8 w-8 object-cover" />
+              </div>
+              <span className="text-[10px] font-semibold text-text-subtle">or</span>
+              <div className="overflow-hidden rounded border border-border/80" title="Steamed Basmati Rice">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/menu/upgrade/rice.jpg" alt="Steamed Rice" className="h-8 w-8 object-cover" />
+              </div>
+              <span className="text-[10px] font-semibold text-text-subtle">+</span>
+              <div className="overflow-hidden rounded border border-border/80" title="0.4L Chilled Soft Drink">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/menu/upgrade/drink.jpg" alt="0.4L Drink" className="h-8 w-8 object-cover" />
+              </div>
+            </div>
+          </div>
+        )}
         <PriceTag amount={product.basePrice} size="lg" className="mt-auto pt-2 font-mono" />
       </div>
     </Card>

@@ -16,7 +16,7 @@ export function SurfaceRoot({ surface, className, children }: SurfaceRootProps) 
       data-surface={surface}
       data-theme={initialTheme(surface)}
       suppressHydrationWarning
-      className={cn("min-h-screen font-body antialiased", className)}
+      className={cn("min-h-screen font-body antialiased bg-canvas text-text", className)}
     >
       <script dangerouslySetInnerHTML={{ __html: themeBootScript(surface) }} />
       {children}

@@ -1,6 +1,17 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "mygd-redesign", "runtimeExecutable": "npx", "runtimeArgs": ["next", "dev", "-p", "3107"], "port": 3107 }
+    {
+      "name": "mygd-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "mygd-redesign",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3107"],
+      "port": 3107
+    }
   ]
 }

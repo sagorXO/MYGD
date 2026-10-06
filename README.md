@@ -1,75 +1,18 @@
 ---
 stale-refs:
-  - source: .claude/worktrees/gladius-legacy-features-26ec7d/docs/PRD.md
+  - source: docs/PRD.md
     changed_at: "2026-10-06T06:51:30"
     sections_changed: [⚙️ Configuration catalogue (v1.1)]
-    summary: "Added: Every value below is **a setting or a table row, never a literal in code** (P.8). Scope: **G** global, **L** per location, **C** per channel. \\"Initial\\" is the value to seed; where the source is an open question the value is not guessed and the setting is required before the feature is enabled. Editors: **O** owner, **M** manager. Every change is audited.; | Key | Meaning | Scope | Initial / default | Editor | Source |; |---|---|---|---|---|---| (+34 more)"
-  - source: .claude/worktrees/gladius-legacy-features-26ec7d/docs/open-questions.md
+    summary: "Added: Every value below is **a setting or a table row, never a literal in code** (P.8). Scope: **G** global, **L** per location, **C** per channel. \"Initial\" is the value to seed; where the source is an open question the value is not guessed and the setting is required before the feature is enabled. Editors: **O** owner, **M** manager. Every change is audited.; | Key | Meaning | Scope | Initial / default | Editor | Source |; |---|---|---|---|---|---| (+34 more)"
+  - source: docs/open-questions.md
     changed_at: "2026-10-06T06:51:51"
     sections_changed: ["PRD v1.1 additions (2026-10-06): order channels and day close", Legacy data (added 2026-10-03)]
     summary: "Added: Source: `docs/gladius-feature-extraction.md`. None of these may be guessed in code; each is a setting or a marked TODO (PRD P.8).; **Order channels (M12)**; - **Q-FOODY-1 (OPEN, blocking M12)** Does Foody (and Bolt, Wolt) give MYGD a direct API or webhook, or is the Softech bridge the only route? Who owns the credentials, and are platform orders paid to the platform (assumed) or sometimes collected in cash? (+19 more)"
+  - source: DESIGN.md
+    changed_at: "2026-10-06T00:37:14"
+    sections_changed: []
+    summary: externally modified
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # MY GERMAN DÖNER (MYGD) — Operations System
 

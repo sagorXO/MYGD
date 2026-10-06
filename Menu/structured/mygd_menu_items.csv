@@ -1,0 +1,119 @@
+group,category,item,variant,price_eur,vegan,description,base_choice,included_sauces,category_offer,review_flags
+Food,Pizza,Margherita,,15.90,,"tomato sauce, mozzarella, tomatoes",,,Second pizza 20% off,
+Food,Pizza,Funghi,,16.90,,"tomato sauce, mozzarella, mushrooms, tomatoes",,,Second pizza 20% off,
+Food,Pizza,Salami,,16.90,,"tomato sauce, mozzarella, salami, tomatoes",,,Second pizza 20% off,
+Food,Pizza,Five cheese,,17.50,,"tomato sauce, mozzarella, gorgonzola, edam, gouda, feta",,,Second pizza 20% off,
+Food,Pizza,Chicken doener pizza,,17.90,,"tomato sauce, mozzarella, chicken doener, tomatoes, onions, 1 sauce of your choice",,1,Second pizza 20% off,
+Food,Tacos,Beef taco,,3.50,,"beef, onions, lettuce, cucumber, tomatoes, red cabbage, bbq sauce",,,4 tacos for 11.90,
+Food,Tacos,Beef taco with jalapeños,,3.50,,"beef, onions, lettuce, cucumber, tomato sauce, red cabbage, jalapeños, sour cream",,,4 tacos for 11.90,Lists 'tomato sauce' where the other tacos list 'tomatoes' - confirm
+Food,Tacos,Chicken taco,,3.50,,"chicken, onions, lettuce, cucumber, tomatoes, red cabbage, garlic sauce",,,4 tacos for 11.90,
+Food,Tacos,Vegan taco,,3.50,yes,"vegan chicken strips, onions, lettuce, cucumber, tomatoes, red cabbage, vegan garlic sauce",,,4 tacos for 11.90,
+Food,MYGD Doezza,Margarita,,6.50,,,,,,No description or ingredients; Spelled 'Margarita' here but 'Margherita' under Pizza
+Food,MYGD Doezza,Salami,,7.50,,,,,,No description or ingredients
+Food,MYGD Doezza,Funghi,,6.95,,,,,,No description or ingredients
+Food,MYGD Doezza,Four cheese,,7.95,,,,,,No description or ingredients; Pizza section calls its version 'Five cheese'
+Food,MYGD Burger,Beefster,,7.95,,,,,,No description or ingredients (the source line ends with a dangling '-')
+Food,MYGD Burger,CHEESY GD,,9.95,,,,,,No description or ingredients
+Food,MYGD Burger,CHICKEN HYPE,,8.50,,,,,,No description or ingredients
+Food,MYGD Burger,C & C CHICKEN,,7.95,,,,,,No description or ingredients
+Food,Doener burger,My chicken,,6.90,,"chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, ketchup, mayo",,,,
+Food,Doener burger,Cheese doener,,7.50,,"doener meat, cheese, lettuce, tomatoes, cucumber, onions, red cabbage, bbq sauce",,,,
+Food,Doener burger,Cheese chicken doener,,7.50,,"chicken doener, cheese, lettuce, tomatoes, cucumber, onion, red cabbage, ketchup, mayo",,,,
+Food,Doener burger,Hamburg doener,,6.90,,"doener meat, lettuce, tomatoes, cucumber, onions, red cabbage, ketchup, mayo, mustard",,,,
+Food,My wraps,Beef wrap,,9.90,,"beef doener, lettuce, tomatoes, cucumber, onions, red cabbage, cocktail sauce",,,,
+Food,My wraps,Chicken wrap,,9.90,,"chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, garlic sauce",,,,
+Food,My wraps,Mix wrap,,9.90,,"beef and chicken doener, lettuce, tomatoes, cucumber, onions, red cabbage, lemon herb sauce",,,,Source spelled 'Miz wrap'
+Food,My wraps,Vegan wrap,,9.90,yes,"vegan balls, lettuce, tomatoes, cucumber, onion, red cabbage, vegan garlic sauce",,,,
+Food,My big's,Big chick,,11.90,,"chicken doener, original berlin flatbread, lettuce, tomatoes, cucumber, onions, red cabbage, garlic sauce",,,,
+Food,My big's,Big B,,11.90,,"beef doener, original berlin flatbread, lettuce, tomatoes, cucumber, onions, red cabbage, cocktail sauce",,,,
+Food,My big's,Big mix,,11.90,,"beef and chicken doener, original berlin flatbread, lettuce, cucumber, onions, red cabbage, lemon herb sauce",,,,"No tomatoes listed, unlike every other Big - confirm"
+Food,My big's,Big green,,11.90,yes,"vegan doener, original berlin flatbread, lettuce, tomatoes, cucumber, onion, red cabbage, vegan sauce",,,,'vegan sauce' - elsewhere this is 'vegan garlic sauce'
+Food,My bowls,Beef bowl,,9.90,,"beef doener, white rice or fries, lettuce, tomatoes, cucumbers, red cabbage, onions, sauce of your choice",white rice / fries,1,,
+Food,My bowls,Chicken bowl,,9.90,,"chicken doener, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, sauce of your choice",white rice / fries,1,,
+Food,My bowls,Mix bowl,,9.90,,"beef and chicken doener, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, sauce of your choice",white rice / fries,1,,
+Food,My bowls,Vegan bowl,,9.90,yes,"vegan balls, white rice or fries, lettuce, cucumber, tomatoes, red cabbage, onions, vegan garlic",white rice / fries,,,"Sauce is fixed as 'vegan garlic', not 'of your choice'"
+Food,Sauce,Garlic,,,,,,,,No price given - confirm included/free vs paid extra
+Food,Sauce,BBQ,,,,,,,,
+Food,Sauce,Honey Mustard,,,,,,,,
+Food,Sauce,Cheese Hot,,,,,,,,
+Food,Sauce,Tzatziki,,,,,,,,
+Food,Sauce,Sour cream,,,,,,,,
+Food,Sauce,Lemon herb,,,,,,,,
+Food,Sauce,Cocktail,,,,,,,,
+Food,Sauce,Hot spicy,,,,,,,,
+Food,Sauce,Vegan garlic,,,yes,,,,,
+Food,Sauce,Mayonnaise,,,,,,,,
+Food,Sauce,Ketchup,,,,,,,,
+Food,Kids meal,Kids meal,,5.00,,"Choice of kids doener, 4 chicken nuggets or 4 meatballs, + 1 kinder riegel + 1 drink (water or juice) + small fries",,,,Source line has no 'EUR' sign - price 5 read as 5.00
+Food,Chicken nuggets,Chicken nuggets,6 pcs,4.90,,,,,,
+Food,Chicken nuggets,Chicken nuggets,12 pcs,7.90,,,,,,
+Food,Chicken nuggets,Chicken nuggets,20 pcs,11.90,,,,,,
+Food,Chicken wings,Chicken wings,6 pcs,5.90,,,,,,
+Food,Chicken wings,Chicken wings,12 pcs,9.90,,,,,,
+Food,Chicken wings,Chicken wings,20 pcs,14.90,,,,,,
+Food,Crunchy fries,Crunchy fries,Regular,2.50,,,,1,,
+Food,Crunchy fries,Crunchy fries,Large,3.50,,,,2,,
+Food,Crunchy fries,Crunchy fries,XL,4.50,,,,2,,
+Food,Sweet potato fries,Sweet potato fries,Regular,2.90,,,,1,,
+Food,Sweet potato fries,Sweet potato fries,Large,3.90,,,,2,,
+Food,Sweet potato fries,Sweet potato fries,XL,4.90,,,,2,,
+Food,Make it a menu,Make it a menu,Regular,3.00,,,fries / white rice,,,Every size says 0.4L drink - confirm whether Medium/Large differ in drink or side size
+Food,Make it a menu,Make it a menu,Medium,3.50,,,fries / white rice,,,
+Food,Make it a menu,Make it a menu,Large,4.50,,,fries / white rice,,,
+Food,Loaded fries,Hollandaise Fries,,7.90,,,,1,,No description of toppings
+Food,Loaded fries,Jalapeño sour cream fries,,7.90,,,,1,,No description of toppings
+Food,Loaded fries,Gravy Fries,,7.90,,,,1,,No description of toppings
+Food,Loaded fries,Cheesy Fries,,7.90,,,,1,,No description of toppings
+Food,Fresh salad,Green Salad,,6.90,,"lettuce, cucumber, tomatoes, red cabbage, onion with vinegar and oil dressing",,,,
+Food,Fresh salad,Chicken Salad,,8.90,,"lettuce, cucumber, tomatoes, red cabbage, onion, chicken with vinegar and oil dressing",,,,
+Food,Fresh salad,Halloumi Salad,,8.90,,"lettuce, cucumber, tomatoes, red cabbage, onions, halloumi with vinegar and oil dressing",,,,
+Food,Meatballs,Meatballs,6 pcs,7.50,,,fries / white rice,,,
+Food,Meatballs,Meatballs,12 pcs,11.50,,,fries / white rice,,,
+Food,Meatballs,Meatballs,20 pcs,16.50,,,fries / white rice,,,
+Food,Mozzarella sticks,Mozzarella sticks,6 pcs,5.90,,,,1,,
+Food,Mozzarella sticks,Mozzarella sticks,12 pcs,9.90,,,,1,,
+Food,Mozzarella sticks,Mozzarella sticks,20 pcs,14.90,,,,1,,
+Drinks,Smoothies,Tropical twist,,2.99,,,,,,
+Drinks,Smoothies,Berry booster,,2.99,,,,,,
+Drinks,Smoothies,Green power,,2.99,,,,,,
+Drinks,Smoothies,Sunset delight,,2.99,,,,,,
+Drinks,Milk shakes,Strawberry,,2.90,,,,,,
+Drinks,Milk shakes,Vanilla,,2.90,,,,,,
+Drinks,Milk shakes,Chocolate,,2.90,,,,,,
+Drinks,Fruit juices,Cappy orange,,1.50,,,,,,
+Drinks,Fruit juices,Cappy apple,,1.50,,,,,,
+Drinks,Water & Ayran,Still water,,1.50,,,,,,
+Drinks,Water & Ayran,Ayran,0.5L,3.50,,,,,,Source heading said 'Aryan'
+Drinks,Energy drinks,Redbull,,3.00,,,,,,
+Drinks,Energy drinks,Redbull sugar free,,3.00,,,,,,Source spelled 'suger'
+Drinks,Energy drinks,Cocoloco,,2.50,,,,,,
+Drinks,Kombucha,Hibiscus,,3.50,,,,,,Source spelled 'Hibicus'
+Drinks,Kombucha,Lemon zen,,3.50,,,,,,
+Drinks,Kombucha,Ginger insight,,3.50,,,,,,
+Drinks,Kombucha,Lemongrass unity,,3.50,,,,,,
+Drinks,Draft beer,Hofbräu München,0.5L,6.00,,,,,,
+Drinks,Draft beer,Hofbräu München,0.3L,4.00,,,,,,
+Drinks,Bottled beer,Hofbräu original,,5.00,,,,,,
+Drinks,Bottled beer,Hofbräu helles,,5.00,,,,,,
+Drinks,Bottled beer,Corona extra,,4.00,,,,,,
+Drinks,Bottled beer,Corona 0%,,4.00,,,,,,
+Drinks,Bottled beer,Keo,,3.00,,,,,,
+Drinks,Bottled beer,Carlsberg,,3.00,,,,,,
+Drinks,Bottled beer,Carlsberg 0%,,3.00,,,,,,
+Drinks,Wine,Red wine,,4.00,,,,,,
+Drinks,Wine,White wine,,4.00,,,,,,
+Drinks,Soft drinks (postmix),Coca-Cola,,2.50,,,,,,
+Drinks,Soft drinks (postmix),Coca-Cola Zero,,2.50,,,,,,
+Drinks,Soft drinks (postmix),Fanta Zero,,2.50,,,,,,
+Drinks,Soft drinks (postmix),Sprite,,2.50,,,,,,
+Drinks,Soft drinks (postmix),Sprite Zero,,2.50,,,,,,
+Drinks,Soft drinks (postmix),Sparkling water,,2.50,,,,,,
+Drinks,Canned drinks,Fanta Zero,,2.50,,,,,,
+Drinks,Canned drinks,Fanta Lemon,,2.50,,,,,,
+Drinks,Canned drinks,Lipton Ice Tea Peach,,2.50,,,,,,
+Drinks,Canned drinks,Lipton Ice Tea Peach Zero,,2.50,,,,,,
+Drinks,Canned drinks,Lipton Ice Tea Lemon,,2.50,,,,,,
+Drinks,Coffee,Espresso,,2.00,,,,,,
+Drinks,Coffee,Americano,,2.50,,,,,,
+Drinks,Coffee,Cappuccino,,3.00,,,,,,
+Drinks,Coffee,Latte macchiato,,3.00,,,,,,

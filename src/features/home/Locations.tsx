@@ -1,5 +1,6 @@
 import { Clock, MapPin, Phone } from "lucide-react";
 import { Card, CardHeader, buttonClasses } from "@/ui";
+import { StoreStatus } from "./StoreStatus";
 import { LOCATIONS } from "./storeLocations";
 
 export function Locations() {
@@ -11,6 +12,7 @@ export function Locations() {
       <div className="grid gap-4 md:grid-cols-2">
         {LOCATIONS.map((l) => (
           <Card key={l.slug} as="article">
+            <div className="mb-3"><StoreStatus store={l} size="sm" /></div>
             <CardHeader title={l.name} description={l.area} />
             <ul className="space-y-2 text-sm text-text-secondary">
               <li className="flex gap-2">

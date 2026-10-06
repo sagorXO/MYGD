@@ -3,8 +3,7 @@ import type { Tone } from "@/ui";
 
 export type MenuFilter = "ALL" | "POPULAR" | "VEGGIE" | "SPICY";
 export type MenuProduct = Pick<ProductDTO, "id" | "name" | "description" | "basePrice" | "badge" | "isVeggie" | "isSpicy" | "isAvailable"> &
-  Partial<Pick<ProductDTO, "allowMealUpgrade">> &
-  Partial<Pick<ProductDTO, "imageUrl" | "nameDE" | "nameGR">>;
+  Partial<Pick<ProductDTO, "allowMealUpgrade" | "imageUrl" | "nameDE" | "nameGR">>;
 
 export interface ProductBadge {
   label: string;

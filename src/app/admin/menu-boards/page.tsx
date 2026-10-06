@@ -238,10 +238,9 @@ export default function MobileOwnerMenuBoardsCMS() {
           </div>
         </div>
 
-        {/* 4 Physical Screen Select Tabs */}
-        {/* 5 Physical Screen Select Tabs */}
-        <div className="mt-3 grid grid-cols-5 gap-1.5 font-mono text-xs">
-          {[1, 2, 3, 4, 5].map((num) => {
+        {/* 7 Physical Screen Select Tabs */}
+        <div className="mt-3 grid grid-cols-7 gap-1 font-mono text-xs">
+          {[1, 2, 3, 4, 5, 6, 7].map((num) => {
             const isSelected = selectedScreenNum === num;
             return (
               <button
@@ -250,14 +249,14 @@ export default function MobileOwnerMenuBoardsCMS() {
                   setSelectedScreenNum(num);
                   setEditingItemIdx(null);
                 }}
-                className={`py-2 px-1 rounded-xl font-bold flex flex-col items-center justify-center transition-all ${
+                className={`py-2 px-0.5 rounded-xl font-bold flex flex-col items-center justify-center transition-all ${
                   isSelected
                     ? "bg-[#E50D7E] text-white shadow-lg glow-magenta"
                     : "bg-[#1F1F21] text-zinc-400 hover:text-white border border-[#3A3A3E]"
                 }`}
               >
-                <Tv size={14} className="mb-0.5" />
-                <span className="text-[11px] leading-tight">Screen {num}</span>
+                <Tv size={13} className="mb-0.5" />
+                <span className="text-[10px] leading-tight">Screen {num}</span>
               </button>
             );
           })}

@@ -45,3 +45,5 @@ export { IndexTable, type Column, type SortState } from "./data/IndexTable";
 export { Page } from "./layout/Page";
 export { Layout, LayoutSection } from "./layout/Layout";
 export { AppShell, type NavItem } from "./layout/AppShell";
+export * from "./domain";
+
