@@ -33,7 +33,7 @@ const CANONICAL_TEMPLATES = [
     title: "Afternoon Prep & Sauce Station Setup",
     shiftType: "LUNCH_PREP",
     tasks: [
-      { id: "pr-1", title: "Fill squeeze bottles with Kräuter, Knoblauch & Scharf sauces", isTempCheck: false },
+      { id: "pr-1", title: "Fill squeeze bottles with the 12 menu sauces (garlic, BBQ, honey mustard, cheese hot, tzatziki, sour cream, lemon herb, cocktail, hot spicy, vegan garlic, mayonnaise, ketchup)", isTempCheck: false },
       { id: "pr-2", title: "Slice 5kg fresh red cabbage, tomatoes, cucumbers & parsley", isTempCheck: false },
       { id: "pr-3", title: "Restock French Fries seasoning blend & wooden forks", isTempCheck: false },
     ],

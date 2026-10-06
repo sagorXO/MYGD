@@ -5,6 +5,9 @@ import { POSOrderTender, POSOrderTenderSchema, Link4PayTerminalResponse } from "
 import { tcpPrintSpooler } from "../printer/tcp-spooler";
 import { ThermalChitPayload } from "../printer/printer.schema";
 import { deductOrderBOMAsync } from "../inventory/bom-decrement.engine";
+import { calculateReverseVat, DEFAULT_VAT_RATE } from "@/lib/tax";
+import { priceCart, type CartLine } from "@/lib/discounts/engine";
+import { findVoucher, loadActivePromotions, voucherToInput } from "@/lib/discounts/store";
 
 export interface POSTenderResult {
   success: boolean;
@@ -13,6 +16,8 @@ export interface POSTenderResult {
   dailySequence: number;
   subtotal: number;
   discountAmount: number;
+  appliedPromotions: { code: string; name: string; amount: number }[];
+  voucherAmount: number;
   taxableSubtotal: number;
   vatAmount: number;
   totalAmount: number;
@@ -29,18 +34,39 @@ export class POSService {
   public static async tenderOrder(rawPayload: unknown): Promise<POSTenderResult> {
     const validated = POSOrderTenderSchema.parse(rawPayload);
 
-    // 1. Calculate Gross Subtotal
-    const grossSubtotal = validated.lines.reduce((sum, line) => sum + line.totalPrice, 0);
+    // 1-2. Price the cart server-side: automatic promotions -> voucher / gift card -> staff percent.
+    const products = await prisma.product.findMany({
+      where: { id: { in: validated.lines.map((l) => l.productId) } },
+      select: { id: true, category: { select: { slug: true } } },
+    });
+    const sectionByProduct = new Map(products.map((p) => [p.id, p.category.slug]));
+    const cartLines: CartLine[] = validated.lines.map((l) => ({
+      sku: l.sku,
+      sectionSlug: sectionByProduct.get(l.productId) ?? "",
+      unitPrice: l.unitPrice,
+      quantity: l.quantity,
+    }));
 
-    // 2. Apply Discount (if any, e.g. 10% VIP or 20% Staff)
-    const discountFactor = Math.min(100, Math.max(0, validated.discountPercent)) / 100;
-    const discountAmount = Number((grossSubtotal * discountFactor).toFixed(2));
-    const finalTotal = Math.max(0, Number((grossSubtotal - discountAmount).toFixed(2)));
+    const voucherRow = validated.voucherCode ? await findVoucher(prisma, validated.voucherCode) : null;
+    if (validated.voucherCode && !voucherRow) {
+      throw new Error(`Voucher ${validated.voucherCode.toUpperCase()} does not exist`);
+    }
+    const priced = priceCart({
+      lines: cartLines,
+      promotions: await loadActivePromotions(prisma),
+      voucher: voucherRow ? voucherToInput(voucherRow) : undefined,
+      manualPercent: validated.discountPercent,
+    });
+    if (priced.voucher?.rejectedReason) {
+      throw new Error(`Voucher ${priced.voucher.code} cannot be used: ${priced.voucher.rejectedReason}`);
+    }
+    const grossSubtotal = priced.subtotal;
+    const discountAmount = priced.discountTotal;
+    const finalTotal = priced.total;
+    const voucherAmount = priced.voucher?.amount ?? 0;
 
-    // 3. Cyprus Standard 19% VAT Calculation (included in final consumer price)
-    // net = gross / 1.19, vat = gross - net
-    const netSubtotal = Number((finalTotal / 1.19).toFixed(2));
-    const vatAmount = Number((finalTotal - netSubtotal).toFixed(2));
+    // 3. VAT is included in the consumer price: net = gross / (1 + rate), vat = gross - net
+    const { net: netSubtotal, vatAmount } = calculateReverseVat(finalTotal);
 
     // 4. Cash change calculation
     let changeDue = 0;
@@ -95,8 +121,9 @@ export class POSService {
       });
     }
 
-    // 6. Persist Order and Items to Database
-    const order = await prisma.order.create({
+    // 6. Persist Order, Items and the voucher redemption atomically
+    const order = await prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
       data: {
         orderNumber,
         dailySequence: dailySeq,
@@ -107,9 +134,12 @@ export class POSService {
         paymentMethod: validated.paymentMethod,
         paymentStatus: "CAPTURED",
         subtotal: netSubtotal,
-        vatRate: 0.19,
+        vatRate: DEFAULT_VAT_RATE,
         vatAmount,
         totalAmount: finalTotal,
+        discountAmount,
+        voucherCode: voucherRow?.code ?? null,
+        promotionCodes: priced.discounts.length ? JSON.stringify(priced.discounts.map((d) => d.code)) : null,
         customerNote: validated.customerNote,
         items: {
           create: validated.lines.map((l) => ({
@@ -145,6 +175,25 @@ export class POSService {
         items: true,
         kitchenTickets: true,
       },
+    });
+
+    if (voucherRow && voucherAmount > 0) {
+      // Optimistic guard: only succeeds if nobody redeemed this voucher since we read it.
+      const claimed = await tx.voucher.updateMany({
+        where: { id: voucherRow.id, redemptions: voucherRow.redemptions },
+        data: {
+          redemptions: { increment: 1 },
+          ...(voucherRow.kind === "GIFT_CARD" ? { balance: priced.voucher?.balanceAfter ?? 0 } : {}),
+        },
+      });
+      if (claimed.count !== 1) {
+        throw new Error(`Voucher ${voucherRow.code} was just used on another till — try again`);
+      }
+      await tx.voucherRedemption.create({
+        data: { voucherId: voucherRow.id, orderId: created.id, amount: voucherAmount },
+      });
+    }
+    return created;
     });
 
     // 7. Atomic BOM Inventory Decrement
@@ -209,6 +258,8 @@ export class POSService {
       dailySequence: dailySeq,
       subtotal: grossSubtotal,
       discountAmount,
+      appliedPromotions: priced.discounts.map((d) => ({ ...d })),
+      voucherAmount,
       taxableSubtotal: netSubtotal,
       vatAmount,
       totalAmount: finalTotal,

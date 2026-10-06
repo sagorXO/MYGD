@@ -3,6 +3,7 @@
 // POST: PIN authentication, punch shift (IN/OUT/BREAK), persist to TimeLog, dispatch SSE event
 
 import { NextRequest, NextResponse } from "next/server";
+import { DEFAULT_VAT_RATE } from "@/lib/tax";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { calculateShiftDuration } from "@/lib/timeclock-engine";
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
           name: `MY GERMAN DÖNER — ${locationSlug} Flagship`,
           address: "Pavlides Court, Agiou Stefanou Street 134, 8260 Emba",
           currency: "EUR",
-          vatRate: 0.19,
+          vatRate: DEFAULT_VAT_RATE,
           isActive: true,
         },
       });
@@ -181,7 +182,7 @@ export async function POST(req: NextRequest) {
           name: `MY GERMAN DÖNER — ${targetLocationSlug}`,
           address: "Pavlides Court, Agiou Stefanou Street 134, 8260 Emba",
           currency: "EUR",
-          vatRate: 0.19,
+          vatRate: DEFAULT_VAT_RATE,
           isActive: true,
         },
       });

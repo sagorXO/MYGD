@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { formatEuro } from "@/lib/i18n";
 import { CategoryDTO, ProductDTO } from "@/types";
 import { POSCartLine, POSOrderTender } from "../pos.schema";
@@ -21,10 +21,24 @@ import {
   Sparkles,
   AlertCircle,
   Loader2,
+  Ticket,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 import { generateVectorPlaceholder } from "@/lib/menu-assets";
+import { calculateReverseVat, formatVatPercent } from "@/lib/tax";
+import { priceCart, type PricedCart, type VoucherRejection } from "@/lib/discounts/engine";
+import type { PromotionDef } from "@/lib/menu/mygd-menu";
+
+const VOUCHER_REASONS: Record<VoucherRejection, string> = {
+  INACTIVE: "This voucher is switched off.",
+  NOT_YET_VALID: "This voucher is not valid yet.",
+  EXPIRED: "This voucher has expired.",
+  USED_UP: "This voucher has been used up.",
+  MIN_SUBTOTAL: "The order is below this voucher's minimum spend.",
+  NO_BALANCE: "This gift card has no balance left.",
+};
 
 export const POSTill: React.FC = () => {
   const [locationSlug, setLocationSlug] = useState<"EMBA" | "LIMASSOL">("EMBA");
@@ -35,6 +49,11 @@ export const POSTill: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH">("CARD");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [discountPercent, setDiscountPercent] = useState<number>(0);
+  const [promotions, setPromotions] = useState<PromotionDef[]>([]);
+  const [voucherInput, setVoucherInput] = useState<string>("");
+  const [voucherCode, setVoucherCode] = useState<string | null>(null);
+  const [voucherMessage, setVoucherMessage] = useState<string | null>(null);
+  const [serverPriced, setServerPriced] = useState<PricedCart | null>(null);
   const [cashTendered, setCashTendered] = useState<number | undefined>(undefined);
   const [activeModalProduct, setActiveModalProduct] = useState<ProductDTO | null>(null);
   const [isTendering, setIsTendering] = useState<boolean>(false);
@@ -62,6 +81,7 @@ export const POSTill: React.FC = () => {
       const data = await res.json();
       if (data.success && data.categories.length > 0) {
         setCategories(data.categories);
+        setPromotions(Array.isArray(data.promotions) ? data.promotions : []);
         setActiveCategoryId((prev) => prev || data.categories[0].id);
       }
     } catch (err) {
@@ -111,12 +131,108 @@ export const POSTill: React.FC = () => {
     setCartLines((prev) => prev.filter((l) => l.lineId !== lineId));
   };
 
-  // Pricing calculations
-  const grossSubtotal = cartLines.reduce((sum, l) => sum + l.totalPrice, 0);
-  const discountAmount = Number(((grossSubtotal * discountPercent) / 100).toFixed(2));
-  const totalAmount = Math.max(0, Number((grossSubtotal - discountAmount).toFixed(2)));
-  const netSubtotal = Number((totalAmount / 1.19).toFixed(2));
-  const vatAmount = Number((totalAmount - netSubtotal).toFixed(2));
+  // Pricing: promotions + staff % are computed instantly on the till; a voucher needs the database,
+  // so with a voucher applied the server's /api/pricing answer is shown (and recomputed again at tender).
+  const sectionByProduct = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of categories) for (const p of c.products ?? []) map.set(p.id, c.slug);
+    return map;
+  }, [categories]);
+
+  const localPriced = useMemo(
+    () =>
+      priceCart({
+        lines: cartLines.map((l) => ({ sku: l.sku, sectionSlug: sectionByProduct.get(l.productId) ?? "", unitPrice: l.unitPrice, quantity: l.quantity })),
+        promotions,
+        manualPercent: discountPercent,
+      }),
+    [cartLines, sectionByProduct, promotions, discountPercent],
+  );
+  const priced = voucherCode && serverPriced ? serverPriced : localPriced;
+
+  useEffect(() => {
+    if (!voucherCode || cartLines.length === 0) {
+      setServerPriced(null);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/pricing", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            lines: cartLines.map((l) => ({ productId: l.productId, sku: l.sku, unitPrice: l.unitPrice, quantity: l.quantity })),
+            voucherCode,
+            discountPercent,
+          }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || "pricing failed");
+        setServerPriced(data.priced);
+        if (data.priced?.voucher?.rejectedReason) {
+          setVoucherMessage(VOUCHER_REASONS[data.priced.voucher.rejectedReason as VoucherRejection]);
+        } else {
+          setVoucherMessage(null);
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        console.error("[POSTill] Voucher pricing failed:", err);
+        setServerPriced(null);
+        setVoucherMessage("Could not check the voucher — check the connection.");
+      }
+    }, 150);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [voucherCode, cartLines, discountPercent]);
+
+  const applyVoucher = async () => {
+    const code = voucherInput.trim().toUpperCase();
+    if (!code || cartLines.length === 0) return;
+    setVoucherMessage("Checking…");
+    try {
+      const res = await fetch("/api/pricing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lines: cartLines.map((l) => ({ productId: l.productId, sku: l.sku, unitPrice: l.unitPrice, quantity: l.quantity })),
+          voucherCode: code,
+          discountPercent,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "pricing failed");
+      if (data.voucherUnknown) {
+        setVoucherMessage(`Voucher ${code} does not exist.`);
+        return;
+      }
+      const rejected = data.priced?.voucher?.rejectedReason as VoucherRejection | undefined;
+      if (rejected) {
+        setVoucherMessage(VOUCHER_REASONS[rejected]);
+        return;
+      }
+      setServerPriced(data.priced);
+      setVoucherCode(code);
+      setVoucherInput("");
+      setVoucherMessage(null);
+    } catch (err) {
+      console.error("[POSTill] Voucher check failed:", err);
+      setVoucherMessage("Could not check the voucher — check the connection.");
+    }
+  };
+
+  const removeVoucher = () => {
+    setVoucherCode(null);
+    setServerPriced(null);
+    setVoucherMessage(null);
+  };
+
+  const grossSubtotal = priced.subtotal;
+  const totalAmount = priced.total;
+  const { vatAmount } = calculateReverseVat(totalAmount);
   const changeDue = cashTendered && cashTendered > totalAmount ? Number((cashTendered - totalAmount).toFixed(2)) : 0;
 
   // Tender Order execution
@@ -146,6 +262,7 @@ export const POSTill: React.FC = () => {
         orderType,
         paymentMethod,
         discountPercent,
+        voucherCode: voucherCode ?? undefined,
         cashTendered: paymentMethod === "CASH" ? cashTendered : undefined,
         lines: cartLines,
       };
@@ -169,6 +286,7 @@ export const POSTill: React.FC = () => {
         // Clear ticket
         setCartLines([]);
         setDiscountPercent(0);
+        removeVoucher();
         setCashTendered(undefined);
       } else {
         alert(data.error || "Failed to process order.");
@@ -416,9 +534,11 @@ export const POSTill: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <span className="font-mono text-[10px] text-zinc-400 block">
-                        {line.breadType}
-                      </span>
+                      {line.selectedSauces.length > 0 && (
+                        <span className="font-mono text-[10px] text-zinc-400 block">
+                          Sauce: {line.selectedSauces.join(", ")}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-1.5">
@@ -451,7 +571,7 @@ export const POSTill: React.FC = () => {
                           key={add.id}
                           className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-950/60 text-[#10B981] border border-emerald-800/50"
                         >
-                          +{add.name} {add.priceAdjustment > 0 && `(+${formatEuro(add.priceAdjustment)})`}
+                          {add.name} {add.priceAdjustment > 0 && `(+${formatEuro(add.priceAdjustment)})`}
                         </span>
                       ))}
                       {line.selectedOmissions.map((omit) => (
@@ -467,6 +587,46 @@ export const POSTill: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
+
+          {/* Voucher / gift card */}
+          <div className="py-2 border-t border-[#3A3A3E] space-y-1.5">
+            {voucherCode ? (
+              <div className="flex items-center justify-between rounded-lg bg-emerald-950/50 border border-emerald-800/60 px-2.5 py-1.5 text-[11px] font-mono">
+                <span className="flex items-center gap-1.5 text-[#10B981] font-bold">
+                  <Ticket size={13} /> {voucherCode}
+                  {priced.voucher && !priced.voucher.rejectedReason && <span>−{formatEuro(priced.voucher.amount)}</span>}
+                  {priced.voucher?.balanceAfter !== undefined && <span className="text-zinc-400">(left {formatEuro(priced.voucher.balanceAfter)})</span>}
+                </span>
+                <button onClick={removeVoucher} aria-label="Remove voucher" className="text-zinc-400 hover:text-white">
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void applyVoucher();
+                }}
+                className="flex gap-1.5"
+              >
+                <input
+                  value={voucherInput}
+                  onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
+                  placeholder="Voucher / gift card code"
+                  aria-label="Voucher code"
+                  className="flex-1 min-w-0 bg-[#1F1F21] border border-[#3A3A3E] rounded-lg px-2.5 py-1.5 text-[11px] font-mono text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50D7E]"
+                />
+                <button
+                  type="submit"
+                  disabled={!voucherInput.trim() || cartLines.length === 0}
+                  className="px-3 rounded-lg text-[10px] font-bold bg-[#E5A93C] text-black disabled:opacity-40"
+                >
+                  APPLY
+                </button>
+              </form>
+            )}
+            {voucherMessage && <p className="text-[10px] font-mono text-[#E5A93C]">{voucherMessage}</p>}
           </div>
 
           {/* Quick Discounts & Cash Presets */}
@@ -522,17 +682,29 @@ export const POSTill: React.FC = () => {
           {/* Totals & Charge CTA */}
           <div className="bg-[#1F1F21] p-3 rounded-2xl border border-[#3A3A3E] space-y-1.5">
             <div className="flex justify-between text-[11px] text-zinc-400">
-              <span>Gross Subtotal:</span>
+              <span>Subtotal:</span>
               <span className="font-mono">{formatEuro(grossSubtotal)}</span>
             </div>
-            {discountPercent > 0 && (
+            {priced.discounts.map((d) => (
+              <div key={d.code} className="flex justify-between text-[11px] text-[#E5A93C]">
+                <span>{d.name}:</span>
+                <span className="font-mono">-{formatEuro(d.amount)}</span>
+              </div>
+            ))}
+            {priced.voucher && !priced.voucher.rejectedReason && priced.voucher.amount > 0 && (
+              <div className="flex justify-between text-[11px] text-[#10B981]">
+                <span>Voucher {priced.voucher.code}:</span>
+                <span className="font-mono">-{formatEuro(priced.voucher.amount)}</span>
+              </div>
+            )}
+            {priced.manual && (
               <div className="flex justify-between text-[11px] text-[#E5A93C]">
-                <span>Discount ({discountPercent}%):</span>
-                <span className="font-mono">-{formatEuro(discountAmount)}</span>
+                <span>Discount ({priced.manual.percent}%):</span>
+                <span className="font-mono">-{formatEuro(priced.manual.amount)}</span>
               </div>
             )}
             <div className="flex justify-between text-[11px] text-zinc-500">
-              <span>Cyprus VAT (19% incl):</span>
+              <span>VAT ({formatVatPercent()} incl):</span>
               <span className="font-mono">{formatEuro(vatAmount)}</span>
             </div>
 

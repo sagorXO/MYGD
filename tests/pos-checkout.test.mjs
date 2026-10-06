@@ -11,15 +11,15 @@ test("WU-2: POS Checkout - Order Payload VAT Calculation & Sequential Numbering"
     { name: "Döner Box Spezial", price: 6.50, quantity: 1 },
   ];
 
-  const financials = calculateOrderFinancials(items, 0.19);
+  const financials = calculateOrderFinancials(items); // default rate = 5%
 
   // Gross = 2 * 7.50 + 6.50 = 21.50
-  // Net = 21.50 / 1.19 = 18.0672 -> 18.07
-  // VAT = 21.50 - 18.07 = 3.43
+  // Net = 21.50 / 1.05 = 20.476 -> 20.48
+  // VAT = 21.50 - 20.48 = 1.02
   assert.equal(financials.grossTotal, 21.50);
-  assert.equal(financials.subtotalNet, 18.07);
-  assert.equal(financials.vatAmount, 3.43);
-  assert.equal(financials.vatRate, 0.19);
+  assert.equal(financials.subtotalNet, 20.48);
+  assert.equal(financials.vatAmount, 1.02);
+  assert.equal(financials.vatRate, 0.05);
 
   const orderNumber = generateOrderNumber("EMBA", 42, new Date("2026-08-24T14:30:00Z"));
   assert.equal(orderNumber, "EMBA-20260824-1430-042");

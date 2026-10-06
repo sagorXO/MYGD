@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { CYPRUS_VAT_RATES, formatVatPercent } from "@/lib/tax";
 import { formatEuro } from "@/lib/i18n";
 import {
   UtensilsCrossed,
@@ -535,7 +536,7 @@ export const MenuRecipeManager: React.FC = () => {
                     {formatEuro(product.basePrice)}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400">
-                    VAT: {product.vatCategory === "FOOD_BEV" ? "9%" : "19%"}
+                    VAT: {formatVatPercent(CYPRUS_VAT_RATES[product.vatCategory as keyof typeof CYPRUS_VAT_RATES])}
                   </span>
                 </div>
               </div>
@@ -909,8 +910,8 @@ export const MenuRecipeManager: React.FC = () => {
                     }
                     className="w-full px-3 py-2 bg-[#2B2B2E] border border-[#3A3A3E] rounded-xl text-white focus:outline-none focus:border-[#E50D7E]"
                   >
-                    <option value="FOOD_BEV">9% Food & Soft Drink</option>
-                    <option value="ALCOHOL_TOBACCO">19% Alcohol & Tobacco</option>
+                    <option value="FOOD_BEV">{formatVatPercent(CYPRUS_VAT_RATES.FOOD_BEV)} Food & Soft Drink</option>
+                    <option value="ALCOHOL">{formatVatPercent(CYPRUS_VAT_RATES.ALCOHOL)} Beer & Wine</option>
                   </select>
                 </div>
 
