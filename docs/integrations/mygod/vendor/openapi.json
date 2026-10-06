@@ -1,0 +1,3975 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sagar Bridge — Catalog, Order Webhook and Registration",
+    "version": "0.2.3",
+    "summary": "Sagar pulls the catalog; DM pushes kiosk and online orders; Sagar confirms committed registration.",
+    "license": {
+      "name": "UNLICENSED",
+      "identifier": "UNLICENSED"
+    },
+    "contact": {
+      "name": "DM Integrations — DM SOFT IKE"
+    },
+    "description": "AGREED IMPLEMENTATION CONTRACT — consult integration-manifest.json for deployed capabilities and catalog-access.txt for the assigned catalog URL. Transport is decided: Sagar pulls the catalog, DM pushes orders to Sagar, and Sagar calls DM after POS commit. The former order-pull draft is withdrawn. The complete-contract servers are non-live order-rehearsal placeholders. Use MyGOD-catalog.openapi.json for catalog onboarding. Receiver and registration access must be provisioned before order testing. All examples are synthetic. HTTPS and Bearer authentication are required in both directions. DM API requests use `SAGAR_STORE_TOKEN`; outgoing order delivery uses a separate `SAGAR_WEBHOOK_TOKEN` issued by Sagar. DM issues a Sagar-specific credential per store and environment. Query g/s values are untrusted routing assertions and must match the credential's server-side grant before any data is read or written. Tokens issued to other integrations confer no Sagar permissions. Portal Basic Auth protects documentation only. MyGOD production target confirmed by the operator: mygermandoener / 576712. Catalog onboarding does not provision an order-processing sandbox or activate live orders. Standard POS bridge flow: kiosk or online (web, Android, iOS) order, committed Sagar registration, confirmation to DM, then the established DM kitchen-printing flow for receipt and preparation tickets. Printing ownership is settled. Registration acknowledgement is not physical-print confirmation; identical retries must not initiate another import or print cycle."
+  },
+  "servers": [
+    {
+      "url": "https://sagar-api.invalid",
+      "description": "NON-LIVE PLACEHOLDER. Replace only with the Sagar endpoint issued by DM for the target environment."
+    }
+  ],
+  "security": [
+    {
+      "SagarStoreBearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Catalog",
+      "description": "DM catalog used for Sagar-side mapping."
+    },
+    {
+      "name": "Orders",
+      "description": "DM-to-Sagar order delivery and Sagar-to-DM registration confirmation."
+    }
+  ],
+  "paths": {
+    "/v1/catalog": {
+      "get": {
+        "operationId": "getSagarCatalog",
+        "tags": [
+          "Catalog"
+        ],
+        "summary": "Read the authorized store catalog",
+        "description": "Refresh before initial mapping and when mapping changes require it. Labels are for display; map using stable IDs. This endpoint grants no catalog writes. Snapshot limit is 2 MiB. Oversized or incomplete snapshots fail; no partial catalog is returned.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Group"
+          },
+          {
+            "$ref": "#/components/parameters/StoreId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Complete catalog wrapper using the established DM catalog shape.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogResponse"
+                },
+                "example": {
+                  "success": true,
+                  "schema_version": "dm.sagar.v1",
+                  "group": "sagar-sandbox-example",
+                  "store_id": "000001",
+                  "environment": "test",
+                  "generated_at": "2026-10-03T09:00:00Z",
+                  "catalog_revision": "synthetic-catalog-1",
+                  "currency": "EUR",
+                  "catalog": {
+                    "products": [
+                      {
+                        "id": "P001",
+                        "name": "Synthetic Wrap",
+                        "price": 8.5,
+                        "available": true,
+                        "options": [
+                          {
+                            "id": "O01",
+                            "product_id_option_id": "P001_O01",
+                            "title": "Sauce",
+                            "type": "single",
+                            "is_require": false,
+                            "min_selected": 0,
+                            "max_selected": 1,
+                            "choices": [
+                              {
+                                "id": "C01",
+                                "option_id_choice_id": "P001_O01_C01",
+                                "title": "Synthetic Garlic",
+                                "is_preselected": true,
+                                "price": 0,
+                                "available": true
+                              }
+                            ]
+                          },
+                          {
+                            "id": "O02",
+                            "product_id_option_id": "P001_O02",
+                            "title": "Extras",
+                            "type": "multi",
+                            "is_require": false,
+                            "min_selected": 0,
+                            "max_selected": 3,
+                            "choices": [
+                              {
+                                "id": "C02",
+                                "option_id_choice_id": "P001_O02_C02",
+                                "title": "Synthetic Cheese",
+                                "is_preselected": false,
+                                "price": 0.5,
+                                "available": true
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "categories": [
+                      {
+                        "id": "CAT001",
+                        "name": "Synthetic Test Menu",
+                        "products": [
+                          "P001"
+                        ]
+                      }
+                    ]
+                  },
+                  "request_id": "example-catalog-request"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, expired, wrong-store or wrong-environment credential. Unknown store hints also fail authentication without exposing store existence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "const": "Bearer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated Sagar integration is disabled or lacks the required operation permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests. Retry only after Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Seconds before retrying."
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error; retry safely using the same identity and revision.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary dependency failure. A status write is never reported successful if its durable update is unconfirmed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orders": {
+      "post": {
+        "operationId": "receiveSagarOrder",
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Sagar receives an order pushed by DM",
+        "description": "IMPLEMENT THIS ENDPOINT ON SAGAR. DM POSTs exactly one full immutable order. The configured receiver URL may use a different path. Verify the separate receiver credential before accepting data and bind it to the assigned store/environment. Deduplicate atomically by environment/store/order_uid; keep the same Sagar order ID across retries. Return 200 or 202 with the matching identity and revision only after durably accepting the delivery. HTTP acceptance is not a received registration: after the POS transaction commits, call setSagarOrderStatus. If the HTTP result is lost, DM may resend identical bytes. Redirects are not followed. Authentication, mapping failures and outages must never create partial or duplicate sales.",
+        "servers": [
+          {
+            "url": "https://sagar-pos.invalid",
+            "description": "NON-LIVE SAGAR RECEIVER PLACEHOLDER. Sagar supplies the exact HTTPS URL."
+          }
+        ],
+        "security": [
+          {
+            "SagarWebhookBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Stable opaque delivery key for environment/store/order_uid/export_revision. It never changes between delivery retries. POS uniqueness must also cover order_uid independently of revision."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDelivery"
+              },
+              "examples": {
+                "kiosk": {
+                  "value": {
+                    "schema_version": "dm.sagar.v1",
+                    "store": {
+                      "group": "sagar-sandbox-example",
+                      "store_id": "000001"
+                    },
+                    "environment": "test",
+                    "order": {
+                      "order_uid": "dm:000001:900001",
+                      "source": "dm",
+                      "source_order_id": "900001",
+                      "dm_order_id": "900001",
+                      "display_order_id": "001",
+                      "created_at": "2026-10-03T09:00:00Z",
+                      "updated_at": "2026-10-03T09:00:00Z",
+                      "accepted_at": "2026-10-03T09:00:00Z",
+                      "completed_at": "2026-10-03T09:00:00Z",
+                      "status": "complete",
+                      "fulfillment_type": "takeaway",
+                      "customer": null,
+                      "currency": "EUR",
+                      "totals": {
+                        "grand_total": 9.5,
+                        "items_total": 9.5,
+                        "delivery_fee": 0,
+                        "discount_total": 0,
+                        "tip_total": 0,
+                        "service_fee": 0,
+                        "bag_fee": 0,
+                        "packaging_fee": 0,
+                        "delivery_tip_total": 0,
+                        "waiter_tip_total": 0
+                      },
+                      "items": [
+                        {
+                          "line_id": "line-1",
+                          "dm_product_id": "P001",
+                          "source_product_id": null,
+                          "sku": null,
+                          "name": "Synthetic Wrap",
+                          "category": {
+                            "dm_category_id": "CAT001",
+                            "source_category_id": null,
+                            "name": "Synthetic Test Menu"
+                          },
+                          "quantity": 1,
+                          "unit_price": 8.5,
+                          "base_line_total": 8.5,
+                          "modifiers_total": 1,
+                          "line_total": 9.5,
+                          "modifiers": [
+                            {
+                              "modifier_group_id": "P001_O01",
+                              "modifier_group_name": "Sauce",
+                              "modifier_group_type": "single",
+                              "choice_id": "P001_O01_C01",
+                              "choice_name": "Synthetic Garlic",
+                              "selected": true,
+                              "selection_type": "removed",
+                              "is_default": true,
+                              "quantity": 1,
+                              "unit_price": 0,
+                              "line_total": 0
+                            },
+                            {
+                              "modifier_group_id": "P001_O02",
+                              "modifier_group_name": "Extras",
+                              "modifier_group_type": "multi",
+                              "choice_id": "P001_O02_C02",
+                              "choice_name": "Synthetic Cheese",
+                              "selected": true,
+                              "selection_type": "selected",
+                              "is_default": false,
+                              "quantity": 2,
+                              "unit_price": 0.5,
+                              "line_total": 1
+                            }
+                          ],
+                          "unresolved": false,
+                          "bundle_parent_line_id": null,
+                          "notes": null,
+                          "text_options": []
+                        }
+                      ],
+                      "flags": {
+                        "contains_unresolved_items": false,
+                        "contains_customer_data": false
+                      },
+                      "export_revision": 1,
+                      "catalog_revision": "synthetic-catalog-1",
+                      "channel": "kiosk",
+                      "client_platform": null,
+                      "import_state": "pending",
+                      "issue": null,
+                      "payment": {
+                        "method": "credit_card",
+                        "status": "paid",
+                        "paid_amount": 9.5,
+                        "amount_due": 0,
+                        "transaction_reference": "SYNTHETIC-PAYMENT-001"
+                      },
+                      "notes": null,
+                      "table_id": null,
+                      "requested_for": null
+                    }
+                  }
+                },
+                "onlineWeb": {
+                  "value": {
+                    "schema_version": "dm.sagar.v1",
+                    "store": {
+                      "group": "sagar-sandbox-example",
+                      "store_id": "000001"
+                    },
+                    "environment": "test",
+                    "order": {
+                      "order_uid": "dm:000001:900002",
+                      "source": "dm",
+                      "source_order_id": "900002",
+                      "dm_order_id": "900002",
+                      "display_order_id": "002",
+                      "created_at": "2026-10-03T09:00:00Z",
+                      "updated_at": "2026-10-03T09:00:00Z",
+                      "accepted_at": "2026-10-03T09:00:00Z",
+                      "completed_at": null,
+                      "status": "processing",
+                      "fulfillment_type": "delivery",
+                      "customer": {
+                        "customer_id": null,
+                        "display_name": "Synthetic Customer",
+                        "phone": "+35700000000",
+                        "email": null,
+                        "delivery_address": {
+                          "street": "Synthetic Test Street",
+                          "number": "0",
+                          "area": "Test Area",
+                          "city": "Test City",
+                          "postal_code": "0000",
+                          "floor": null,
+                          "bell": null,
+                          "notes": "SYNTHETIC — DO NOT FULFIL",
+                          "lat": null,
+                          "lng": null
+                        },
+                        "comments": null
+                      },
+                      "currency": "EUR",
+                      "totals": {
+                        "grand_total": 12,
+                        "items_total": 9.5,
+                        "delivery_fee": 2,
+                        "discount_total": 0.5,
+                        "tip_total": 1,
+                        "service_fee": 0,
+                        "bag_fee": 0,
+                        "packaging_fee": 0,
+                        "delivery_tip_total": 1,
+                        "waiter_tip_total": 0
+                      },
+                      "items": [
+                        {
+                          "line_id": "line-1",
+                          "dm_product_id": "P001",
+                          "source_product_id": null,
+                          "sku": null,
+                          "name": "Synthetic Wrap",
+                          "category": {
+                            "dm_category_id": "CAT001",
+                            "source_category_id": null,
+                            "name": "Synthetic Test Menu"
+                          },
+                          "quantity": 1,
+                          "unit_price": 8.5,
+                          "base_line_total": 8.5,
+                          "modifiers_total": 1,
+                          "line_total": 9.5,
+                          "modifiers": [
+                            {
+                              "modifier_group_id": "P001_O01",
+                              "modifier_group_name": "Sauce",
+                              "modifier_group_type": "single",
+                              "choice_id": "P001_O01_C01",
+                              "choice_name": "Synthetic Garlic",
+                              "selected": true,
+                              "selection_type": "removed",
+                              "is_default": true,
+                              "quantity": 1,
+                              "unit_price": 0,
+                              "line_total": 0
+                            },
+                            {
+                              "modifier_group_id": "P001_O02",
+                              "modifier_group_name": "Extras",
+                              "modifier_group_type": "multi",
+                              "choice_id": "P001_O02_C02",
+                              "choice_name": "Synthetic Cheese",
+                              "selected": true,
+                              "selection_type": "selected",
+                              "is_default": false,
+                              "quantity": 2,
+                              "unit_price": 0.5,
+                              "line_total": 1
+                            }
+                          ],
+                          "unresolved": false,
+                          "bundle_parent_line_id": null,
+                          "notes": null,
+                          "text_options": []
+                        }
+                      ],
+                      "flags": {
+                        "contains_unresolved_items": false,
+                        "contains_customer_data": true
+                      },
+                      "export_revision": 1,
+                      "catalog_revision": "synthetic-catalog-1",
+                      "channel": "online",
+                      "client_platform": "web",
+                      "import_state": "pending",
+                      "issue": null,
+                      "payment": {
+                        "method": "cash",
+                        "status": "pay_on_fulfillment",
+                        "paid_amount": 0,
+                        "amount_due": 12,
+                        "transaction_reference": null
+                      },
+                      "notes": null,
+                      "table_id": null,
+                      "requested_for": null
+                    }
+                  }
+                },
+                "onlineAndroid": {
+                  "value": {
+                    "schema_version": "dm.sagar.v1",
+                    "store": {
+                      "group": "sagar-sandbox-example",
+                      "store_id": "000001"
+                    },
+                    "environment": "test",
+                    "order": {
+                      "order_uid": "dm:000001:900003",
+                      "source": "dm",
+                      "source_order_id": "900003",
+                      "dm_order_id": "900003",
+                      "display_order_id": "003",
+                      "created_at": "2026-10-03T09:00:00Z",
+                      "updated_at": "2026-10-03T09:00:00Z",
+                      "accepted_at": "2026-10-03T09:00:00Z",
+                      "completed_at": null,
+                      "status": "processing",
+                      "fulfillment_type": "delivery",
+                      "customer": {
+                        "customer_id": null,
+                        "display_name": "Synthetic Customer",
+                        "phone": "+35700000000",
+                        "email": null,
+                        "delivery_address": {
+                          "street": "Synthetic Test Street",
+                          "number": "0",
+                          "area": "Test Area",
+                          "city": "Test City",
+                          "postal_code": "0000",
+                          "floor": null,
+                          "bell": null,
+                          "notes": "SYNTHETIC — DO NOT FULFIL",
+                          "lat": null,
+                          "lng": null
+                        },
+                        "comments": null
+                      },
+                      "currency": "EUR",
+                      "totals": {
+                        "grand_total": 12,
+                        "items_total": 9.5,
+                        "delivery_fee": 2,
+                        "discount_total": 0.5,
+                        "tip_total": 1,
+                        "service_fee": 0,
+                        "bag_fee": 0,
+                        "packaging_fee": 0,
+                        "delivery_tip_total": 1,
+                        "waiter_tip_total": 0
+                      },
+                      "items": [
+                        {
+                          "line_id": "line-1",
+                          "dm_product_id": "P001",
+                          "source_product_id": null,
+                          "sku": null,
+                          "name": "Synthetic Wrap",
+                          "category": {
+                            "dm_category_id": "CAT001",
+                            "source_category_id": null,
+                            "name": "Synthetic Test Menu"
+                          },
+                          "quantity": 1,
+                          "unit_price": 8.5,
+                          "base_line_total": 8.5,
+                          "modifiers_total": 1,
+                          "line_total": 9.5,
+                          "modifiers": [
+                            {
+                              "modifier_group_id": "P001_O01",
+                              "modifier_group_name": "Sauce",
+                              "modifier_group_type": "single",
+                              "choice_id": "P001_O01_C01",
+                              "choice_name": "Synthetic Garlic",
+                              "selected": true,
+                              "selection_type": "removed",
+                              "is_default": true,
+                              "quantity": 1,
+                              "unit_price": 0,
+                              "line_total": 0
+                            },
+                            {
+                              "modifier_group_id": "P001_O02",
+                              "modifier_group_name": "Extras",
+                              "modifier_group_type": "multi",
+                              "choice_id": "P001_O02_C02",
+                              "choice_name": "Synthetic Cheese",
+                              "selected": true,
+                              "selection_type": "selected",
+                              "is_default": false,
+                              "quantity": 2,
+                              "unit_price": 0.5,
+                              "line_total": 1
+                            }
+                          ],
+                          "unresolved": false,
+                          "bundle_parent_line_id": null,
+                          "notes": null,
+                          "text_options": []
+                        }
+                      ],
+                      "flags": {
+                        "contains_unresolved_items": false,
+                        "contains_customer_data": true
+                      },
+                      "export_revision": 1,
+                      "catalog_revision": "synthetic-catalog-1",
+                      "channel": "online",
+                      "client_platform": "android",
+                      "import_state": "pending",
+                      "issue": null,
+                      "payment": {
+                        "method": "cash",
+                        "status": "pay_on_fulfillment",
+                        "paid_amount": 0,
+                        "amount_due": 12,
+                        "transaction_reference": null
+                      },
+                      "notes": null,
+                      "table_id": null,
+                      "requested_for": null
+                    }
+                  }
+                },
+                "onlineIos": {
+                  "value": {
+                    "schema_version": "dm.sagar.v1",
+                    "store": {
+                      "group": "sagar-sandbox-example",
+                      "store_id": "000001"
+                    },
+                    "environment": "test",
+                    "order": {
+                      "order_uid": "dm:000001:900004",
+                      "source": "dm",
+                      "source_order_id": "900004",
+                      "dm_order_id": "900004",
+                      "display_order_id": "004",
+                      "created_at": "2026-10-03T09:00:00Z",
+                      "updated_at": "2026-10-03T09:00:00Z",
+                      "accepted_at": "2026-10-03T09:00:00Z",
+                      "completed_at": null,
+                      "status": "processing",
+                      "fulfillment_type": "delivery",
+                      "customer": {
+                        "customer_id": null,
+                        "display_name": "Synthetic Customer",
+                        "phone": "+35700000000",
+                        "email": null,
+                        "delivery_address": {
+                          "street": "Synthetic Test Street",
+                          "number": "0",
+                          "area": "Test Area",
+                          "city": "Test City",
+                          "postal_code": "0000",
+                          "floor": null,
+                          "bell": null,
+                          "notes": "SYNTHETIC — DO NOT FULFIL",
+                          "lat": null,
+                          "lng": null
+                        },
+                        "comments": null
+                      },
+                      "currency": "EUR",
+                      "totals": {
+                        "grand_total": 12,
+                        "items_total": 9.5,
+                        "delivery_fee": 2,
+                        "discount_total": 0.5,
+                        "tip_total": 1,
+                        "service_fee": 0,
+                        "bag_fee": 0,
+                        "packaging_fee": 0,
+                        "delivery_tip_total": 1,
+                        "waiter_tip_total": 0
+                      },
+                      "items": [
+                        {
+                          "line_id": "line-1",
+                          "dm_product_id": "P001",
+                          "source_product_id": null,
+                          "sku": null,
+                          "name": "Synthetic Wrap",
+                          "category": {
+                            "dm_category_id": "CAT001",
+                            "source_category_id": null,
+                            "name": "Synthetic Test Menu"
+                          },
+                          "quantity": 1,
+                          "unit_price": 8.5,
+                          "base_line_total": 8.5,
+                          "modifiers_total": 1,
+                          "line_total": 9.5,
+                          "modifiers": [
+                            {
+                              "modifier_group_id": "P001_O01",
+                              "modifier_group_name": "Sauce",
+                              "modifier_group_type": "single",
+                              "choice_id": "P001_O01_C01",
+                              "choice_name": "Synthetic Garlic",
+                              "selected": true,
+                              "selection_type": "removed",
+                              "is_default": true,
+                              "quantity": 1,
+                              "unit_price": 0,
+                              "line_total": 0
+                            },
+                            {
+                              "modifier_group_id": "P001_O02",
+                              "modifier_group_name": "Extras",
+                              "modifier_group_type": "multi",
+                              "choice_id": "P001_O02_C02",
+                              "choice_name": "Synthetic Cheese",
+                              "selected": true,
+                              "selection_type": "selected",
+                              "is_default": false,
+                              "quantity": 2,
+                              "unit_price": 0.5,
+                              "line_total": 1
+                            }
+                          ],
+                          "unresolved": false,
+                          "bundle_parent_line_id": null,
+                          "notes": null,
+                          "text_options": []
+                        }
+                      ],
+                      "flags": {
+                        "contains_unresolved_items": false,
+                        "contains_customer_data": true
+                      },
+                      "export_revision": 1,
+                      "catalog_revision": "synthetic-catalog-1",
+                      "channel": "online",
+                      "client_platform": "ios",
+                      "import_state": "pending",
+                      "issue": null,
+                      "payment": {
+                        "method": "cash",
+                        "status": "pay_on_fulfillment",
+                        "paid_amount": 0,
+                        "amount_due": 12,
+                        "transaction_reference": null
+                      },
+                      "notes": null,
+                      "table_id": null,
+                      "requested_for": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Durably accepted delivery, including an identical replay.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryAccepted"
+                },
+                "example": {
+                  "success": true,
+                  "order_uid": "dm:000001:900001",
+                  "export_revision": 1
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Durably queued delivery. Registration callback remains required after POS commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryAccepted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Receiver credential rejected; do not import.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Same order identity has conflicting content or revision; reconcile without creating another sale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid order or missing mapping; do not partially import.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests. Retry only after Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Seconds before retrying."
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error; retry safely using the same identity and revision.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary dependency failure. A status write is never reported successful if its durable update is unconfirmed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/orders/{order_uid}/status": {
+      "post": {
+        "operationId": "setSagarOrderStatus",
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Confirm committed registration or report a blocked import",
+        "description": "Requires the credential's store to own this native order and an existing prepared Sagar export with the same export_revision. A received acknowledgement atomically persists the Sagar ID, revision and bridge receipt state before HTTP 200. Repeating the same mapping succeeds; a different Sagar ID or stale revision returns 409. A rejected status preserves the customer's business order and blocks automatic import retries. A later successful received status may resolve that rejection. A late rejection cannot undo received. If cancellation races with import, return order_not_eligible and reconcile explicitly with DM; never interpret the conflict as an automatic refund or delete the committed Sagar order. Resolve a previously committed matching acknowledgement before considering later business-state changes: replaying that acknowledgement still returns its original success after a subsequent cancellation.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Group"
+          },
+          {
+            "$ref": "#/components/parameters/StoreId"
+          },
+          {
+            "name": "order_uid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "URL-encoded opaque order_uid from the delivered webhook body."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusRequest"
+              },
+              "examples": {
+                "received": {
+                  "value": {
+                    "status": "received",
+                    "export_revision": 1,
+                    "sagar_order_id": "SAGAR-SYNTHETIC-001",
+                    "registered_at": "2026-10-03T09:00:03Z"
+                  }
+                },
+                "rejected": {
+                  "value": {
+                    "status": "rejected",
+                    "export_revision": 1,
+                    "issue": {
+                      "code": "mapping_missing",
+                      "message": "Synthetic cheese choice needs a Sagar mapping.",
+                      "unmapped_ids": [
+                        "P001_O02_C02"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Durable result, or a matching previously committed result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                },
+                "example": {
+                  "success": true,
+                  "order_uid": "dm:000001:900001",
+                  "export_revision": 1,
+                  "status": "received",
+                  "sagar_order_id": "SAGAR-SYNTHETIC-001",
+                  "first_applied_at": "2026-10-03T09:00:04Z",
+                  "already_applied": false,
+                  "request_id": "example-ack-request"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, expired, wrong-store or wrong-environment credential. Unknown store hints also fail authentication without exposing store existence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "const": "Bearer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated Sagar integration is disabled or lacks the required operation permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order is not available within the authenticated Sagar scope; no cross-store existence is disclosed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "revision_conflict, registration_conflict, status_conflict or order_not_eligible. Reconcile before attempting a new import.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid status payload. received requires a non-empty sagar_order_id and matching revision.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests. Retry only after Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Seconds before retrying."
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error; retry safely using the same identity and revision.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary dependency failure. A status write is never reported successful if its durable update is unconfirmed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SagarWebhookBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Sagar receiver credential",
+        "description": "Separate store/environment-scoped credential issued by Sagar to DM. Never reuse the DM API or portal credential. DM sends it only to the configured HTTPS receiver; redirects are refused."
+      },
+      "SagarStoreBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Opaque store credential",
+        "description": "Server-issued Sagar-specific secret, using the existing DM store/client Bearer pattern. This is not a JWT, OAuth login, portal password or customer token. Send only in Authorization over HTTPS, never in the URL. DM stores a SHA-256 hash and uses constant-time hash comparison. Store, environment and permissions come from the matching server-side credential grant."
+      }
+    },
+    "parameters": {
+      "Group": {
+        "name": "g",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": "Group routing hint. For the confirmed MyGOD production target: mygermandoener. Must match the authenticated grant."
+      },
+      "StoreId": {
+        "name": "s",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": "Store routing hint. For the confirmed MyGOD production target: 576712. Must match the authenticated grant."
+      }
+    },
+    "schemas": {
+      "StoreRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Store selected by the required `g` and `s` query parameters.",
+        "required": [
+          "group",
+          "store_id"
+        ],
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "Store group key supplied as query parameter `g`."
+          },
+          "store_id": {
+            "type": "string",
+            "description": "Store id supplied as query parameter `s`."
+          },
+          "store_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable store name when configured."
+          }
+        }
+      },
+      "SagarOrder": {
+        "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for",
+              "customer"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "delivery"
+                ]
+              },
+              "customer": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Order-scoped contact and delivery details, using the existing per-client field-group permissions. Unneeded or unapproved fields are null. No customer-directory access is granted.",
+                "required": [
+                  "customer_id",
+                  "display_name",
+                  "phone",
+                  "email",
+                  "delivery_address",
+                  "comments"
+                ],
+                "properties": {
+                  "customer_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Delivery Manager customer id or source customer id when approved and available."
+                  },
+                  "display_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer display name when the `identity` field group is approved."
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "description": "Delivery contact"
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer email when the `contact` field group is approved."
+                  },
+                  "delivery_address": {
+                    "$ref": "#/components/schemas/CustomerDeliveryAddress"
+                  },
+                  "comments": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer-facing order comments when the `comments` field group is approved."
+                  }
+                }
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "kiosk"
+              },
+              "client_platform": {
+                "type": "null"
+              },
+              "import_state": {
+                "type": "string",
+                "const": "blocked"
+              },
+              "issue": {
+                "$ref": "#/components/schemas/ImportIssue"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for",
+              "customer"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "delivery"
+                ]
+              },
+              "customer": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Order-scoped contact and delivery details, using the existing per-client field-group permissions. Unneeded or unapproved fields are null. No customer-directory access is granted.",
+                "required": [
+                  "customer_id",
+                  "display_name",
+                  "phone",
+                  "email",
+                  "delivery_address",
+                  "comments"
+                ],
+                "properties": {
+                  "customer_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Delivery Manager customer id or source customer id when approved and available."
+                  },
+                  "display_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer display name when the `identity` field group is approved."
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "description": "Delivery contact"
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer email when the `contact` field group is approved."
+                  },
+                  "delivery_address": {
+                    "$ref": "#/components/schemas/CustomerDeliveryAddress"
+                  },
+                  "comments": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer-facing order comments when the `comments` field group is approved."
+                  }
+                }
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "online"
+              },
+              "client_platform": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "web",
+                  "android",
+                  "ios",
+                  null
+                ],
+                "description": "Online platform only when reliably recorded; otherwise null. Kiosk always uses null regardless of its operating system."
+              },
+              "import_state": {
+                "type": "string",
+                "const": "blocked"
+              },
+              "issue": {
+                "$ref": "#/components/schemas/ImportIssue"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for",
+              "customer"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "delivery"
+                ]
+              },
+              "customer": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Order-scoped contact and delivery details, using the existing per-client field-group permissions. Unneeded or unapproved fields are null. No customer-directory access is granted.",
+                "required": [
+                  "customer_id",
+                  "display_name",
+                  "phone",
+                  "email",
+                  "delivery_address",
+                  "comments"
+                ],
+                "properties": {
+                  "customer_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Delivery Manager customer id or source customer id when approved and available."
+                  },
+                  "display_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer display name when the `identity` field group is approved."
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "description": "Delivery contact"
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer email when the `contact` field group is approved."
+                  },
+                  "delivery_address": {
+                    "$ref": "#/components/schemas/CustomerDeliveryAddress"
+                  },
+                  "comments": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer-facing order comments when the `comments` field group is approved."
+                  }
+                }
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "kiosk"
+              },
+              "client_platform": {
+                "type": "null"
+              },
+              "import_state": {
+                "type": "string",
+                "const": "pending"
+              },
+              "issue": {
+                "type": "null"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for",
+              "customer"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "delivery"
+                ]
+              },
+              "customer": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Order-scoped contact and delivery details, using the existing per-client field-group permissions. Unneeded or unapproved fields are null. No customer-directory access is granted.",
+                "required": [
+                  "customer_id",
+                  "display_name",
+                  "phone",
+                  "email",
+                  "delivery_address",
+                  "comments"
+                ],
+                "properties": {
+                  "customer_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Delivery Manager customer id or source customer id when approved and available."
+                  },
+                  "display_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer display name when the `identity` field group is approved."
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "description": "Delivery contact"
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer email when the `contact` field group is approved."
+                  },
+                  "delivery_address": {
+                    "$ref": "#/components/schemas/CustomerDeliveryAddress"
+                  },
+                  "comments": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Customer-facing order comments when the `comments` field group is approved."
+                  }
+                }
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "online"
+              },
+              "client_platform": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "web",
+                  "android",
+                  "ios",
+                  null
+                ],
+                "description": "Online platform only when reliably recorded; otherwise null. Kiosk always uses null regardless of its operating system."
+              },
+              "import_state": {
+                "type": "string",
+                "const": "pending"
+              },
+              "issue": {
+                "type": "null"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "takeaway",
+                  "dinein"
+                ]
+              },
+              "customer": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OrderCustomer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Order-scoped fulfilment data permitted by this credential. Delivery orders require the authorised contact/address fields before publication."
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "kiosk"
+              },
+              "client_platform": {
+                "type": "null"
+              },
+              "import_state": {
+                "type": "string",
+                "const": "blocked"
+              },
+              "issue": {
+                "$ref": "#/components/schemas/ImportIssue"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "takeaway",
+                  "dinein"
+                ]
+              },
+              "customer": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OrderCustomer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Order-scoped fulfilment data permitted by this credential. Delivery orders require the authorised contact/address fields before publication."
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "online"
+              },
+              "client_platform": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "web",
+                  "android",
+                  "ios",
+                  null
+                ],
+                "description": "Online platform only when reliably recorded; otherwise null. Kiosk always uses null regardless of its operating system."
+              },
+              "import_state": {
+                "type": "string",
+                "const": "blocked"
+              },
+              "issue": {
+                "$ref": "#/components/schemas/ImportIssue"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "takeaway",
+                  "dinein"
+                ]
+              },
+              "customer": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OrderCustomer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Order-scoped fulfilment data permitted by this credential. Delivery orders require the authorised contact/address fields before publication."
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "kiosk"
+              },
+              "client_platform": {
+                "type": "null"
+              },
+              "import_state": {
+                "type": "string",
+                "const": "pending"
+              },
+              "issue": {
+                "type": "null"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Eligible native DM order snapshot for import into Sagar. Product and modifier totals preserve the accepted order, independently of later catalog changes. Sagar must import once per order_uid.",
+            "required": [
+              "order_uid",
+              "source",
+              "source_order_id",
+              "dm_order_id",
+              "display_order_id",
+              "created_at",
+              "updated_at",
+              "accepted_at",
+              "completed_at",
+              "status",
+              "fulfillment_type",
+              "currency",
+              "totals",
+              "items",
+              "flags",
+              "export_revision",
+              "catalog_revision",
+              "channel",
+              "client_platform",
+              "import_state",
+              "issue",
+              "payment",
+              "notes",
+              "table_id",
+              "requested_for"
+            ],
+            "properties": {
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Stable identity using the existing native convention dm:<store_id>:<dm_order_id>. Treat as opaque; display_order_id is not an idempotency key."
+              },
+              "source": {
+                "type": "string",
+                "const": "dm",
+                "description": "Native DM kiosk or online orders in v1."
+              },
+              "source_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "External/source order id when available; nullable when the source did not provide a stable id."
+              },
+              "dm_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Native DM order identifier."
+              },
+              "display_order_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable order id for support or operator screens; do not use as the primary upsert key."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Original creation time. Eligibility, pagination and recovery are not limited by this timestamp."
+              },
+              "updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Last known update timestamp in ISO UTC format when available."
+              },
+              "accepted_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was accepted when available."
+              },
+              "completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Timestamp when the order was completed when available."
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM business state at export. This is separate from Sagar import state."
+              },
+              "fulfillment_type": {
+                "type": "string",
+                "enum": [
+                  "takeaway",
+                  "dinein"
+                ]
+              },
+              "customer": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OrderCustomer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Order-scoped fulfilment data permitted by this credential. Delivery orders require the authorised contact/address fields before publication."
+              },
+              "currency": {
+                "type": "string",
+                "const": "EUR"
+              },
+              "totals": {
+                "$ref": "#/components/schemas/OrderTotals"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SagarOrderItem"
+                },
+                "minItems": 1,
+                "description": "Complete hydrated lines. Missing identities or cart data block publication; they do not produce a partial importable order."
+              },
+              "flags": {
+                "$ref": "#/components/schemas/OrderFlags"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Immutable payload revision. Re-fetching the same revision returns the same import data. A changed payload requires a new revision and explicit reconciliation if already imported."
+              },
+              "catalog_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Catalog revision recorded with the order, if available. Never substitute the current revision for an unknown historical one."
+              },
+              "channel": {
+                "type": "string",
+                "const": "online"
+              },
+              "client_platform": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "web",
+                  "android",
+                  "ios",
+                  null
+                ],
+                "description": "Online platform only when reliably recorded; otherwise null. Kiosk always uses null regardless of its operating system."
+              },
+              "import_state": {
+                "type": "string",
+                "const": "pending"
+              },
+              "issue": {
+                "type": "null"
+              },
+              "payment": {
+                "$ref": "#/components/schemas/Payment"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Fulfilment instructions from the order."
+              },
+              "table_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "DM dine-in table identifier if recorded."
+              },
+              "requested_for": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Scheduled fulfilment time. Preserve it; do not assume every exported order is for immediate preparation."
+              }
+            }
+          }
+        ]
+      },
+      "OrderTotals": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "EUR amounts in major units, matching existing DM exports. Use decimal arithmetic at two decimal places. grand_total = items_total + delivery_fee + service_fee + bag_fee + packaging_fee + tip_total - discount_total. Tax is already included; do not add it again.",
+        "required": [
+          "grand_total",
+          "items_total",
+          "delivery_fee",
+          "discount_total",
+          "tip_total",
+          "service_fee",
+          "bag_fee",
+          "packaging_fee",
+          "delivery_tip_total",
+          "waiter_tip_total"
+        ],
+        "properties": {
+          "grand_total": {
+            "type": "number",
+            "description": "Final order total as reported by the source/DM."
+          },
+          "items_total": {
+            "type": "number",
+            "description": "Sum of item line totals before delivery fee, discounts, and tips when available."
+          },
+          "delivery_fee": {
+            "type": "number",
+            "description": "Delivery fee charged for the order, or `0` when not present."
+          },
+          "discount_total": {
+            "type": "number",
+            "description": "Total discount amount, or `0` when not present."
+          },
+          "tip_total": {
+            "type": "number",
+            "description": "delivery_tip_total + waiter_tip_total. Those component fields are informational; do not add them again to grand_total."
+          },
+          "service_fee": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Service charge"
+          },
+          "bag_fee": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Bag charge"
+          },
+          "packaging_fee": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Packaging or environmental charge"
+          },
+          "delivery_tip_total": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Delivery tip component"
+          },
+          "waiter_tip_total": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Waiter tip component"
+          }
+        }
+      },
+      "SagarOrderItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "DM order line using the established export field names. line_total already includes modifiers_total; never add the modifiers twice. For a priced bundle parent, component lines carry only their separately allocated amount, commonly zero.",
+        "required": [
+          "line_id",
+          "dm_product_id",
+          "source_product_id",
+          "sku",
+          "name",
+          "category",
+          "quantity",
+          "unit_price",
+          "base_line_total",
+          "modifiers_total",
+          "line_total",
+          "modifiers",
+          "unresolved",
+          "bundle_parent_line_id",
+          "notes",
+          "text_options"
+        ],
+        "properties": {
+          "line_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Stable line identifier when available; otherwise a generated line position string."
+          },
+          "dm_product_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Same product identity as catalog.products[].id."
+          },
+          "source_product_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Marketplace/source product id when available, including bridge external ids when present."
+          },
+          "sku": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "SKU when provided by the catalog/source."
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Product display name as available in the source payload."
+          },
+          "category": {
+            "$ref": "#/components/schemas/OrderLineCategory"
+          },
+          "quantity": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "unit_price": {
+            "type": "number",
+            "description": "Unit price before quantity multiplication and modifiers when available."
+          },
+          "base_line_total": {
+            "type": "number",
+            "description": "Base line total before modifiers."
+          },
+          "modifiers_total": {
+            "type": "number",
+            "description": "Sum of all modifier choice line totals for this item."
+          },
+          "line_total": {
+            "type": "number",
+            "description": "Final line total including modifiers."
+          },
+          "modifiers": {
+            "type": "array",
+            "description": "Applied modifier choices attached to this item. This array contains order facts only; it is not a full catalog choices list and it does not expose custom free-text comments or print HTML.\n",
+            "items": {
+              "$ref": "#/components/schemas/OrderModifier"
+            }
+          },
+          "unresolved": {
+            "type": "boolean",
+            "const": false
+          },
+          "bundle_parent_line_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Parent line_id for a bundle component, otherwise null. Parent must exist in this order; cycles are forbidden."
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Product instructions, without converting them into fabricated choice IDs."
+          },
+          "text_options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "product_id_option_id",
+                "value"
+              ],
+              "properties": {
+                "product_id_option_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "description": "Catalog text-option group identity"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "description": "Customer-entered text"
+                }
+              }
+            }
+          }
+        }
+      },
+      "OrderLineCategory": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Category metadata for an order line when available.",
+        "required": [
+          "dm_category_id",
+          "source_category_id",
+          "name"
+        ],
+        "properties": {
+          "dm_category_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Delivery Manager category id when resolved."
+          },
+          "source_category_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Marketplace/source category id when available."
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Normalized category display name when available. Raw category objects are never returned."
+          }
+        }
+      },
+      "OrderModifier": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Established modifier shape. modifier_group_id is the catalog product_id_option_id; choice_id is option_id_choice_id. selected=true means the modifier entry is present; selection_type=removed explicitly removes a default choice.",
+        "required": [
+          "modifier_group_id",
+          "modifier_group_name",
+          "modifier_group_type",
+          "choice_id",
+          "choice_name",
+          "selected",
+          "selection_type",
+          "is_default",
+          "quantity",
+          "unit_price",
+          "line_total"
+        ],
+        "properties": {
+          "modifier_group_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Exactly catalog option.product_id_option_id; do not derive by splitting strings."
+          },
+          "modifier_group_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Modifier group display name."
+          },
+          "modifier_group_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source option group type when available, for example `single`, `multi`, or `checkbox`."
+          },
+          "choice_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Exactly catalog choice.option_id_choice_id; do not map by display name."
+          },
+          "choice_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Selected choice display name."
+          },
+          "selected": {
+            "type": "boolean",
+            "const": true,
+            "description": "Always `true` in `modifiers[]`. The API returns applied choices only, so absence from this array means the choice is not part of the order line.\n"
+          },
+          "selection_type": {
+            "type": "string",
+            "enum": [
+              "selected",
+              "removed",
+              "default_included"
+            ],
+            "description": "How to interpret the applied choice: `selected` for an added/explicit choice, `removed` when a default/preselected choice was removed, `default_included` when a default/preselected choice remained in the order, and `unknown` when the source does not provide enough detail.\n"
+          },
+          "is_default": {
+            "type": "boolean",
+            "description": "`true` when the source marks the choice as preselected/default."
+          },
+          "quantity": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Modifier units across this whole order line, not per product unit."
+          },
+          "unit_price": {
+            "type": "number",
+            "description": "Unit price for the modifier choice."
+          },
+          "line_total": {
+            "type": "number",
+            "description": "Authoritative total contribution across the whole order line, included in modifiers_total. A removal may have zero or a negative price contribution as recorded by DM."
+          }
+        }
+      },
+      "OrderFlags": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Data quality and privacy flags for the order.",
+        "required": [
+          "contains_unresolved_items",
+          "contains_customer_data"
+        ],
+        "properties": {
+          "contains_unresolved_items": {
+            "type": "boolean",
+            "const": false
+          },
+          "contains_customer_data": {
+            "type": "boolean",
+            "description": "`true` when this order includes the optional `customer` object."
+          }
+        }
+      },
+      "OrderCustomer": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Order-scoped contact and delivery details, using the existing per-client field-group permissions. Unneeded or unapproved fields are null. No customer-directory access is granted.",
+        "required": [
+          "customer_id",
+          "display_name",
+          "phone",
+          "email",
+          "delivery_address",
+          "comments"
+        ],
+        "properties": {
+          "customer_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Delivery Manager customer id or source customer id when approved and available."
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Customer display name when the `identity` field group is approved."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Customer phone when the `contact` field group is approved."
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Customer email when the `contact` field group is approved."
+          },
+          "delivery_address": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CustomerDeliveryAddress"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Delivery address when the `delivery_address` field group is approved."
+          },
+          "comments": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Customer-facing order comments when the `comments` field group is approved."
+          }
+        }
+      },
+      "CustomerDeliveryAddress": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "street",
+          "number",
+          "area",
+          "city",
+          "postal_code",
+          "floor",
+          "bell",
+          "notes",
+          "lat",
+          "lng"
+        ],
+        "properties": {
+          "street": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "area": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "floor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bell": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lat": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Exact latitude only when the `delivery_coordinates` field group is approved."
+          },
+          "lng": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Exact longitude only when the `delivery_coordinates` field group is approved."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Error response envelope. Error bodies never include tokens or customer data.",
+        "required": [
+          "success",
+          "comment_id",
+          "message",
+          "next_steps",
+          "request_id",
+          "retriable"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": false,
+            "description": "Always `false` for error responses."
+          },
+          "comment_id": {
+            "type": "string",
+            "enum": [
+              "invalid_params",
+              "invalid_auth",
+              "bridge_not_active",
+              "scope_not_allowed",
+              "invalid_cursor",
+              "order_not_found",
+              "order_not_eligible",
+              "revision_conflict",
+              "registration_conflict",
+              "status_conflict",
+              "invalid_status_payload",
+              "rate_limit_exceeded",
+              "catalog_unavailable",
+              "orders_unavailable",
+              "acknowledgement_unavailable",
+              "internal_error"
+            ],
+            "description": "Stable machine-readable error id."
+          },
+          "message": {
+            "type": "string",
+            "description": "Vendor-safe error message."
+          },
+          "next_steps": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Operational next steps for the caller.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "request_id": {
+            "type": "string",
+            "description": "Request id to provide to Delivery Manager support."
+          },
+          "retriable": {
+            "type": "boolean",
+            "description": "Whether the caller can retry the same request later."
+          }
+        }
+      },
+      "Payment": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "status",
+              "paid_amount",
+              "amount_due",
+              "transaction_reference"
+            ],
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "credit_card",
+                  "other"
+                ]
+              },
+              "status": {
+                "const": "paid",
+                "type": "string"
+              },
+              "paid_amount": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Already collected amount; do not charge it again."
+              },
+              "amount_due": {
+                "const": 0,
+                "type": "number"
+              },
+              "transaction_reference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Payment reference if needed and available; never a card number, token or credential."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "status",
+              "paid_amount",
+              "amount_due",
+              "transaction_reference"
+            ],
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "credit_card",
+                  "other"
+                ]
+              },
+              "status": {
+                "const": "pay_on_fulfillment",
+                "type": "string"
+              },
+              "paid_amount": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Already collected amount; do not charge it again."
+              },
+              "amount_due": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Outstanding collection amount. paid_amount + amount_due equals grand_total."
+              },
+              "transaction_reference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Payment reference if needed and available; never a card number, token or credential."
+              }
+            }
+          }
+        ]
+      },
+      "ImportIssue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "unmapped_ids"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "mapping_missing",
+              "invalid_order",
+              "unsupported_fulfillment",
+              "import_failed"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Operational diagnostic without credentials or customer data."
+          },
+          "unmapped_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S",
+              "description": "DM product, option or choice identity needing attention"
+            }
+          }
+        }
+      },
+      "CatalogChoice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "option_id_choice_id",
+          "title",
+          "is_preselected",
+          "price",
+          "available"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "DM choice identity"
+          },
+          "option_id_choice_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Canonical full choice identity used in orders"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Choice label"
+          },
+          "is_preselected": {
+            "type": "boolean"
+          },
+          "price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Catalog price contribution if authoritative; null means unavailable, not free. Order amounts remain authoritative."
+          },
+          "available": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "CatalogOption": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "product_id_option_id",
+          "title",
+          "type",
+          "is_require",
+          "min_selected",
+          "max_selected",
+          "choices"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "DM option identity"
+          },
+          "product_id_option_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Canonical full option identity used in orders"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Group label"
+          },
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Canonical DM option type, including text where applicable"
+          },
+          "is_require": {
+            "type": "boolean"
+          },
+          "min_selected": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "max_selected": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogChoice"
+            }
+          }
+        }
+      },
+      "CatalogProduct": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "price",
+          "available",
+          "options"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "DM product identity; equals order dm_product_id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Product label"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Catalog base price in EUR major units"
+          },
+          "available": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogOption"
+            }
+          }
+        }
+      },
+      "CatalogCategory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "products"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "DM category identity"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Category label"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S",
+              "description": "Referenced product id"
+            }
+          }
+        }
+      },
+      "CatalogResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "success",
+          "schema_version",
+          "group",
+          "store_id",
+          "environment",
+          "generated_at",
+          "catalog_revision",
+          "currency",
+          "catalog",
+          "request_id"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "schema_version": {
+            "const": "dm.sagar.v1",
+            "type": "string"
+          },
+          "group": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Authenticated group"
+          },
+          "store_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Authenticated store"
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "test",
+              "production"
+            ]
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "catalog_revision": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Opaque content revision; same content retains the same revision"
+          },
+          "currency": {
+            "type": "string",
+            "const": "EUR"
+          },
+          "catalog": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "products",
+              "categories"
+            ],
+            "properties": {
+              "products": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogProduct"
+                }
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogCategory"
+                }
+              }
+            }
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "DM support request identifier"
+          }
+        }
+      },
+      "OrderDelivery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "store",
+          "environment",
+          "order"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "dm.sagar.v1",
+            "type": "string"
+          },
+          "store": {
+            "$ref": "#/components/schemas/StoreRef"
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "test",
+              "production"
+            ]
+          },
+          "order": {
+            "$ref": "#/components/schemas/SagarOrder"
+          }
+        },
+        "description": "One immutable order pushed from DM to the authenticated Sagar webhook. Retries retain the same environment, store, order_uid and export_revision."
+      },
+      "DeliveryAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "success",
+          "order_uid",
+          "export_revision"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "order_uid": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Identity from the delivered order"
+          },
+          "export_revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "HTTP 200 or 202 confirms that Sagar durably accepted responsibility for this delivery. It does not mark POS registration in DM. A separate status callback is mandatory after POS commit."
+      },
+      "ReceivedStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "export_revision",
+          "sagar_order_id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "received"
+          },
+          "export_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sagar_order_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Durably committed partner order ID"
+          },
+          "registered_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Send only after Sagar's import transaction commits. Retry the identical request after a timeout."
+      },
+      "RejectedStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "export_revision",
+          "issue"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "rejected"
+          },
+          "export_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "issue": {
+            "$ref": "#/components/schemas/ImportIssue"
+          }
+        },
+        "description": "Signals a blocked import. It does not cancel/refund the DM order. A rejection cannot undo an already received order."
+      },
+      "StatusRequest": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ReceivedStatus"
+          },
+          {
+            "$ref": "#/components/schemas/RejectedStatus"
+          }
+        ]
+      },
+      "StatusResponse": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "success",
+              "order_uid",
+              "export_revision",
+              "status",
+              "sagar_order_id",
+              "first_applied_at",
+              "already_applied",
+              "request_id"
+            ],
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "const": true
+              },
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Acknowledged DM identity"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "const": "received",
+                "type": "string"
+              },
+              "sagar_order_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Committed Sagar ID"
+              },
+              "first_applied_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "already_applied": {
+                "type": "boolean",
+                "description": "True for a repeated matching acknowledgement; first_applied_at stays unchanged."
+              },
+              "request_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM support request identifier"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "success",
+              "order_uid",
+              "export_revision",
+              "status",
+              "sagar_order_id",
+              "first_applied_at",
+              "already_applied",
+              "request_id"
+            ],
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "const": true
+              },
+              "order_uid": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "Acknowledged DM identity"
+              },
+              "export_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "const": "rejected",
+                "type": "string"
+              },
+              "sagar_order_id": {
+                "type": "null"
+              },
+              "first_applied_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "already_applied": {
+                "type": "boolean",
+                "description": "True for a repeated matching acknowledgement; first_applied_at stays unchanged."
+              },
+              "request_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "DM support request identifier"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "x-agent-guide": "llms-full.txt",
+  "x-integration-manifest": "integration-manifest.json",
+  "x-contract-state": "agreed-push-contract-runtime-readiness-in-manifest",
+  "x-pilot": {
+    "group": "mygermandoener",
+    "store_id": "576712",
+    "confirmed_by_operator": true
+  },
+  "x-open-items": [
+    "Order-processing sandbox and registration access",
+    "Partner payment/fulfilment code mapping",
+    "Sagar HTTPS webhook URL and separate receiver credential",
+    "Joint delivery/callback/recovery acceptance"
+  ]
+}
