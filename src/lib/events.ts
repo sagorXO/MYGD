@@ -12,7 +12,8 @@ export type RealtimeEventType =
   | "MENU_BOARD_UPDATED"
   | "HEARTBEAT"
   | "PING"
-  | "STAFF_PUNCHED";
+  | "STAFF_PUNCHED"
+  | "ADS_UPDATED";
 
 export interface RealtimeEvent<T = any> {
   type: RealtimeEventType;

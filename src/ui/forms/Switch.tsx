@@ -8,10 +8,12 @@ interface SwitchProps {
   checked: boolean;
   onChange: (next: boolean) => void;
   disabled?: boolean;
+  /** Keep the label for screen readers only (e.g. a switch inside a table row). */
+  labelHidden?: boolean;
   className?: string;
 }
 
-export function Switch({ id, label, checked, onChange, disabled = false, className }: SwitchProps) {
+export function Switch({ id, label, checked, onChange, disabled = false, labelHidden = false, className }: SwitchProps) {
   return (
     <div className={cn("flex min-h-hit items-center gap-3", className)}>
       <button
@@ -30,7 +32,7 @@ export function Switch({ id, label, checked, onChange, disabled = false, classNa
       >
         <span className={cn("inline-block h-5 w-5 rounded-pill bg-surface shadow-card transition-transform duration-fast", checked ? "translate-x-5" : "translate-x-0.5")} />
       </button>
-      <label htmlFor={id} className="text-sm text-text">
+      <label htmlFor={id} className={labelHidden ? "sr-only" : "text-sm text-text"}>
         {label}
       </label>
     </div>

@@ -7,7 +7,10 @@ export type Access = "PUBLIC" | Role;
 const PUBLIC_PAGES = new Set(["/", "/order", "/display", "/boards", "/login"]);
 // Read-only feeds used by the unattended guest screens (/display, /boards) and the public site.
 const PUBLIC_GET_APIS = new Set(["/api/menu", "/api/kds", "/api/menuboards"]);
-const PUBLIC_SSE_CHANNELS = new Set(["display", "boards"]);
+const PUBLIC_SSE_CHANNELS = new Set(["display", "boards", "signage"]);
+// Portrait ad screens: the player page, its service worker, its feed and its media files (read-only).
+const PUBLIC_SIGNAGE_PAGES = "/signage";
+const PUBLIC_SIGNAGE_GET_PREFIXES = ["/api/signage/ads", "/api/signage/media"];
 
 function normalise(pathname: string): string {
   // Resolve "..", "//" and percent-encoding the same way the router does, then drop a trailing slash.
@@ -27,6 +30,8 @@ export function requiredRole(pathname: string, method: string, searchParams: URL
   if (within(path, "/dev")) return "PUBLIC"; // these pages return 404 in production themselves
   if (path === "/api/auth/login" && verb === "POST") return "PUBLIC";
   if (verb === "GET" && PUBLIC_GET_APIS.has(path)) return "PUBLIC";
+  if (verb === "GET" && within(path, PUBLIC_SIGNAGE_PAGES)) return "PUBLIC";
+  if (verb === "GET" && PUBLIC_SIGNAGE_GET_PREFIXES.some((base) => within(path, base))) return "PUBLIC";
   if (path === "/api/events" && verb === "GET" && PUBLIC_SSE_CHANNELS.has(searchParams.get("channel") ?? "")) {
     return "PUBLIC";
   }

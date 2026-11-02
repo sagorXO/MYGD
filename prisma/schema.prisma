@@ -655,6 +655,85 @@ model MenuBoardConfig {
 }
 
 // ---------------------------------------------------------
+// 10b. PORTRAIT-SCREEN ADS (images and video on the 4 menu-board screens)
+// [ADR] Context: the 4 portrait screens are the same TVs as the menu boards (Sagar, 2026-10-30).
+// Decision: AdDisplay.screenNumber uses the same numbering as MenuBoardConfig.screenNumber;
+// ads live in their own tables, so the menu-board data is untouched.
+// Consequence: a screen can be addressed by one number for both menu and ads.
+// ---------------------------------------------------------
+
+enum AdMediaType {
+  IMAGE
+  VIDEO
+}
+
+model AdMedia {
+  id         String      @id @default(cuid())
+  fileName   String // original upload name, shown in admin only
+  mediaType  AdMediaType
+  mimeType   String
+  byteSize   Int
+  sha256     String      @unique // content address; also the cache key on the screens
+  storageKey String      @unique // path under MEDIA_ROOT
+  width      Int?
+  height     Int?
+  durationMs Int? // measured video length
+  uploadedBy String?
+  createdAt  DateTime    @default(now())
+
+  playlistItems AdPlaylistItem[]
+}
+
+model AdPlaylist {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  timeZone  String   @default("Asia/Nicosia") // schedules are read in this zone
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items    AdPlaylistItem[]
+  displays AdDisplay[]
+}
+
+model AdPlaylistItem {
+  id              String    @id @default(cuid())
+  playlistId      String
+  mediaId         String
+  position        Int
+  durationSeconds Int? // required for images; optional cap for videos
+  startsAt        DateTime? // inclusive
+  endsAt          DateTime? // exclusive
+  daysOfWeek      Int[]     @default([]) // ISO 1 = Mon … 7 = Sun; empty = every day
+  startMinute     Int? // minutes after local midnight, inclusive
+  endMinute       Int? // exclusive; start > end crosses midnight
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  playlist AdPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  media    AdMedia    @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@unique([playlistId, position])
+  @@index([mediaId])
+}
+
+model AdDisplay {
+  id           String    @id @default(cuid())
+  screenNumber Int       @unique // same numbering as MenuBoardConfig.screenNumber (SOW: 1–4)
+  name         String
+  playlistId   String?
+  lastSeenAt   DateTime?
+  appVersion   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  playlist AdPlaylist? @relation(fields: [playlistId], references: [id], onDelete: SetNull)
+
+  @@index([playlistId])
+}
+
+// ---------------------------------------------------------
 // 11. SECURITY, AUDIT LOGS & DISASTER RECOVERY SYNC
 // ---------------------------------------------------------
 
