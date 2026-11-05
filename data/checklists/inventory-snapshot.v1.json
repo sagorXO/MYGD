@@ -1,0 +1,688 @@
+{
+  "status": "DRAFT - snapshot from 24 Oct 2026, recount before use",
+  "items": [
+    {
+      "category": "Meat / Protein",
+      "product": "Chicken",
+      "snapshot": "6",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Beef",
+      "snapshot": "3",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Veggie Chicken",
+      "snapshot": "2",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Chicken Patties",
+      "snapshot": "7 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Beef Patties",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Chicken Nuggets",
+      "snapshot": "9 bags + 4 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Meatballs",
+      "snapshot": "5 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Meat / Protein",
+      "product": "Chicken Wings",
+      "snapshot": "4 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Berlin Bread",
+      "snapshot": "6 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Burger Buns",
+      "snapshot": "6 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Square Burger Buns",
+      "snapshot": "9 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Wraps",
+      "snapshot": "4",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Big Pizza Bases",
+      "snapshot": "5 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Bread / Wraps / Pizza Bases",
+      "product": "Small Pizza Bases",
+      "snapshot": "3 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Lettuce",
+      "snapshot": "4 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Tomatoes",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Cucumbers",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Jalapeño Pickles",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Red Onion",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Red Cabbage",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Vegetables / Salad",
+      "product": "Mushrooms",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 17,
+      "needsReview": "Listed in two categories"
+    },
+    {
+      "category": "Fries / Sides",
+      "product": "Fries",
+      "snapshot": "5 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Fries / Sides",
+      "product": "Sweet Potato Fries",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Fries / Sides",
+      "product": "Onion Rings",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Fries / Sides",
+      "product": "Rice",
+      "snapshot": "1 bag",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Fries / Sides",
+      "product": "Mozzarella Sticks",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 17
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Mayonnaise",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Ketchup",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "BBQ Sauce Bucket",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Hollandaise Sauce",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Sour Cream",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Mustard",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Yoghurt",
+      "snapshot": "5 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Feta Cheese",
+      "snapshot": "10 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Sauces / Dairy",
+      "product": "Pizza Sauce",
+      "snapshot": "5",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Tomato Sauce",
+      "snapshot": "6 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Salami",
+      "snapshot": "1 pack",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Mushrooms",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "Listed in two categories"
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Mozzarella Cheese",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Halloumi",
+      "snapshot": "6 bags",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Gorgonzola",
+      "snapshot": "2",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Edam Cheese",
+      "snapshot": "8",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Pizza Ingredients",
+      "product": "Parmesan",
+      "snapshot": "3",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Original",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF; Name is ambiguous"
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Pikante",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF; Name is ambiguous"
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Cheese",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "Name is ambiguous"
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Leberkäse",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Gutmann Bratwurst",
+      "snapshot": "8",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "German Products / Sausages",
+      "product": "Weißwurst",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 18
+    },
+    {
+      "category": "Post-Mix",
+      "product": "Coca-Cola Normal",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Post-Mix",
+      "product": "Sprite Zero",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Post-Mix",
+      "product": "Sprite",
+      "snapshot": "2",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Post-Mix",
+      "product": "Fanta",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Post-Mix",
+      "product": "Gas",
+      "snapshot": "1",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 18,
+      "needsReview": "No unit in the PDF"
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Ayran",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "White Wine",
+      "snapshot": "15 bottles",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Red Wine",
+      "snapshot": "5 bottles",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Red Bull",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Red Bull Zero",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Coco Loco",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Kombucha Ginger",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Kombucha Berries",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Kombucha Lemon",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Kombucha Hibiscus",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Cold Drinks",
+      "product": "Water",
+      "snapshot": "43 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Fanta Zero",
+      "snapshot": "2 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Fanta Lemon",
+      "snapshot": "1 pack",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Fanta Normal",
+      "snapshot": "1 pack",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Ice Tea Peach",
+      "snapshot": "3 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Ice Tea Peach Zero",
+      "snapshot": "1 pack",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Ice Tea Lemon",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Apple Juice",
+      "snapshot": "3 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Orange Juice",
+      "snapshot": "5 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Coca-Cola Zero",
+      "snapshot": "1 pack",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Coca-Cola Original",
+      "snapshot": "3 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Corona Original",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Corona Zero",
+      "snapshot": "1 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "HB Original",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "HB Dark",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "HB Alcohol Free",
+      "snapshot": "2 boxes",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Carlsberg",
+      "snapshot": "1/2 box",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Carlsberg Alcohol Free",
+      "snapshot": "3 packs",
+      "status": null,
+      "lowAt": null,
+      "sourcePage": 19
+    },
+    {
+      "category": "Soft Drinks / Beer",
+      "product": "Keo",
+      "snapshot": "OUT",
+      "status": "OUT",
+      "lowAt": null,
+      "sourcePage": 19
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import {
   HACCPValidationResult,
   HACCPLogRequest,
 } from "./haccp.schema";
+import { evaluateTemperature, HACCP_LIMITS, limitText } from "./temperature";
 
 export class HACCPService {
   /**
@@ -16,55 +17,19 @@ export class HACCPService {
     targetType: HACCPTargetType,
     temperature: number
   ): HACCPValidationResult {
-    switch (targetType) {
-      case "CHILLED": {
-        // Walk-in Fridges / Prep Counters: 0°C – 5°C
-        const isCompliant = temperature >= 0.0 && temperature <= 5.0;
-        const inDangerZone = temperature > 5.0 && temperature < 63.0;
-        return {
-          isCompliant,
-          inDangerZone,
-          targetMin: 0.0,
-          targetMax: 5.0,
-          message: isCompliant
-            ? `Compliant (Target: 0°C–5°C, actual: ${temperature}°C)`
-            : `Non-compliant: Chilled storage exceeds 5.0°C statutory threshold. Danger Zone!`,
-          correctiveActionRequired: !isCompliant,
-        };
-      }
-
-      case "FROZEN": {
-        // Deep Freezers: -18°C or below
-        const isCompliant = temperature <= -18.0;
-        const inDangerZone = temperature > -18.0;
-        return {
-          isCompliant,
-          inDangerZone,
-          targetMin: -25.0,
-          targetMax: -18.0,
-          message: isCompliant
-            ? `Compliant (Target: ≤ -18.0°C, actual: ${temperature}°C)`
-            : `Non-compliant: Freezer temperature above -18.0°C limit!`,
-          correctiveActionRequired: !isCompliant,
-        };
-      }
-
-      case "HOT_HOLDING": {
-        // Cooked Rotisserie Döner Meat: ≥ 63°C
-        const isCompliant = temperature >= 63.0;
-        const inDangerZone = temperature < 63.0 && temperature > 5.0;
-        return {
-          isCompliant,
-          inDangerZone,
-          targetMin: 63.0,
-          targetMax: 85.0,
-          message: isCompliant
-            ? `Compliant (Target: ≥ 63.0°C, actual: ${temperature}°C)`
-            : `CRITICAL HACCP BREACH: Hot-holding rotisserie meat below 63.0°C Danger Zone!`,
-          correctiveActionRequired: !isCompliant,
-        };
-      }
-    }
+    const { isCompliant, inDangerZone } = evaluateTemperature(targetType, temperature);
+    const { minC, maxC } = HACCP_LIMITS[targetType];
+    return {
+      isCompliant,
+      inDangerZone,
+      // A one-sided limit still reports a finite range: infinity turns into null once sent as JSON.
+      targetMin: minC ?? -25,
+      targetMax: maxC ?? 85,
+      message: isCompliant
+        ? `Compliant (Target: ${limitText(targetType)}, actual: ${temperature}°C)`
+        : `Non-compliant: must be ${limitText(targetType)}, actual: ${temperature}°C`,
+      correctiveActionRequired: !isCompliant,
+    };
   }
 
   /**

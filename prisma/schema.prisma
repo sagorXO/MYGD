@@ -44,6 +44,9 @@ model Location {
 
   @@index([slug])
   @@index([isActive])
+
+  checklistRuns ChecklistRun[]
+  stockCounts   StockCount[]
 }
 
 model Terminal {
@@ -888,4 +891,194 @@ model VoucherRedemption {
 
   @@unique([voucherId, orderId])
   @@index([orderId])
+}
+
+// ---------------------------------------------------------
+// Shift checklists from Oliver's operations manual (24 Oct 2026). Additive: the old
+// ChecklistTemplate/ChecklistLog tables stay as they are and new code does not use them.
+// [ADR] Context: tasks need per-item who/when/sign-off, which JSON columns can't give.
+// Decision: tasks live in rows loaded from data/checklists; a run is one station + phase + day.
+// Consequence: a task or station can change without a code change; staff ids here are snapshots
+// (plain text, no foreign key) so history survives a staff member being removed.
+// ---------------------------------------------------------
+enum ChecklistPhase {
+  OPENING
+  DURING_SHIFT
+  CLOSING
+}
+
+enum ChecklistSectionMode {
+  TICK
+  COUNT
+  CHECK_IN
+  REFERENCE_PER_ORDER
+}
+
+enum ChecklistItemKind {
+  CHECK
+  TEMPERATURE
+  COUNT
+}
+
+enum ChecklistEntryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  VERIFIED
+  ISSUE_BLOCKED
+}
+
+enum ChecklistRunStatus {
+  OPEN
+  COMPLETED
+}
+
+enum StockStatus {
+  OK
+  LOW
+  OUT
+}
+
+model ChecklistSection {
+  id          String               @id @default(cuid())
+  station     String
+  stationName String
+  phase       ChecklistPhase
+  title       String
+  mode        ChecklistSectionMode
+  position    Int
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  items    ChecklistItem[]
+  checkIns ChecklistCheckIn[]
+
+  @@unique([station, phase, title])
+  @@index([isActive, position])
+}
+
+model ChecklistItem {
+  id          String            @id @default(cuid())
+  sectionId   String
+  position    Int
+  label       String
+  kind        ChecklistItemKind @default(CHECK)
+  isCritical  Boolean           @default(false)
+  haccpTarget String? // CHILLED | FROZEN | HOT_HOLDING
+  needsReview String?
+  sourcePage  Int?
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  section ChecklistSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  entries ChecklistEntry[]
+
+  @@unique([sectionId, position])
+}
+
+model ChecklistRun {
+  id              String             @id @default(cuid())
+  locationId      String
+  station         String
+  phase           ChecklistPhase
+  shiftDate       DateTime           @db.Date
+  status          ChecklistRunStatus @default(OPEN)
+  completedById   String?
+  completedByName String?
+  completedAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  location Location           @relation(fields: [locationId], references: [id])
+  entries  ChecklistEntry[]
+  checkIns ChecklistCheckIn[]
+
+  @@unique([locationId, station, phase, shiftDate])
+  @@index([locationId, shiftDate])
+}
+
+model ChecklistEntry {
+  id               String               @id @default(cuid())
+  runId            String
+  itemId           String
+  status           ChecklistEntryStatus @default(NOT_STARTED)
+  temperature      Float?
+  isCompliant      Boolean?
+  correctiveAction String?
+  note             String?
+  recordedById     String?
+  recordedByName   String?
+  recordedAt       DateTime?
+  verifiedById     String?
+  verifiedByName   String?
+  verifiedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  run  ChecklistRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  item ChecklistItem @relation(fields: [itemId], references: [id])
+
+  @@unique([runId, itemId])
+  @@index([itemId])
+}
+
+model ChecklistCheckIn {
+  id             String   @id @default(cuid())
+  runId          String
+  sectionId      String
+  recordedById   String
+  recordedByName String
+  createdAt      DateTime @default(now())
+
+  run     ChecklistRun     @relation(fields: [runId], references: [id], onDelete: Cascade)
+  section ChecklistSection @relation(fields: [sectionId], references: [id])
+
+  @@index([runId, sectionId, createdAt])
+  @@index([sectionId])
+}
+
+model StockItem {
+  id          String   @id @default(cuid())
+  category    String
+  product     String
+  position    Int
+  snapshot    String // Last count from the manual, as written ("9 bags + 4 boxes")
+  lowAt       Float? // LOW level, not set until Oliver gives one
+  needsReview String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  counts StockCount[]
+
+  @@unique([category, product])
+  @@index([isActive, position])
+}
+
+model StockCount {
+  id             String       @id @default(cuid())
+  stockItemId    String
+  locationId     String
+  shiftDate      DateTime     @db.Date
+  count          Float?
+  status         StockStatus?
+  recordedById   String
+  recordedByName String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  stockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+  location  Location  @relation(fields: [locationId], references: [id])
+
+  @@unique([stockItemId, locationId, shiftDate])
+  @@index([locationId, shiftDate])
+}
+
+model OperationalSetting {
+  key       String   @id
+  value     Json
+  updatedBy String?
+  updatedAt DateTime @updatedAt
 }

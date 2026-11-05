@@ -14,6 +14,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit",
     "user:create": "tsx scripts/create-user.ts",
+    "checklists:load": "tsx scripts/load-checklists.ts",
     "import:gladius": "tsx scripts/import-gladius.ts",
     "bootstrap:production": "tsx scripts/bootstrap-production.ts"
   },

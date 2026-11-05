@@ -2,6 +2,7 @@
 // Deny by default; the route → role table lives in src/lib/auth/policy.ts.
 // Fails closed: if SESSION_SECRET is missing or weak, protected routes are refused.
 import { NextResponse, type NextRequest } from "next/server";
+import { isOperatorActivity, OPERATOR_COOKIE, operatorCookie, refreshOperatorToken } from "@/lib/auth/operator";
 import { hiddenInProduction, requiredRole } from "@/lib/auth/policy";
 import { hasRole } from "@/lib/auth/roles";
 import { readSessionSecret, verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
@@ -35,7 +36,13 @@ export async function middleware(req: NextRequest) {
   const session = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value, secret);
   if (!session) return deny(req, 401, "Authentication required.");
   if (!hasRole(session.role, access)) return deny(req, 403, "Not allowed for your role.");
-  return NextResponse.next();
+
+  const res = NextResponse.next();
+  if (isOperatorActivity(req.nextUrl.pathname, req.method)) {
+    const fresh = await refreshOperatorToken(req.cookies.get(OPERATOR_COOKIE)?.value, secret);
+    if (fresh) res.cookies.set(operatorCookie(fresh));
+  }
+  return res;
 }
 
 export const config = {

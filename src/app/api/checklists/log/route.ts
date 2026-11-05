@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireOperator } from "@/lib/auth/operator-guard";
 import { validateHACCPTemperature } from "@/lib/haccp-validator";
 
 export const dynamic = "force-dynamic";
@@ -49,20 +50,22 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[Checklist Log GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to fetch logs" },
+      { success: false, error: "Failed to fetch logs" },
       { status: 500 }
     );
   }
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireOperator(req);
+  if (!auth.ok) return auth.response;
   try {
     const body = await req.json();
-    const { locationSlug = "EMBA", shiftType, completedBy, tasks = [], notes } = body;
+    const { locationSlug = "EMBA", shiftType, tasks = [], notes } = body;
 
-    if (!shiftType || !completedBy) {
+    if (!shiftType) {
       return NextResponse.json(
-        { success: false, error: "shiftType and completedBy are required" },
+        { success: false, error: "shiftType is required" },
         { status: 400 }
       );
     }
@@ -107,7 +110,7 @@ export async function POST(req: NextRequest) {
       data: {
         locationId: location.id,
         shiftType,
-        completedBy,
+        completedBy: auth.operator.name,
         isCompliant,
         logsJson: JSON.stringify(processedTasks),
         notes: notes || undefined,
@@ -122,7 +125,7 @@ export async function POST(req: NextRequest) {
           action: "HACCP_DANGER_ZONE_VIOLATION",
           details: JSON.stringify({
             logId: createdLog.id,
-            completedBy,
+            completedBy: auth.operator.name,
             shiftType,
             details: dangerZoneDetails,
           }),
@@ -140,7 +143,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("[Checklist Log POST Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to persist checklist log" },
+      { success: false, error: "Failed to persist checklist log" },
       { status: 500 }
     );
   }

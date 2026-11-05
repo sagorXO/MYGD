@@ -38,3 +38,29 @@ export function createFailureLimiter({ limit, windowMs }: { limit: number; windo
     },
   };
 }
+
+export interface PinLimiterOptions {
+  shortLimit: number;
+  shortWindowMs: number;
+  longLimit: number;
+  longWindowMs: number;
+}
+
+// [ADR] Context: a PIN can be as short as 4 digits, and one short lock window still allows about 1,400 guesses a day.
+// Decision: a few typos earn a short wait; repeated failures earn a much longer one.
+// Consequence: guessing becomes slow, and the long lock also stops genuine PINs on that login until it ends.
+export function createPinLimiter({ shortLimit, shortWindowMs, longLimit, longWindowMs }: PinLimiterOptions) {
+  const short = createFailureLimiter({ limit: shortLimit, windowMs: shortWindowMs });
+  const long = createFailureLimiter({ limit: longLimit, windowMs: longWindowMs });
+  return {
+    isBlocked(key: string, now: number = Date.now()): LimiterState & { long: boolean } {
+      const longState = long.isBlocked(key, now);
+      if (longState.blocked) return { ...longState, long: true };
+      return { ...short.isBlocked(key, now), long: false };
+    },
+    recordFailure(key: string, now: number = Date.now()): void {
+      short.recordFailure(key, now);
+      long.recordFailure(key, now);
+    },
+  };
+}

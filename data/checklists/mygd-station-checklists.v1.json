@@ -1,0 +1,2934 @@
+{
+  "status": "APPROVED design 5 Nov 2026. Critical flags and temperature limits still need Oliver to confirm.",
+  "source": {
+    "file": "MYGD_Operations_Station_Checklists.pdf",
+    "version": "24 October 2026",
+    "pages": 20
+  },
+  "suggestedSettings": {
+    "openingTime": "11:30",
+    "closingTime": "22:00",
+    "timeZone": "Asia/Nicosia"
+  },
+  "temperatureLimits": {
+    "status": "UNCONFIRMED - from our plan, not the PDF",
+    "CHILLED": {
+      "minC": 0,
+      "maxC": 5
+    },
+    "HOT_HOLDING": {
+      "minC": 63
+    },
+    "FROZEN": {
+      "maxC": -18
+    }
+  },
+  "statuses": [
+    "NOT_STARTED",
+    "IN_PROGRESS",
+    "COMPLETED",
+    "VERIFIED",
+    "ISSUE_BLOCKED"
+  ],
+  "modes": {
+    "TICK": "Each task ticked with who and when",
+    "COUNT": "Numeric stock count",
+    "CHECK_IN": "One check-in per group during the shift; tasks shown as a guide",
+    "REFERENCE_PER_ORDER": "Done for every order; shown as a guide, not ticked"
+  },
+  "quietPeriod": {
+    "KITCHEN_PREP": [
+      "RESTOCK - Salad Bar, Sauce Bar, fries, pizza ingredients, frozen drinks, packaging",
+      "PREPARE - backup salad, vegetables, sauces, GN containers, next peak",
+      "CLEAN - dishes, preparation surfaces, fryers, pizza station, refrigerators, floors, rubbish",
+      "ORGANISE - refrigerators, FIFO, dates, dry storage, frozen stock, low-stock reporting"
+    ],
+    "ASSEMBLY": [
+      "RESTOCK - sauces, salad, toppings, cheese, wraps/buns, packaging",
+      "PREPARE - backup ingredients, clean GN containers, next peak",
+      "CLEAN - workstation, utensils, GN containers, shelves, handles, floor, rubbish",
+      "SUPPORT - Packing / Expeditor, Kitchen / Prep, dishwashing, restocking, Bread Station if assigned"
+    ]
+  },
+  "knownGaps": [
+    "Critical tasks are not marked in the PDF; critical flags here are suggestions",
+    "No Bread Station or stand-alone Packing/Expeditor checklist",
+    "Mid Shift and Evening are named on page 16 but have no task lists",
+    "MYGD target production time has no number",
+    "MYGD Points is undefined"
+  ],
+  "checklists": [
+    {
+      "station": "RESTAURANT",
+      "stationName": "Restaurant (all staff)",
+      "phase": "OPENING",
+      "group": "Restaurant",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Open the restaurant",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 2,
+          "label": "Open windows for ventilation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 3,
+          "label": "Turn on all lights",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 4,
+          "label": "Turn on lights in the customer drinks refrigerators",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 5,
+          "label": "Turn on the air conditioning and then close all doors and windows",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 6,
+          "label": "Start the music - Spotify: Chill Out Playlist",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 7,
+          "label": "Check customer area, entrance and outside area are clean and ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        }
+      ]
+    },
+    {
+      "station": "RESTAURANT",
+      "stationName": "Restaurant (all staff)",
+      "phase": "OPENING",
+      "group": "Equipment",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Turn on all required equipment",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 2,
+          "label": "Prepare the grills",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 3,
+          "label": "Turn on and prepare the fryer",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 4,
+          "label": "Turn on and prepare the Konvektomat",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 5,
+          "label": "Prepare the post-mix machine",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 6,
+          "label": "Check drinks machines",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 7,
+          "label": "Check refrigerators are operating correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 3
+        },
+        {
+          "position": 8,
+          "label": "Check salad bar refrigeration",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 3
+        },
+        {
+          "position": 9,
+          "label": "Report any equipment fault immediately",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        }
+      ]
+    },
+    {
+      "station": "RESTAURANT",
+      "stationName": "Restaurant (all staff)",
+      "phase": "OPENING",
+      "group": "Preparation",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Fully stock the salad bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 2,
+          "label": "Fully stock the sauce bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 3,
+          "label": "Refill the drinks refrigerator",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 4,
+          "label": "Prepare customer tables",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 5,
+          "label": "Refill napkins, cup lids, straws and customer supplies",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 6,
+          "label": "Refill takeaway and delivery packaging",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 7,
+          "label": "Prepare bread station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 8,
+          "label": "Prepare meat for first service",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 9,
+          "label": "Prepare fries station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 10,
+          "label": "Prepare packing / expeditor station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 3
+        }
+      ]
+    },
+    {
+      "station": "RESTAURANT",
+      "stationName": "Restaurant (all staff)",
+      "phase": "OPENING",
+      "group": "Morning Inventory Check",
+      "mode": "COUNT",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check meat stock",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 2,
+          "label": "Check bread stock",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 3,
+          "label": "Check wraps",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 4,
+          "label": "Check pizza bases",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 5,
+          "label": "Check burger buns",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 6,
+          "label": "Check vegetables and salad ingredients",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 7,
+          "label": "Check fries and side products",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 3
+        },
+        {
+          "position": 8,
+          "label": "Check sauces and dairy",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 4
+        },
+        {
+          "position": 9,
+          "label": "Check pizza ingredients",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 4
+        },
+        {
+          "position": 10,
+          "label": "Check drinks and post-mix stock",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 4
+        },
+        {
+          "position": 11,
+          "label": "Check packaging and cleaning supplies",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 4
+        },
+        {
+          "position": 12,
+          "label": "Review LOW / OUT OF STOCK list and report critical shortages to Shift Leader",
+          "kind": "COUNT",
+          "critical": false,
+          "sourcePage": 4
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "OPENING",
+      "group": "Cash Register",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Open the cash register",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 2,
+          "label": "Count and verify the cash float",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 5
+        },
+        {
+          "position": 3,
+          "label": "Ensure sufficient change is available",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 4,
+          "label": "Check card payment terminal",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 5,
+          "label": "Check receipt printer",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 6,
+          "label": "Start POS system",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 7,
+          "label": "Check correct menu and prices are active",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "OPENING",
+      "group": "Systems",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Open Foody",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 2,
+          "label": "Open Wolt",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 3,
+          "label": "Open all other delivery platforms",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 4,
+          "label": "Check internet connection",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 5,
+          "label": "Check all order printers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 6,
+          "label": "Check kitchen display screens / KDS if available",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 7,
+          "label": "Check orders are correctly transmitted to the kitchen",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "OPENING",
+      "group": "Restaurant Readiness",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Confirm all stations are ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 2,
+          "label": "Check Bread Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 3,
+          "label": "Check Sauce Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 4,
+          "label": "Check Salad Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 5,
+          "label": "Check Meat / Hot Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 6,
+          "label": "Check Fries Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 7,
+          "label": "Check Packing / Expeditor Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 8,
+          "label": "Check drinks refrigerator",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 9,
+          "label": "Check packaging stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 10,
+          "label": "Check napkins, lids and straws",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 11,
+          "label": "Check customer tables and dining area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 12,
+          "label": "Check cleanliness throughout the restaurant",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "OPENING",
+      "group": "Team Briefing",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Confirm all employees are present",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 2,
+          "label": "Assign each employee to a station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 3,
+          "label": "Explain expected busy periods",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 4,
+          "label": "Explain out-of-stock products",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 5,
+          "label": "Explain special promotions",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 6,
+          "label": "Confirm break schedule",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 7,
+          "label": "Remind staff about Clean As You Go",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        },
+        {
+          "position": 8,
+          "label": "Confirm opening readiness",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 5
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "Customer Service",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Welcome customers in a friendly manner",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 2,
+          "label": "Take orders accurately",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 3,
+          "label": "Enter all special requests correctly into the POS",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 4,
+          "label": "Process payments correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 5,
+          "label": "Handle complaints professionally",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 6,
+          "label": "Make sure customers receive the correct order",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 7,
+          "label": "Maintain excellent customer service",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "Order Coordination",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Ensure special requests are correctly entered",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 2,
+          "label": "Ensure kitchen staff can clearly see modifications",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 3,
+          "label": "Monitor order sequence",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 4,
+          "label": "Ensure no order is forgotten",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 5,
+          "label": "Monitor waiting times",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 6,
+          "label": "Prioritise delivery orders correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 7,
+          "label": "Identify dine-in, takeaway and delivery orders correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "Expeditor / Final Order Control",
+      "mode": "REFERENCE_PER_ORDER",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check order number",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 2,
+          "label": "Check number of products",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 3,
+          "label": "Check special requests",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 4,
+          "label": "Check fries / sides",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 5,
+          "label": "Check drinks",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 6,
+          "label": "Check sauces / extras",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 7,
+          "label": "Check packaging",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 8,
+          "label": "Confirm dine-in / takeaway / delivery",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "Team Management",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Coordinate the team",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 2,
+          "label": "Monitor all workstations",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 3,
+          "label": "Keep employees on assigned stations during peaks",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 4,
+          "label": "Support employees when required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 5,
+          "label": "Organise workflow",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 6,
+          "label": "Monitor production speed and waiting times",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 7,
+          "label": "Organise breaks",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 8,
+          "label": "Assign quiet-period tasks",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 9,
+          "label": "Prevent unnecessary standing / waiting",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 10,
+          "label": "Reassign employees when operationally required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "Stock / Cash / Quality",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Review daily inventory check",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 2,
+          "label": "Monitor drinks, packaging and cleaning supplies",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 6
+        },
+        {
+          "position": 3,
+          "label": "Monitor bread, meat, sauces, salad and fries",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 4,
+          "label": "Review Low Stock and Out of Stock lists",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 5,
+          "label": "Monitor cash float and change",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 6,
+          "label": "Record cash discrepancies immediately",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 7,
+          "label": "Check product presentation and portion sizes",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 8,
+          "label": "Check temperatures and freshness",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 9,
+          "label": "Ensure MYGD standards are followed",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "DURING_SHIFT",
+      "group": "MYGD Points",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Complete daily MYGD Points evaluation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7,
+          "needsReview": "MYGD Points is not defined in the PDF"
+        },
+        {
+          "position": 2,
+          "label": "Recognise strong employee performance",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7,
+          "needsReview": "MYGD Points is not defined in the PDF"
+        },
+        {
+          "position": 3,
+          "label": "Record improvement opportunities",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7,
+          "needsReview": "MYGD Points is not defined in the PDF"
+        },
+        {
+          "position": 4,
+          "label": "Give immediate feedback where appropriate",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7,
+          "needsReview": "MYGD Points is not defined in the PDF"
+        }
+      ]
+    },
+    {
+      "station": "SHIFT_LEADER",
+      "stationName": "Register / Shift Leader",
+      "phase": "CLOSING",
+      "group": "Closing",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Close cash register",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 2,
+          "label": "Count cash drawer",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 3,
+          "label": "Complete daily cash reconciliation",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 4,
+          "label": "Record any discrepancy",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 5,
+          "label": "Secure cash",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 6,
+          "label": "Close Foody / Wolt / other delivery systems",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 7,
+          "label": "Log out of POS",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 8,
+          "label": "Confirm all orders are completed",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 9,
+          "label": "Confirm all stations are cleaned",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 10,
+          "label": "Confirm all food is stored correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 11,
+          "label": "Check refrigerators",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 12,
+          "label": "Check salad bar, sauce station, bread station, meat/hot station, fries and packing area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 13,
+          "label": "Check dishwashing and customer area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 14,
+          "label": "Check rubbish has been removed",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 15,
+          "label": "Check floors",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 16,
+          "label": "Record maintenance issues and stock shortages",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 17,
+          "label": "Confirm restaurant is prepared for next day",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 18,
+          "label": "Turn off required equipment and music",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 7
+        },
+        {
+          "position": 19,
+          "label": "Check windows and doors",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 20,
+          "label": "Activate alarm",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        },
+        {
+          "position": 21,
+          "label": "Lock restaurant",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 7
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "OPENING",
+      "group": "Meat Stock",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check chicken stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 2,
+          "label": "Check beef stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 3,
+          "label": "Check other meat products required for the day",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 4,
+          "label": "Compare stock with expected sales",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 5,
+          "label": "Inform Shift Leader immediately if stock is low",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "OPENING",
+      "group": "Konvektomat / Hot Equipment",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Switch on Konvektomat",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 2,
+          "label": "Check equipment is functioning correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 3,
+          "label": "Prepare first meat batch",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 4,
+          "label": "Check correct programme / settings",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 5,
+          "label": "Prepare hot holding area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 6,
+          "label": "Check required temperatures",
+          "kind": "TEMPERATURE",
+          "critical": true,
+          "sourcePage": 8,
+          "haccpTarget": "HOT_HOLDING"
+        },
+        {
+          "position": 7,
+          "label": "Prepare clean GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 8,
+          "label": "Prepare serving / portioning utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "OPENING",
+      "group": "Workstation",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Clean and sanitise workstation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 2,
+          "label": "Prepare cutting board if required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 3,
+          "label": "Prepare knives and tongs",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 4,
+          "label": "Prepare scales / portioning tools if used",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 5,
+          "label": "Ensure sanitiser and clean cloths are available",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 6,
+          "label": "Make sure enough meat is ready for opening",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "DURING_SHIFT",
+      "group": "Meat Production",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Produce meat according to MYGD procedure",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 2,
+          "label": "Follow correct Konvektomat programme",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 3,
+          "label": "Maintain correct food temperature",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 4,
+          "label": "Keep a continuous supply of meat ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 5,
+          "label": "Follow MYGD portion standards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 6,
+          "label": "Maintain consistent portions",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 7,
+          "label": "Maintain product quality",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 8,
+          "label": "Avoid overproduction",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 9,
+          "label": "Minimise waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "DURING_SHIFT",
+      "group": "Continuous Production Flow",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Monitor chicken, beef and other meat stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 8
+        },
+        {
+          "position": 2,
+          "label": "Estimate upcoming requirement",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 3,
+          "label": "Prepare next batch before current batch runs out",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 4,
+          "label": "Inform Shift Leader of low stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 5,
+          "label": "Record unusual waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "DURING_SHIFT",
+      "group": "Workstation / Quiet Period",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Keep station clean throughout service",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 2,
+          "label": "Remove food waste immediately",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 3,
+          "label": "Clean utensils regularly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 4,
+          "label": "Replace dirty GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 5,
+          "label": "Keep equipment handles clean",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 6,
+          "label": "Keep floor clean and dry",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 7,
+          "label": "Check next meat batch",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 8,
+          "label": "Clean Konvektomat exterior",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 9,
+          "label": "Prepare clean GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 10,
+          "label": "Assist Fries Station only when station remains covered",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        }
+      ]
+    },
+    {
+      "station": "MEAT_HOT",
+      "stationName": "Meat / Hot Station",
+      "phase": "CLOSING",
+      "group": "Closing",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check remaining meat",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 2,
+          "label": "Record remaining stock and waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 3,
+          "label": "Store usable product according to food safety procedure",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 9
+        },
+        {
+          "position": 4,
+          "label": "Dispose of product where required",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 9
+        },
+        {
+          "position": 5,
+          "label": "Clean Konvektomat",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 6,
+          "label": "Clean hot holding equipment",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 7,
+          "label": "Clean GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 8,
+          "label": "Clean knives, tongs and cutting boards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 9,
+          "label": "Clean and sanitise workstation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 10,
+          "label": "Clean shelves and handles",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 11,
+          "label": "Remove food waste and rubbish",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 12,
+          "label": "Sweep and mop floor",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        },
+        {
+          "position": 13,
+          "label": "Leave station ready for next day",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 9
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Fresh Preparation",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Wash all required vegetables",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 2,
+          "label": "Prepare and cut lettuce",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 3,
+          "label": "Prepare tomatoes",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 4,
+          "label": "Prepare cucumbers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 5,
+          "label": "Prepare onions",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 6,
+          "label": "Prepare red cabbage",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 7,
+          "label": "Prepare additional salad ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 8,
+          "label": "Fill salad GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 9,
+          "label": "Prepare backup salad containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 10,
+          "label": "Check freshness and quality",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 11,
+          "label": "Label and date prepared products where required",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 10
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Sauce Preparation",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Prepare all required sauces",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 2,
+          "label": "Fill sauce containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 3,
+          "label": "Fill Sauce Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 4,
+          "label": "Prepare backup sauces",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 5,
+          "label": "Check sauce consistency and quality",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 6,
+          "label": "Label and date sauces where required",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 10
+        },
+        {
+          "position": 7,
+          "label": "Refrigerate backup sauces correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 10
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Salad & Sauce Bar",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check Salad Bar refrigeration and temperature",
+          "kind": "TEMPERATURE",
+          "critical": true,
+          "sourcePage": 10,
+          "haccpTarget": "CHILLED"
+        },
+        {
+          "position": 2,
+          "label": "Fully stock Salad Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 3,
+          "label": "Fully stock Sauce Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 4,
+          "label": "Prepare clean serving utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 5,
+          "label": "Ensure backup ingredients are available",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 6,
+          "label": "Clean and sanitise the entire station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Fries Station",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check fryer",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 2,
+          "label": "Switch on and preheat fryer",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 3,
+          "label": "Check oil level and condition",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 4,
+          "label": "Prepare French fries stock",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 5,
+          "label": "Prepare fryer baskets",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 6,
+          "label": "Prepare salt / seasoning",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 7,
+          "label": "Prepare fries packaging",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 8,
+          "label": "Check portion standard",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        },
+        {
+          "position": 9,
+          "label": "Ensure station is clean and ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 10
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Pizza Station",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check pizza oven",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 2,
+          "label": "Switch on and preheat pizza oven",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 3,
+          "label": "Check pizza bases, sauce, cheese and toppings",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 4,
+          "label": "Prepare pizza ingredients and utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 5,
+          "label": "Prepare pizza packaging",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 6,
+          "label": "Ensure pizza station is clean and ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "Frozen Drinks",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check frozen drinks machine",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 2,
+          "label": "Ensure machine is operating correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 3,
+          "label": "Check product level",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 4,
+          "label": "Refill if required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 5,
+          "label": "Check cups, lids and straws",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 6,
+          "label": "Clean dispensing area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "OPENING",
+      "group": "General Kitchen",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Clean and sanitise all work surfaces",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 2,
+          "label": "Prepare chopping boards, knives and utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 3,
+          "label": "Prepare clean GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 4,
+          "label": "Check cleaning cloths and sanitiser",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 5,
+          "label": "Check rubbish bins and dishwashing area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 6,
+          "label": "Ensure floors are clean and dry",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 7,
+          "label": "Ensure kitchen is fully prepared before service",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "DURING_SHIFT",
+      "group": "Production & Restocking",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Monitor Salad Bar continuously",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 2,
+          "label": "Refill ingredients before they run out",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 3,
+          "label": "Prepare additional salad when required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 4,
+          "label": "Maintain backup GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 5,
+          "label": "Refill sauces before they run out",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 6,
+          "label": "Prepare additional sauce when required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 7,
+          "label": "Cook fries to MYGD standard",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 8,
+          "label": "Prepare pizzas to MYGD standard",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 9,
+          "label": "Prepare frozen drinks to order",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 10,
+          "label": "Monitor kitchen stock and identify low stock early",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "DURING_SHIFT",
+      "group": "Dishwashing",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Wash dirty GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 2,
+          "label": "Wash knives, chopping boards and utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 3,
+          "label": "Wash preparation equipment",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 4,
+          "label": "Keep sink area clean",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 5,
+          "label": "Keep dishwasher loaded and operating when required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        },
+        {
+          "position": 6,
+          "label": "Return clean equipment to correct station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 11
+        }
+      ]
+    },
+    {
+      "station": "KITCHEN_PREP",
+      "stationName": "Kitchen / Prep & Utility",
+      "phase": "CLOSING",
+      "group": "Closing",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Store all food correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 2,
+          "label": "Cover and refrigerate salads, vegetables and sauces",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 3,
+          "label": "Label products where required",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 4,
+          "label": "Follow FIFO",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 5,
+          "label": "Dispose of food according to MYGD procedure",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 6,
+          "label": "Record unusual waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 7,
+          "label": "Wash GN containers and utensils",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 8,
+          "label": "Clean Salad Bar and Sauce Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 9,
+          "label": "Clean fryer area and baskets",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 10,
+          "label": "Manage / filter oil according to procedure",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 11,
+          "label": "Store pizza ingredients correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 12
+        },
+        {
+          "position": 12,
+          "label": "Clean pizza area and oven according to procedure",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 13,
+          "label": "Clean frozen drinks dispensing area",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 14,
+          "label": "Complete all dishwashing",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 15,
+          "label": "Clean dishwasher and sinks",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 16,
+          "label": "Clean and sanitise all work surfaces",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 17,
+          "label": "Organise refrigerators and storage",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 18,
+          "label": "Empty rubbish bins",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 19,
+          "label": "Sweep and mop floor",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        },
+        {
+          "position": 20,
+          "label": "Ensure kitchen is prepared for next day",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 12
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "OPENING",
+      "group": "Workstation",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Clean and sanitise workstation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 2,
+          "label": "Prepare clean GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 3,
+          "label": "Prepare utensils, tongs and portioning tools",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 4,
+          "label": "Prepare knives where required",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 5,
+          "label": "Check cutting boards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 6,
+          "label": "Ensure cleaning cloths and sanitiser are available",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 7,
+          "label": "Check packaging required at the station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "OPENING",
+      "group": "Ingredients & Order System",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check all required ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 2,
+          "label": "Check Salad Bar and Sauce Bar",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 3,
+          "label": "Check cheese and toppings",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 4,
+          "label": "Check Döner, Dürüm, Burger and Bowl ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 5,
+          "label": "Check required pizza ingredients where applicable",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 6,
+          "label": "Check backup ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 7,
+          "label": "Report missing products to Shift Leader",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 8,
+          "label": "Check order screen / KDS",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 9,
+          "label": "Check printer if used",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 10,
+          "label": "Confirm special-order modifications are visible",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "DURING_SHIFT",
+      "group": "Food Preparation",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Prepare every product according to the customer order",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 2,
+          "label": "Follow MYGD recipes",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 3,
+          "label": "Follow standard portion sizes",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 4,
+          "label": "Follow correct production sequence",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 5,
+          "label": "Read all customer modifications before starting the product",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 6,
+          "label": "Assemble Döner correctly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 7,
+          "label": "Roll Dürüm correctly and tightly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 8,
+          "label": "Prepare Burgers according to MYGD standards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 9,
+          "label": "Prepare Bowls according to MYGD standards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 10,
+          "label": "Prepare Pizza according to assigned workflow",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "DURING_SHIFT",
+      "group": "Special Orders / Modifications",
+      "mode": "REFERENCE_PER_ORDER",
+      "items": [
+        {
+          "position": 1,
+          "label": "Read the complete modification before assembly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 2,
+          "label": "Keep modified products clearly identifiable",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 3,
+          "label": "Never rely only on verbal communication",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 13
+        },
+        {
+          "position": 4,
+          "label": "Ask Shift Leader if the order is unclear",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 5,
+          "label": "Never guess a customer modification",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "DURING_SHIFT",
+      "group": "Product Quality Check",
+      "mode": "REFERENCE_PER_ORDER",
+      "items": [
+        {
+          "position": 1,
+          "label": "Correct product",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 2,
+          "label": "Correct bread / wrap / bun / bowl",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 3,
+          "label": "Correct protein",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 4,
+          "label": "Correct ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 5,
+          "label": "Correct sauces",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 6,
+          "label": "Correct customer modifications",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 7,
+          "label": "Correct portion",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 8,
+          "label": "Correct presentation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 9,
+          "label": "Correct individual packaging",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "DURING_SHIFT",
+      "group": "Speed & Communication",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Begin orders immediately when they appear",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 2,
+          "label": "Follow the correct order sequence",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 3,
+          "label": "Work efficiently without sacrificing quality",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 4,
+          "label": "Complete products within MYGD target production time",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 5,
+          "label": "Communicate immediately when production is delayed",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 6,
+          "label": "Avoid unnecessary movement away from the station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 7,
+          "label": "Communicate bread needs to Bread Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 8,
+          "label": "Communicate meat needs and extra-meat orders to Meat / Hot Station",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 9,
+          "label": "Communicate missing ingredients to Kitchen Crew",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 10,
+          "label": "Hand completed products to the correct order / Expeditor",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 11,
+          "label": "Inform Shift Leader about low stock, equipment problems or unclear orders",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "DURING_SHIFT",
+      "group": "Stock & Cleanliness",
+      "mode": "CHECK_IN",
+      "items": [
+        {
+          "position": 1,
+          "label": "Monitor ingredients continuously",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 2,
+          "label": "Refill before containers are empty",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 3,
+          "label": "Keep backup ingredients ready",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 4,
+          "label": "Inform Kitchen / Prep before backup stock is exhausted",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 5,
+          "label": "Keep workstation clean throughout shift",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 6,
+          "label": "Clean spills immediately",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 7,
+          "label": "Clean utensils regularly",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 8,
+          "label": "Replace dirty utensils and GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 9,
+          "label": "Remove food waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 10,
+          "label": "Keep floor clean and dry",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        },
+        {
+          "position": 11,
+          "label": "Keep ingredients organised",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 14
+        }
+      ]
+    },
+    {
+      "station": "ASSEMBLY",
+      "stationName": "Preparation / Assembly",
+      "phase": "CLOSING",
+      "group": "Closing",
+      "mode": "TICK",
+      "items": [
+        {
+          "position": 1,
+          "label": "Check remaining ingredients",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 2,
+          "label": "Store all ingredients correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 15
+        },
+        {
+          "position": 3,
+          "label": "Cover, label and date products where required",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 15
+        },
+        {
+          "position": 4,
+          "label": "Refrigerate products",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 15
+        },
+        {
+          "position": 5,
+          "label": "Dispose of unusable food correctly",
+          "kind": "CHECK",
+          "critical": true,
+          "sourcePage": 15
+        },
+        {
+          "position": 6,
+          "label": "Report unusual waste",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 7,
+          "label": "Empty and wash GN containers",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 8,
+          "label": "Clean utensils, knives, tongs and cutting boards",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 9,
+          "label": "Clean and sanitise workstation",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 10,
+          "label": "Clean shelves and handles",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 11,
+          "label": "Empty rubbish",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 12,
+          "label": "Sweep and mop floor",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        },
+        {
+          "position": 13,
+          "label": "Leave station ready for next shift",
+          "kind": "CHECK",
+          "critical": false,
+          "sourcePage": 15
+        }
+      ]
+    }
+  ]
+}

@@ -15,7 +15,9 @@ import {
   Plus,
 } from "lucide-react";
 import { HACCPTargetType } from "../haccp.schema";
-import { HACCPService } from "../haccp.service";
+import { Banner } from "@/ui";
+import { OperatorPad } from "@/modules/checklists/components/OperatorPad";
+import { evaluateTemperature, limitText } from "../temperature";
 
 export const StaffHaccpHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"TIMECLOCK" | "HACCP" | "CHECKLIST">("TIMECLOCK");
@@ -25,13 +27,15 @@ export const StaffHaccpHub: React.FC = () => {
   const [pin, setPin] = useState<string>("");
   const [staffId, setStaffId] = useState<string>("Alex");
   const [clockMessage, setClockMessage] = useState<string | null>(null);
+  const [clockError, setClockError] = useState<string | null>(null);
 
   // HACCP State
   const [equipment, setEquipment] = useState<string>("Walk-in Fridge #1");
   const [targetType, setTargetType] = useState<HACCPTargetType>("CHILLED");
   const [tempInput, setTempInput] = useState<string>("3.2");
   const [correctiveAction, setCorrectiveAction] = useState<string>("");
-  const [haccpLogs, setHaccpLogs] = useState<any[]>([]);
+  const [haccpResult, setHaccpResult] = useState<{ tone: "success" | "warning" | "critical"; text: string } | null>(null);
+  const [pinPadOpen, setPinPadOpen] = useState(false);
 
   // Timeclock PIN Press
   const handlePinDigit = (digit: string) => {
@@ -43,8 +47,9 @@ export const StaffHaccpHub: React.FC = () => {
   const handleClearPin = () => setPin("");
 
   const handleClockIn = async () => {
+    setClockError(null);
     if (pin.length < 4) {
-      alert("Please enter your PIN (4–8 digits).");
+      setClockError("Please enter your PIN (4–8 digits).");
       return;
     }
     try {
@@ -59,16 +64,17 @@ export const StaffHaccpHub: React.FC = () => {
         setClockMessage(`✅ Clocked in: ${data.staff?.name ?? "staff member"}`);
         setPin("");
       } else {
-        alert(data.error || "Clock-in failed.");
+        setClockError(data.error || "Clock-in failed.");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setClockError("No connection. You are not clocked in. Check the network and try again.");
     }
   };
 
   const handleClockOut = async () => {
+    setClockError(null);
     if (pin.length < 4) {
-      alert("Please enter your PIN (4–8 digits).");
+      setClockError("Please enter your PIN (4–8 digits).");
       return;
     }
     try {
@@ -82,52 +88,54 @@ export const StaffHaccpHub: React.FC = () => {
         setClockMessage(`👋 Clocked out: ${data.staff?.name ?? "staff member"} (${data.timeLog?.totalMinutes ?? 0} min)`);
         setPin("");
       } else {
-        alert(data.error || "Clock-out failed.");
+        setClockError(data.error || "Clock-out failed.");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setClockError("No connection. You are not clocked out. Check the network and try again.");
     }
   };
 
   // Submit HACCP Log
   const handleSaveHaccp = async () => {
+    setHaccpResult(null);
     const tempNum = parseFloat(tempInput);
     if (isNaN(tempNum)) {
-      alert("Please enter a valid temperature.");
+      setHaccpResult({ tone: "critical", text: "Enter a valid temperature." });
       return;
     }
-
-    const validation = HACCPService.validateTemperature(targetType, tempNum);
-    if (validation.correctiveActionRequired && !correctiveAction.trim()) {
-      alert("CRITICAL: Corrective action note is mandatory when temperature is outside statutory limits!");
+    const { isCompliant } = evaluateTemperature(targetType, tempNum);
+    if (!isCompliant && !correctiveAction.trim()) {
+      setHaccpResult({ tone: "critical", text: `Out of range: must be ${limitText(targetType)}. Say what you did about it.` });
       return;
     }
-
     try {
-      // TODO(M1, contract Stage 1): BROKEN — /api/checklists does not exist (404), and no route saves
-      // HACCP temperature readings yet (HACCPService.logTemperature has no route). Build it in M1;
-      // see docs/PRD.md M1.3. loggedBy is a free-text name until then.
-      const res = await fetch("/api/checklists", {
+      const res = await fetch("/api/haccp/readings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          locationSlug,
           equipmentName: equipment,
           targetType,
           temperature: tempNum,
-          loggedBy: staffId,
           correctiveAction: correctiveAction.trim() || undefined,
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        alert(`HACCP Record logged. Status: ${validation.isCompliant ? "COMPLIANT" : "BREACH FLAGGED"}`);
-        setCorrectiveAction("");
-      } else {
-        alert(data.error || "Failed to log HACCP record.");
+      if (data.code === "OPERATOR_REQUIRED") {
+        setPinPadOpen(true);
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      if (!data.success) {
+        setHaccpResult({ tone: "critical", text: data.error || "The reading was not saved. Try again." });
+        return;
+      }
+      setHaccpResult(
+        data.isCompliant
+          ? { tone: "success", text: `Saved by ${data.recordedBy}. In range.` }
+          : { tone: "warning", text: `Saved by ${data.recordedBy}. Out of range, flagged for the Shift Leader.` }
+      );
+      setCorrectiveAction("");
+    } catch {
+      setHaccpResult({ tone: "critical", text: "No connection. The reading was not saved." });
     }
   };
 
@@ -248,6 +256,7 @@ export const StaffHaccpHub: React.FC = () => {
                 {clockMessage}
               </span>
             )}
+            {clockError && <div className="mt-4"><Banner tone="critical" title={clockError} /></div>}
           </div>
 
           {/* Shift Schedule Info */}
@@ -317,7 +326,7 @@ export const StaffHaccpHub: React.FC = () => {
               <label className="text-xs font-mono text-zinc-500 uppercase block mb-1.5">Standard Type</label>
               <select
                 value={targetType}
-                onChange={(e) => setTargetType(e.target.value as any)}
+                onChange={(e) => setTargetType(e.target.value as HACCPTargetType)}
                 className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs font-mono text-zinc-900 focus:outline-none focus:border-[#E50D7E]"
               >
                 <option value="CHILLED">Chilled Storage (0°C – 5°C)</option>
@@ -347,6 +356,8 @@ export const StaffHaccpHub: React.FC = () => {
             </div>
           </div>
 
+          {haccpResult && <Banner tone={haccpResult.tone} title={haccpResult.text} />}
+
           {/* Corrective Action Area (Mandatory if in Danger Zone) */}
           <div>
             <label className="text-xs font-mono text-amber-700 uppercase block mb-1.5">
@@ -362,6 +373,15 @@ export const StaffHaccpHub: React.FC = () => {
           </div>
         </div>
       )}
+
+      <OperatorPad
+        open={pinPadOpen}
+        onClose={() => setPinPadOpen(false)}
+        onSignedIn={() => {
+          setPinPadOpen(false);
+          void handleSaveHaccp();
+        }}
+      />
     </div>
   );
 };
