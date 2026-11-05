@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { eventBroker } from "@/lib/events";
+import { parseJsonArray } from "@/lib/safe-json";
 import {
   CANONICAL_SCREEN_CONFIGS,
   validateLayoutType,
@@ -67,9 +68,7 @@ export async function GET(req: NextRequest) {
       const formatted = {
         ...config,
         items:
-          typeof config.itemsJson === "string"
-            ? JSON.parse(config.itemsJson)
-            : config.itemsJson || [],
+          parseJsonArray(config.itemsJson),
       };
 
       return NextResponse.json({
@@ -86,9 +85,7 @@ export async function GET(req: NextRequest) {
     const formattedConfigs = configs.map((c) => ({
       ...c,
       items:
-        typeof c.itemsJson === "string"
-          ? JSON.parse(c.itemsJson)
-          : c.itemsJson || [],
+        parseJsonArray(c.itemsJson),
     }));
 
     return NextResponse.json({
@@ -171,9 +168,7 @@ export async function PATCH(req: NextRequest) {
     const formatted = {
       ...updated,
       items:
-        typeof updated.itemsJson === "string"
-          ? JSON.parse(updated.itemsJson)
-          : updated.itemsJson || [],
+        parseJsonArray(updated.itemsJson),
     };
 
     // Dispatch real-time SSE event for zero-refresh dynamic 4K physical screens

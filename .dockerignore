@@ -19,8 +19,10 @@ docs
 Documents
 Requirements
 tests
-scripts
 artifacts
+deploy
+.claude
+Menu
 
 # Legacy store data (GDPR-sensitive) — never ship
 import

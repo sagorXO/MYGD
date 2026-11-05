@@ -1,9 +1,24 @@
 // MY GERMAN DÖNER — Validation for the screen-ads API (Zod, at the system boundary).
 import { z } from "zod";
 
-/** Screens per the signed SOW (/boards?screen=1..4); the same numbers as MenuBoardConfig. */
+/**
+ * 1-4: the portrait menu boards (same numbers as MenuBoardConfig).
+ * 5-6: the two LED TVs in landscape for the drinks menu (Sagar, 2026-11-02).
+ */
 export const AD_SCREEN_MIN = 1;
-export const AD_SCREEN_MAX = 4;
+export const AD_SCREEN_MAX = 6;
+const LAST_PORTRAIT_SCREEN = 4;
+
+export const AD_ORIENTATIONS = ["PORTRAIT", "LANDSCAPE"] as const;
+export type AdOrientationKind = (typeof AD_ORIENTATIONS)[number];
+
+export function defaultOrientation(screen: number): AdOrientationKind {
+  return screen <= LAST_PORTRAIT_SCREEN ? "PORTRAIT" : "LANDSCAPE";
+}
+
+export function defaultScreenName(screen: number): string {
+  return screen <= LAST_PORTRAIT_SCREEN ? `Portrait ${screen}` : `Landscape ${screen - LAST_PORTRAIT_SCREEN}`;
+}
 
 const CLOCK = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -61,6 +76,7 @@ export const PlaylistCreateSchema = z.object({ name: z.string().trim().min(1).ma
 export const DisplayAssignSchema = z.object({
   name: z.string().trim().min(1).max(60).optional(),
   playlistId: z.string().min(1).nullable(),
+  orientation: z.enum(AD_ORIENTATIONS).optional(),
 });
 
 // --- what the screen accepts from the feed API (validated in the browser too) ---
@@ -85,6 +101,7 @@ export const FeedItemSchema = z.object({
 
 export const ScreenFeedSchema = z.object({
   screenNumber: z.number().int().min(AD_SCREEN_MIN).max(AD_SCREEN_MAX),
+  orientation: z.enum(AD_ORIENTATIONS),
   status: z.enum(["READY", "PAUSED", "UNASSIGNED"]),
   playlist: z
     .object({ id: z.string(), name: z.string(), timeZone: z.string().min(1), updatedAt: z.string().datetime({ offset: true }) })

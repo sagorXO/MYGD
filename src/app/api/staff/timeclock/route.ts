@@ -8,13 +8,16 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { calculateShiftDuration } from "@/lib/timeclock-engine";
 import { verifyStaffPin } from "@/lib/auth/staff-pin";
+import { clientIp } from "@/lib/auth/client-ip";
+import { getSession } from "@/lib/auth/guard";
 import { createFailureLimiter } from "@/lib/auth/rate-limit";
 import { eventBroker } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
 
 // Brute-force brake for the shared wall tablet: at most 10 FAILED PINs per minute per client.
-const pinLimiter = createFailureLimiter({ limit: 10, windowMs: 60_000 });
+// A signed-in device can try a few wrong PINs (typos at shift change), not walk through the PIN space.
+const pinLimiter = createFailureLimiter({ limit: 5, windowMs: 5 * 60_000 });
 
 export async function GET(req: NextRequest) {
   try {
@@ -22,22 +25,12 @@ export async function GET(req: NextRequest) {
     const locationSlug = (url.searchParams.get("location") || "EMBA").toUpperCase();
 
     // 1. Resolve Location
-    let location = await prisma.location.findUnique({
+    const location = await prisma.location.findUnique({
       where: { slug: locationSlug },
     });
 
     if (!location) {
-      location = await prisma.location.upsert({
-        where: { slug: locationSlug },
-        update: {},
-        create: {
-          slug: locationSlug,
-          name: `MY GERMAN DÖNER — ${locationSlug} Flagship`,
-          address: "Pavlides Court, Agiou Stefanou Street 134, 8260 Emba",
-          currency: "EUR",
-          isActive: true,
-        },
-      });
+      return NextResponse.json({ success: false, error: "Unknown location." }, { status: 404 });
     }
 
     // 2. Fetch Open / Active TimeLogs (clockOut is null)
@@ -118,7 +111,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[Timeclock GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to fetch timeclock data" },
+      { success: false, error: "Failed to fetch timeclock data" },
       { status: 500 }
     );
   }
@@ -139,7 +132,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Identify the staff member by PIN against bcrypt hashes on AdminUser (no plaintext PINs).
-    const clientKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+    const clientKey = (await getSession(req))?.sub ?? clientIp(req.headers);
     const rate = pinLimiter.isBlocked(clientKey);
     if (rate.blocked) {
       return NextResponse.json(
@@ -168,22 +161,12 @@ export async function POST(req: NextRequest) {
     const targetLocationSlug = String(locationSlug || "EMBA").toUpperCase();
 
     // 2. Resolve Location
-    let location = await prisma.location.findUnique({
+    const location = await prisma.location.findUnique({
       where: { slug: targetLocationSlug },
     });
 
     if (!location) {
-      location = await prisma.location.upsert({
-        where: { slug: targetLocationSlug },
-        update: {},
-        create: {
-          slug: targetLocationSlug,
-          name: `MY GERMAN DÖNER — ${targetLocationSlug}`,
-          address: "Pavlides Court, Agiou Stefanou Street 134, 8260 Emba",
-          currency: "EUR",
-          isActive: true,
-        },
-      });
+      return NextResponse.json({ success: false, error: "Unknown location." }, { status: 404 });
     }
 
     const now = new Date();
@@ -306,7 +289,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("[Timeclock POST Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to process timeclock action" },
+      { success: false, error: "Failed to process timeclock action" },
       { status: 500 }
     );
   }

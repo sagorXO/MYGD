@@ -1,5 +1,6 @@
 // POST /api/auth/login — username + PIN → signed session cookie.
 import { NextResponse, type NextRequest } from "next/server";
+import { clientIp } from "@/lib/auth/client-ip";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authenticate, type LoginRepository } from "@/lib/auth/login";
@@ -18,17 +19,21 @@ const repo: LoginRepository = {
       select: { id: true, username: true, role: true, pinHash: true, isActive: true, failedAttempts: true, lockedUntil: true },
     });
   },
-  async recordFailedAttempt(id, failedAttempts, lockedUntil) {
-    await prisma.adminUser.update({ where: { id }, data: { failedAttempts, lockedUntil } });
+  async registerAttempt(id, restart) {
+    const row = await prisma.adminUser.update({
+      where: { id },
+      data: restart ? { failedAttempts: 1, lockedUntil: null } : { failedAttempts: { increment: 1 } },
+      select: { failedAttempts: true },
+    });
+    return row.failedAttempts;
+  },
+  async lock(id, lockedUntil) {
+    await prisma.adminUser.update({ where: { id }, data: { lockedUntil } });
   },
   async recordSuccess(id) {
     await prisma.adminUser.update({ where: { id }, data: { failedAttempts: 0, lockedUntil: null } });
   },
 };
-
-function clientKey(req: NextRequest): string {
-  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "local";
-}
 
 export async function POST(req: NextRequest) {
   let secret: string;
@@ -38,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: "Authentication is not configured on this server." }, { status: 503 });
   }
 
-  const ip = clientKey(req);
+  const ip = clientIp(req.headers);
   const rate = limiter.isBlocked(ip);
   if (rate.blocked) {
     return NextResponse.json(

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 const { toScreenFeed } = await import("../src/modules/signage/ads/feed.ts");
-const { parseClock, formatClock, ItemInputSchema, ScreenNumberSchema, ReorderSchema } = await import(
+const { parseClock, formatClock, ItemInputSchema, ScreenNumberSchema, ReorderSchema, DisplayAssignSchema } = await import(
   "../src/modules/signage/ads/ads.schema.ts"
 );
 
@@ -21,6 +21,7 @@ function row(o = {}) {
 function display(o = {}) {
   return {
     screenNumber: 1,
+    orientation: "PORTRAIT",
     playlist: { id: "p1", name: "Main playlist", timeZone: "Asia/Nicosia", isActive: true, updatedAt: NOW, items: [row()] },
     ...o,
   };
@@ -29,7 +30,7 @@ function display(o = {}) {
 // --- feed ----------------------------------------------------------------
 
 test("a screen with no record or no playlist is UNASSIGNED with no items", () => {
-  assert.deepEqual(toScreenFeed(3, null, NOW), { screenNumber: 3, status: "UNASSIGNED", playlist: null, items: [], generatedAt: NOW.toISOString() });
+  assert.deepEqual(toScreenFeed(3, null, NOW), { screenNumber: 3, orientation: "PORTRAIT", status: "UNASSIGNED", playlist: null, items: [], generatedAt: NOW.toISOString() });
   assert.equal(toScreenFeed(1, display({ playlist: null }), NOW).status, "UNASSIGNED");
 });
 
@@ -78,10 +79,11 @@ test("parseClock and formatClock convert HH:MM and minutes", () => {
   assert.equal(formatClock(75), "01:15");
 });
 
-test("ScreenNumberSchema accepts the 4 contract screens only", () => {
+test("ScreenNumberSchema accepts the 4 portrait and 2 landscape screens only", () => {
   assert.equal(ScreenNumberSchema.parse("2"), 2);
+  assert.equal(ScreenNumberSchema.parse("6"), 6);
   assert.throws(() => ScreenNumberSchema.parse("0"));
-  assert.throws(() => ScreenNumberSchema.parse("5"));
+  assert.throws(() => ScreenNumberSchema.parse("7"));
   assert.throws(() => ScreenNumberSchema.parse("1.5"));
 });
 
@@ -136,4 +138,31 @@ test("ScreenFeedSchema accepts a real feed and rejects a foreign media URL", () 
   assert.ok(ScreenFeedSchema.safeParse(feed).success);
   const bad = { ...feed, items: [{ ...feed.items[0], mediaUrl: "https://evil.example/x.jpg" }] };
   assert.equal(ScreenFeedSchema.safeParse(bad).success, false);
+});
+
+// --- orientation: portrait menu boards and landscape drinks TVs -----------------
+
+const { defaultOrientation, defaultScreenName } = await import("../src/modules/signage/ads/ads.schema.ts");
+
+test("screens 1-4 default to portrait and 5-6 to landscape", () => {
+  assert.equal(defaultOrientation(1), "PORTRAIT");
+  assert.equal(defaultOrientation(4), "PORTRAIT");
+  assert.equal(defaultOrientation(5), "LANDSCAPE");
+  assert.equal(defaultOrientation(6), "LANDSCAPE");
+  assert.equal(defaultScreenName(4), "Portrait 4");
+  assert.equal(defaultScreenName(5), "Landscape 1");
+  assert.equal(defaultScreenName(6), "Landscape 2");
+});
+
+test("the feed uses the screen's saved orientation, or the default when it has no record", () => {
+  assert.equal(toScreenFeed(5, null, NOW).orientation, "LANDSCAPE");
+  assert.equal(toScreenFeed(1, display({ orientation: "LANDSCAPE" }), NOW).orientation, "LANDSCAPE");
+  assert.equal(toScreenFeed(1, display({ orientation: "LANDSCAPE", playlist: null }), NOW).orientation, "LANDSCAPE");
+  assert.ok(ScreenFeedSchema.safeParse(toScreenFeed(6, null, NOW)).success);
+});
+
+test("DisplayAssignSchema accepts an orientation and rejects anything else", () => {
+  assert.equal(DisplayAssignSchema.parse({ playlistId: null, orientation: "LANDSCAPE" }).orientation, "LANDSCAPE");
+  assert.equal(DisplayAssignSchema.parse({ playlistId: null }).orientation, undefined);
+  assert.throws(() => DisplayAssignSchema.parse({ playlistId: null, orientation: "SIDEWAYS" }));
 });

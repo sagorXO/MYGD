@@ -4,7 +4,7 @@ export const PrinterStationSchema = z.enum(["INDOOR", "GRILL", "BOTH"]);
 export type PrinterStation = z.infer<typeof PrinterStationSchema>;
 
 export const PrinterConfigSchema = z.object({
-  host: z.string().ip().or(z.string().min(1)),
+  host: z.union([z.ipv4(), z.ipv6()]).or(z.string().min(1)),
   port: z.number().int().min(1).max(65535).default(9100),
   timeoutMs: z.number().int().min(500).max(10000).default(3000),
 });

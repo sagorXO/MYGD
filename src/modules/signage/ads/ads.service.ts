@@ -9,7 +9,7 @@ import { toScreenFeed, type ScreenFeed } from "./feed";
 import { validatePlaylist, type PlaylistItem } from "./playlist";
 import { sniffMedia, mp4DurationMs, storageKeyFor } from "./media";
 import { MediaConfigError, maxUploadBytes, sha256Hex, writeMediaFile } from "./storage";
-import type { ItemInput } from "./ads.schema";
+import { defaultOrientation, defaultScreenName, type AdOrientationKind, type ItemInput } from "./ads.schema";
 
 export const SIGNAGE_CHANNEL = "signage";
 
@@ -53,7 +53,7 @@ export async function getScreenFeed(screenNumber: number, now = new Date()): Pro
   prisma.adDisplay
     .upsert({
       where: { screenNumber },
-      create: { screenNumber, name: `Portrait ${screenNumber}`, lastSeenAt: now },
+      create: { screenNumber, name: defaultScreenName(screenNumber), orientation: defaultOrientation(screenNumber), lastSeenAt: now },
       update: { lastSeenAt: now },
     })
     .catch((err: unknown) => console.error("[ads] heartbeat write failed", err instanceof Error ? err.message : err));
@@ -209,16 +209,20 @@ export async function reorderItems(playlistId: string, itemIds: string[], actor:
 
 // --- screens ↔ playlists -----------------------------------------------------
 
-export async function assignDisplay(screenNumber: number, playlistId: string | null, name: string | undefined, actor: Actor) {
+export async function assignDisplay(
+  screenNumber: number,
+  { playlistId, name, orientation }: { playlistId: string | null; name?: string; orientation?: AdOrientationKind },
+  actor: Actor,
+) {
   if (playlistId && !(await prisma.adPlaylist.findUnique({ where: { id: playlistId } }))) {
     throw new AdsError(404, "Playlist not found.");
   }
   const display = await prisma.adDisplay.upsert({
     where: { screenNumber },
-    create: { screenNumber, name: name ?? `Portrait ${screenNumber}`, playlistId },
-    update: { playlistId, ...(name ? { name } : {}) },
+    create: { screenNumber, name: name ?? defaultScreenName(screenNumber), orientation: orientation ?? defaultOrientation(screenNumber), playlistId },
+    update: { playlistId, ...(name ? { name } : {}), ...(orientation ? { orientation } : {}) },
   });
-  await audit(actor, "ADS_DISPLAY_ASSIGNED", { screenNumber, playlistId });
+  await audit(actor, "ADS_DISPLAY_ASSIGNED", { screenNumber, playlistId, orientation });
   notifyScreens("display-assigned");
   return display;
 }

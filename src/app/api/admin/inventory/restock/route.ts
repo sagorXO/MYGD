@@ -71,6 +71,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, updatedStock: updated.currentStock });
   } catch (err: any) {
     console.error("[API /api/admin/inventory/restock] Error:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "The request could not be completed." }, { status: 500 });
   }
 }

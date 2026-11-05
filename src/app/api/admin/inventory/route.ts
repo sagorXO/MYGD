@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[Inventory GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to load inventory" },
+      { success: false, error: "Failed to load inventory" },
       { status: 500 }
     );
   }
@@ -119,7 +119,7 @@ export async function PATCH(req: NextRequest) {
   } catch (err: any) {
     console.error("[Inventory PATCH Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to update stock" },
+      { success: false, error: "Failed to update stock" },
       { status: 500 }
     );
   }

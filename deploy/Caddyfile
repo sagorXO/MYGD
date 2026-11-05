@@ -1,0 +1,21 @@
+# TLS certificates are obtained and renewed automatically for {$DOMAIN}.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	# Rejects oversized uploads before they reach the app (app limit 100 MB, plus multipart overhead).
+	request_body {
+		max_size 110MB
+	}
+
+	# Live updates (SSE) must not be compressed or buffered.
+	@compressible not path /api/events
+	encode @compressible zstd gzip
+
+	reverse_proxy app:3000 {
+		flush_interval -1
+	}
+
+	header -Server
+}

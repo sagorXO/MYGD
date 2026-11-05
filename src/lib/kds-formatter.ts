@@ -121,3 +121,16 @@ export function formatKDSTicket(ticket: any): FormattedKDSTicket {
     items,
   };
 }
+
+/** What a public screen may see: no customer notes, staff names or line details. */
+export function toPublicTicket<T extends { id: string; orderNumber: string; status: string; createdAt: unknown; station?: unknown; elapsedSeconds?: unknown; itemsSummary?: unknown }>(t: T) {
+  return {
+    id: t.id,
+    orderNumber: t.orderNumber,
+    status: t.status,
+    createdAt: t.createdAt,
+    station: t.station,
+    elapsedSeconds: t.elapsedSeconds,
+    itemsSummary: t.itemsSummary,
+  };
+}

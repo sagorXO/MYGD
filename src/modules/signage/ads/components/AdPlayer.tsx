@@ -1,12 +1,12 @@
 "use client";
-// MY GERMAN DÖNER — Portrait-screen ad player (1080 × 1920 stage, chrome-free).
+// MY GERMAN DÖNER — Screen player (portrait 1080 × 1920 or landscape 1920 × 1080 stage, chrome-free).
 // [ADR] Context: screens must keep playing through network loss and come back on their own.
 // Decision: the screen receives the whole schedule and decides locally (playlist.ts); the feed is
 // kept in localStorage and media in a service worker cache; SSE pushes changes, a 60 s poll is the backstop.
 // Consequence: a screen offline for days keeps a correct schedule from its last feed.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FeedResponseSchema, ScreenFeedSchema } from "../ads.schema";
+import { defaultOrientation, FeedResponseSchema, ScreenFeedSchema } from "../ads.schema";
 import { playableItems, type ScreenFeed } from "../feed";
 import { afterPlaybackFailure, itemDurationMs, nextItem } from "../playlist";
 import { AdSlate } from "./AdSlate";
@@ -17,6 +17,10 @@ const VIDEO_STALL_MS = 5_000;
 const VIDEO_LOAD_GRACE_MS = 60_000; // first play of a new file waits for the whole download
 const EMPTY_RECHECK_MS = 30_000;
 const BAD_ITEM_SKIP_MS = 1_000;
+const STAGE = {
+  PORTRAIT: { aspectRatio: "9 / 16", height: "min(100vh, calc(100vw * 16 / 9))" },
+  LANDSCAPE: { aspectRatio: "16 / 9", height: "min(100vh, calc(100vw * 9 / 16))" },
+} as const;
 const WATCHDOG_MS = 10 * 60_000; // no new item for this long → reload the page
 
 type Playable = ReturnType<typeof playableItems>[number];
@@ -198,7 +202,7 @@ export function AdPlayer({ screen }: { screen: number }) {
     <div className="fixed inset-0 flex cursor-none items-center justify-center overflow-hidden bg-black" aria-hidden="true">
       <div
         className="relative overflow-hidden bg-[var(--mygd-neutral-950)] [container-type:size]"
-        style={{ aspectRatio: "9 / 16", height: "min(100vh, calc(100vw * 16 / 9))" }}
+        style={STAGE[feed?.orientation ?? defaultOrientation(screen)]}
       >
         {previous ? <Layer key={`prev-${previous.id}-${playToken}`} item={previous} fading /> : null}
         {current ? (

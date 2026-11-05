@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
     console.error("[API /api/orders] Order tender failed:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to tender order" },
+      { success: false, error: "Failed to tender order" },
       { status: 500 }
     );
   }

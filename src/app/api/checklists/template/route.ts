@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[Checklist Template GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to fetch checklist templates" },
+      { success: false, error: "Failed to fetch checklist templates" },
       { status: 500 }
     );
   }

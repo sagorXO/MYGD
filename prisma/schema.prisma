@@ -718,10 +718,16 @@ model AdPlaylistItem {
   @@index([mediaId])
 }
 
+enum AdOrientation {
+  PORTRAIT
+  LANDSCAPE
+}
+
 model AdDisplay {
   id           String    @id @default(cuid())
-  screenNumber Int       @unique // same numbering as MenuBoardConfig.screenNumber (SOW: 1–4)
+  screenNumber Int       @unique // 1–4 = menu boards (MenuBoardConfig numbers); 5–6 = landscape drinks TVs
   name         String
+  orientation  AdOrientation @default(PORTRAIT)
   playlistId   String?
   lastSeenAt   DateTime?
   appVersion   String?

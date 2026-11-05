@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[Build Sheets GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to fetch build sheets" },
+      { success: false, error: "Failed to fetch build sheets" },
       { status: 500 }
     );
   }

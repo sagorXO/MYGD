@@ -2,6 +2,7 @@
 // The screen gets the whole schedule, not just what is live now, so it can keep deciding
 // correctly from its cached copy while the network is down.
 
+import { defaultOrientation, type AdOrientationKind } from "./ads.schema";
 import { activeItems, type AdMediaKind } from "./playlist";
 
 export interface FeedSourceItem {
@@ -19,6 +20,7 @@ export interface FeedSourceItem {
 
 export interface FeedSourceDisplay {
   screenNumber: number;
+  orientation: AdOrientationKind;
   playlist: {
     id: string;
     name: string;
@@ -48,6 +50,7 @@ export type FeedStatus = "READY" | "PAUSED" | "UNASSIGNED";
 
 export interface ScreenFeed {
   screenNumber: number;
+  orientation: AdOrientationKind;
   status: FeedStatus;
   playlist: { id: string; name: string; timeZone: string; updatedAt: string } | null;
   items: FeedItem[];
@@ -75,17 +78,18 @@ function toFeedItem(i: FeedSourceItem): FeedItem {
 
 export function toScreenFeed(screenNumber: number, display: FeedSourceDisplay | null, now: Date): ScreenFeed {
   const generatedAt = now.toISOString();
+  const orientation = display?.orientation ?? defaultOrientation(screenNumber);
   const playlist = display?.playlist ?? null;
-  if (!playlist) return { screenNumber, status: "UNASSIGNED", playlist: null, items: [], generatedAt };
+  if (!playlist) return { screenNumber, orientation, status: "UNASSIGNED", playlist: null, items: [], generatedAt };
 
   const meta = { id: playlist.id, name: playlist.name, timeZone: playlist.timeZone, updatedAt: playlist.updatedAt.toISOString() };
-  if (!playlist.isActive) return { screenNumber, status: "PAUSED", playlist: meta, items: [], generatedAt };
+  if (!playlist.isActive) return { screenNumber, orientation, status: "PAUSED", playlist: meta, items: [], generatedAt };
 
   const items = playlist.items
     .filter((i) => i.isActive && !(i.endsAt && i.endsAt.getTime() <= now.getTime()))
     .sort((a, b) => a.position - b.position)
     .map(toFeedItem);
-  return { screenNumber, status: "READY", playlist: meta, items, generatedAt };
+  return { screenNumber, orientation, status: "READY", playlist: meta, items, generatedAt };
 }
 
 /** Browser-side: turn a feed item back into the shape the playlist rules use. */

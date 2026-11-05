@@ -1,53 +1,50 @@
 # ---------------------------------------------------------
-# MY GERMAN DÖNER (MYGD) — Production Dockerfile
-# Multi-stage Next.js 15 standalone container
+# MY GERMAN DÖNER (MYGD) — Production images
+#   target "runner": the web app (standalone Next.js server, non-root)
+#   target "tools":  one-off jobs: prisma migrate deploy, npm run user:create, npm run db:seed
 # ---------------------------------------------------------
 
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
-
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Build needs no real database or secrets; these placeholders exist only during this RUN.
+RUN DATABASE_URL=postgresql://build:build@localhost/build DIRECT_URL=postgresql://build:build@localhost/build \
+    sh -c "npx prisma generate && npm run build"
 
-# Generate the Prisma client (PostgreSQL) and compile the standalone bundle
-RUN npx prisma generate
-RUN npm run build
+FROM builder AS tools
+ENV NODE_ENV=production
+USER node
+CMD ["npx", "prisma", "migrate", "deploy"]
 
-# Stage 3: Production Runner
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
+RUN apk add --no-cache openssl
 WORKDIR /app
-
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV MEDIA_ROOT=/data/media
 
-RUN apk add --no-cache openssl
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+# Owned by the app user so a new named volume mounted here inherits the right owner.
+RUN mkdir -p /data/media && chown -R nextjs:nodejs /data
 
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy static assets and standalone bundle
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
-
 EXPOSE 3000
-
-# Start Next.js Standalone Production Server
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1
 CMD ["node", "server.js"]

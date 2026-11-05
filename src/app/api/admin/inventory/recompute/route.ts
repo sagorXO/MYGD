@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("[Inventory Recompute Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Recompute failed" },
+      { success: false, error: "Recompute failed" },
       { status: 500 }
     );
   }

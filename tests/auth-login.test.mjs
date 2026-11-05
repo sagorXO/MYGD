@@ -18,8 +18,17 @@ function makeRepo(users) {
       const r = rows.get(username);
       return r ? { ...r } : null;
     },
-    async recordFailedAttempt(id, failedAttempts, lockedUntil) {
-      for (const r of rows.values()) if (r.id === id) Object.assign(r, { failedAttempts, lockedUntil });
+    async registerAttempt(id, restart) {
+      for (const r of rows.values()) {
+        if (r.id !== id) continue;
+        r.failedAttempts = restart ? 1 : r.failedAttempts + 1;
+        if (restart) r.lockedUntil = null;
+        return r.failedAttempts;
+      }
+      throw new Error("no such user");
+    },
+    async lock(id, lockedUntil) {
+      for (const r of rows.values()) if (r.id === id) r.lockedUntil = lockedUntil;
     },
     async recordSuccess(id) {
       for (const r of rows.values()) if (r.id === id) Object.assign(r, { failedAttempts: 0, lockedUntil: null });
@@ -139,4 +148,23 @@ test("auth/staff-pin: wrong, malformed, inactive and duplicate PINs are refused"
   assert.equal((await verifyStaffPin("5555", [{ id: "u3", username: "old", role: "STORE_STAFF", pinHash: hash("5555"), isActive: false }], cmp)).reason, "NO_MATCH");
   const dup = [{ ...anna, isActive: true }, { id: "u9", username: "twin", role: "STORE_STAFF", pinHash: hash("4821"), isActive: true }];
   assert.equal((await verifyStaffPin("4821", dup, cmp)).reason, "AMBIGUOUS");
+});
+
+
+test("a burst of parallel guesses cannot get past the attempt limit", async () => {
+  const { authenticate: login, MAX_FAILED_ATTEMPTS: max } = await import("../src/lib/auth/login.ts");
+  const repo = makeRepo([{ id: "a", username: "anna", role: "STORE_STAFF", pinHash: "h" }]);
+  let compared = 0;
+  const deps = {
+    repo,
+    now: () => new Date("2026-11-02T10:00:00Z"),
+    comparePin: async () => {
+      compared += 1;
+      await new Promise((r) => setTimeout(r, 5));
+      return false;
+    },
+  };
+  await Promise.all(Array.from({ length: 50 }, () => login({ username: "anna", pin: "1234" }, deps)));
+  assert.ok(compared <= max, `compared ${compared} PINs, limit ${max}`);
+  assert.ok(repo.rows.get("anna").lockedUntil instanceof Date);
 });

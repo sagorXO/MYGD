@@ -1,4 +1,4 @@
-// Portrait-screen ad player: /signage/ads?screen=1..4 (the same numbers as the menu boards).
+// Screen player: /signage/ads?screen=1..6 (1-4 portrait menu boards, 5-6 landscape drinks TVs).
 import { ScreenNumberSchema, AD_SCREEN_MIN, AD_SCREEN_MAX } from "@/modules/signage/ads/ads.schema";
 import { AdPlayer } from "@/modules/signage/ads/components/AdPlayer";
 import { AdSlate } from "@/modules/signage/ads/components/AdSlate";

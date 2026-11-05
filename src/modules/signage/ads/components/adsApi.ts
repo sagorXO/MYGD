@@ -1,4 +1,5 @@
 // Browser client for the manager API (/api/admin/ads/*). Dates arrive as ISO strings.
+import type { AdOrientationKind } from "../ads.schema";
 import type { AdMediaKind, PlaylistItem } from "../playlist";
 
 export interface AdminMedia {
@@ -34,6 +35,7 @@ export interface AdminDisplay {
   id: string;
   screenNumber: number;
   name: string;
+  orientation: AdOrientationKind;
   playlistId: string | null;
   lastSeenAt: string | null;
 }
@@ -81,7 +83,8 @@ export const adsApi = {
   saveItem: (id: string, item: ItemBody) => call(`/api/admin/ads/items/${id}`, jsonInit("PATCH", item)),
   removeItem: (id: string) => call(`/api/admin/ads/items/${id}`, { method: "DELETE" }),
   reorder: (playlistId: string, itemIds: string[]) => call("/api/admin/ads/items", jsonInit("PUT", { playlistId, itemIds })),
-  assign: (screen: number, playlistId: string | null) => call(`/api/admin/ads/displays/${screen}`, jsonInit("PUT", { playlistId })),
+  assign: (screen: number, playlistId: string | null, orientation?: AdOrientationKind) =>
+    call(`/api/admin/ads/displays/${screen}`, jsonInit("PUT", { playlistId, orientation })),
 };
 
 export function toPlaylistItem(i: AdminItem): PlaylistItem {

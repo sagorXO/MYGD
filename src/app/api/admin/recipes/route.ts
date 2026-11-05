@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Admin recipe GET error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch recipe" },
+      { success: false, error: "Failed to fetch recipe" },
       { status: 500 }
     );
   }
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Admin recipe POST error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to add ingredient to recipe" },
+      { success: false, error: "Failed to add ingredient to recipe" },
       { status: 500 }
     );
   }
@@ -206,7 +206,7 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     console.error("Admin recipe PUT error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update recipe ingredient" },
+      { success: false, error: "Failed to update recipe ingredient" },
       { status: 500 }
     );
   }
@@ -261,7 +261,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     console.error("Admin recipe DELETE error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to delete recipe ingredient" },
+      { success: false, error: "Failed to delete recipe ingredient" },
       { status: 500 }
     );
   }

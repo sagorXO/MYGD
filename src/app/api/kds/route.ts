@@ -5,7 +5,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { eventBroker } from "@/lib/events";
-import { formatKDSTicket } from "@/lib/kds-formatter";
+import { getSession } from "@/lib/auth/guard";
+import { formatKDSTicket, toPublicTicket } from "@/lib/kds-formatter";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "asc" },
     });
 
-    const formattedTickets = tickets.map(formatKDSTicket);
+    // Unauthenticated callers are the customer screens: status only, no customer text.
+    const signedIn = (await getSession(req)) !== null;
+    const formattedTickets = signedIn ? tickets.map(formatKDSTicket) : tickets.map(formatKDSTicket).map(toPublicTicket);
 
     return NextResponse.json({
       success: true,
@@ -61,7 +64,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[KDS GET Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to fetch KDS tickets" },
+      { success: false, error: "Failed to fetch KDS tickets" },
       { status: 500 }
     );
   }
@@ -155,7 +158,7 @@ export async function PATCH(req: NextRequest) {
   } catch (err: any) {
     console.error("[KDS PATCH Error]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to update ticket" },
+      { success: false, error: "Failed to update ticket" },
       { status: 500 }
     );
   }

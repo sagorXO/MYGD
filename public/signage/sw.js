@@ -1,7 +1,7 @@
 // MY GERMAN DÖNER — Portrait-screen service worker (scope /signage/).
 // Keeps the player working offline: the page and its scripts, the latest feed, and every media file.
 // Media is cached whole and Range requests are answered from the cache, so video still plays offline.
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `mygd-signage-shell-${VERSION}`;
 const FEED_CACHE = `mygd-signage-feed-${VERSION}`;
 const MEDIA_CACHE = `mygd-signage-media-${VERSION}`;
@@ -45,9 +45,8 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(media(req, url));
   } else if (url.pathname.startsWith("/api/signage/ads/")) {
     event.respondWith(networkFirst(req, FEED_CACHE));
-  } else if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(cacheFirst(req, SHELL_CACHE));
-  } else if (req.mode === "navigate" && url.pathname.startsWith("/signage/")) {
+  } else if (url.pathname.startsWith("/_next/static/") || (req.mode === "navigate" && url.pathname.startsWith("/signage/"))) {
+    // Network first, so a screen never gets stuck on old player code; the cache is for offline only.
     event.respondWith(networkFirst(req, SHELL_CACHE));
   }
 });
@@ -56,21 +55,12 @@ async function networkFirst(req, cacheName) {
   const cache = await caches.open(cacheName);
   try {
     const res = await fetch(req);
-    if (res.ok) await cache.put(req, res.clone());
+    if (res.ok) await cache.put(req, res.clone()).catch(() => undefined); // storage full: still serve it
     return res;
   } catch {
     const cached = await cache.match(req);
     return cached || new Response(JSON.stringify({ success: false, error: "offline" }), { status: 503, headers: { "Content-Type": "application/json" } });
   }
-}
-
-async function cacheFirst(req, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(req);
-  if (cached) return cached;
-  const res = await fetch(req);
-  if (res.ok) await cache.put(req, res.clone());
-  return res;
 }
 
 async function media(req, url) {

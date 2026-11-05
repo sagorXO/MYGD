@@ -1,9 +1,9 @@
 "use client";
-// MY GERMAN DÖNER — Manager screen for the portrait-screen ads (/admin/ads).
+// MY GERMAN DÖNER — Manager screen for the screen ads (/admin/ads): 4 portrait boards, 2 landscape TVs.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, ImageIcon, MonitorPlay, Upload, Video } from "lucide-react";
-import { Badge, Banner, Button, Card, CardHeader, EmptyState, IconButton, Page, Select, Skeleton, Switch } from "@/ui";
-import { AD_SCREEN_MAX, AD_SCREEN_MIN, formatClock } from "../ads.schema";
+import { Badge, Banner, Button, Card, EmptyState, IconButton, Page, Select, Skeleton, Switch, TextField } from "@/ui";
+import { AD_SCREEN_MAX, AD_SCREEN_MIN, defaultOrientation, defaultScreenName, formatClock, type AdOrientationKind } from "../ads.schema";
 import { MEDIA_URL_PREFIX } from "../feed";
 import { itemStatus, screenOnline } from "../status";
 import { adsApi, toPlaylistItem, type AdminItem, type AdminOverview, type ItemBody } from "./adsApi";
@@ -35,6 +35,8 @@ export function AdsManager() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [playlistId, setPlaylistId] = useState<string | null>(null);
+  const [newPlaylistName, setNewPlaylistName] = useState<string | null>(null); // null = form closed
   const [now, setNow] = useState(() => new Date());
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -69,7 +71,8 @@ export function AdsManager() {
     [load],
   );
 
-  const playlist = data?.playlists[0] ?? null;
+  const playlist = data?.playlists.find((p) => p.id === playlistId) ?? data?.playlists[0] ?? null;
+  const playingOn = data && playlist ? data.displays.filter((d) => d.playlistId === playlist.id).map((d) => d.name) : [];
   const items = useMemo(() => playlist?.items ?? [], [playlist]);
   const selected = items.find((i) => i.id === selectedId) ?? null;
   const showingCount = playlist ? items.filter((i) => itemStatus(toPlaylistItem(i), now, playlist.timeZone) === "SHOWING").length : 0;
@@ -102,6 +105,14 @@ export function AdsManager() {
     void run(() => adsApi.reorder(playlist.id, ids));
   };
 
+  const createPlaylist = (name: string) =>
+    void run(async () => {
+      const { playlist: created } = await adsApi.createPlaylist(name);
+      setPlaylistId(created.id);
+      setSelectedId(null);
+      setNewPlaylistName(null);
+    });
+
   const remove = (item: AdminItem) => {
     if (!window.confirm(`Remove ${item.media.fileName} from the playlist? The screens stop showing it.`)) return;
     void run(async () => {
@@ -122,8 +133,8 @@ export function AdsManager() {
 
   if (!data) {
     return (
-      <Page title="Screen ads" subtitle="Playlist shown on the 4 portrait screens">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Page title="Screen ads" subtitle="What the 4 portrait screens and 2 landscape TVs play">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {SCREENS.map((n) => (
             <Skeleton key={n} variant="card" />
           ))}
@@ -136,7 +147,7 @@ export function AdsManager() {
   return (
     <Page
       title="Screen ads"
-      subtitle="Playlist shown on the 4 portrait screens. Changes reach the screens within a few seconds."
+      subtitle="Each screen plays its own playlist. Changes reach the screens within a few seconds."
       width="full"
       primaryAction={
         playlist ? (
@@ -144,7 +155,7 @@ export function AdsManager() {
             <Button variant="primary" icon={Upload} loading={busy} onClick={() => fileInput.current?.click()}>
               Upload media
             </Button>
-            <span className="text-xs text-text-secondary">JPG, PNG, WebP or MP4 (H.264) · portrait 1080 × 1920</span>
+            <span className="text-xs text-text-secondary">JPG, PNG, WebP or MP4 (H.264) · portrait 1080 × 1920 · landscape 1920 × 1080</span>
             <input ref={fileInput} type="file" accept={ACCEPT} multiple className="sr-only" aria-label="Choose ad files" onChange={(e) => upload(e.target.files)} />
           </div>
         ) : undefined
@@ -152,14 +163,15 @@ export function AdsManager() {
     >
       {actionError ? <Banner tone="critical" title={actionError} onDismiss={() => setActionError(null)} className="mb-4" /> : null}
 
-      <section aria-label="Screens" className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Screens" className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {SCREENS.map((n) => {
           const d = data.displays.find((x) => x.screenNumber === n) ?? null;
           const online = screenOnline(d?.lastSeenAt ? new Date(d.lastSeenAt) : null, now);
+          const orientation = d?.orientation ?? defaultOrientation(n);
           return (
             <Card key={n} className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-text">{d?.name ?? `Portrait ${n}`}</span>
+                <span className="font-semibold text-text">{d?.name ?? defaultScreenName(n)}</span>
                 <Badge tone={online ? "success" : "neutral"} dot>
                   {online ? "Online" : "Offline"}
                 </Badge>
@@ -173,6 +185,17 @@ export function AdsManager() {
                 options={[{ value: "", label: "Nothing (brand slate)" }, ...data.playlists.map((p) => ({ value: p.id, label: p.name }))]}
                 onChange={(e) => void run(() => adsApi.assign(n, e.target.value || null))}
               />
+              <Select
+                id={`screen-${n}-orientation`}
+                label="Orientation"
+                value={orientation}
+                disabled={busy}
+                options={[
+                  { value: "PORTRAIT", label: "Portrait (1080 × 1920)" },
+                  { value: "LANDSCAPE", label: "Landscape (1920 × 1080)" },
+                ]}
+                onChange={(e) => void run(() => adsApi.assign(n, d?.playlistId ?? null, e.target.value as AdOrientationKind))}
+              />
             </Card>
           );
         })}
@@ -183,9 +206,9 @@ export function AdsManager() {
           <EmptyState
             icon={MonitorPlay}
             title="No playlist yet"
-            description="Create the playlist, upload images or videos, then choose it for each screen above."
+            description="Create a playlist, upload images or videos, then choose it for a screen above."
             action={
-              <Button variant="primary" loading={busy} onClick={() => void run(() => adsApi.createPlaylist(DEFAULT_PLAYLIST_NAME))}>
+              <Button variant="primary" loading={busy} onClick={() => createPlaylist(DEFAULT_PLAYLIST_NAME)}>
                 Create playlist
               </Button>
             }
@@ -194,10 +217,44 @@ export function AdsManager() {
       ) : (
         <div className="flex flex-wrap items-start gap-6">
           <Card padding="none" className="min-w-0 flex-[999_1_600px] overflow-hidden">
-            <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
-              <h2 className="text-base font-semibold text-text">{playlist.name}</h2>
-              <span className="text-sm text-text-secondary">Use the arrows to change the order</span>
+            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border-subtle px-5 py-4">
+              <div className="min-w-56">
+                <Select
+                  id="ad-playlist"
+                  label="Playlist"
+                  value={playlist.id}
+                  options={data.playlists.map((p) => ({ value: p.id, label: p.name }))}
+                  onChange={(e) => {
+                    setPlaylistId(e.target.value);
+                    setSelectedId(null);
+                  }}
+                />
+              </div>
+              {newPlaylistName === null ? (
+                <Button variant="secondary" onClick={() => setNewPlaylistName("")}>
+                  New playlist
+                </Button>
+              ) : (
+                <form
+                  className="flex flex-wrap items-end gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (newPlaylistName.trim()) createPlaylist(newPlaylistName.trim());
+                  }}
+                >
+                  <TextField id="ad-new-playlist" label="New playlist name" value={newPlaylistName} maxLength={60} onChange={(e) => setNewPlaylistName(e.target.value)} />
+                  <Button type="submit" variant="primary" loading={busy} disabled={!newPlaylistName.trim()}>
+                    Create
+                  </Button>
+                  <Button variant="tertiary" onClick={() => setNewPlaylistName(null)}>
+                    Cancel
+                  </Button>
+                </form>
+              )}
             </div>
+            <p className="border-b border-border-subtle px-5 py-2.5 text-sm text-text-secondary">
+              {playingOn.length > 0 ? `Playing on: ${playingOn.join(", ")}` : "Not on any screen yet. Choose it in a screen card above."} · Use the arrows to change the order
+            </p>
             {items.length === 0 ? (
               <EmptyState icon={Upload} title="The playlist is empty" description="Upload an image or video to start. Screens show the brand slate until then." />
             ) : (

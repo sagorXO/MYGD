@@ -211,3 +211,26 @@ See the chat summary of 30 Oct 2026 (Q-AD-1..4, Q-CL-1..3, Q-KDS-1..4, Q-DM-A..D
 ## 8. Deploy note: the baseline migration
 
 `20261030000000_baseline` creates every table. On a **new** database, `prisma migrate deploy` is enough. On a database already built with `db push` (or from the kiosk branch), it would fail on tables that exist, and that database's shape must be checked against `main` first. Once it matches, mark the baseline as already done with `prisma migrate resolve --applied 20261030000000_baseline`, then run `migrate deploy`. `mygd_edge_db` does not match `main` today (section 7), so this does not apply to it until it has been aligned.
+
+## 9. Update, 2 Nov 2026: Sagar's facts and the new order of work
+
+**Facts**
+- Our system **replaces screenypro.com** on the 4 portrait screens.
+- Two non-smart LED TVs (static images from USB today, can't run ScreenyPro) may become **landscape drinks screens** that work like the portrait ones.
+- Separate **smart monitors show customers the waiting time**. The timer TV is for customers.
+- Kitchens have **printers and no screens**. Kitchen screens come later.
+- **Main priority:** finish Oli's 3 points and **host the system online**. Everything else comes after.
+
+**Priority 1 changes (done, not committed):** screens 1-6 with a saved orientation (5-6 landscape), one playlist per screen, a playlist picker in admin. `/boards` still redirects to ScreenyPro until the switchover.
+
+**Priority 3 re-scoped:** the time target shows on the **customer waiting-time monitor (`/display`)**, not a kitchen monitor. The receiver and `ExternalOrder` are unchanged. `/display` reads `ExternalOrder`, and `/kds` reuses the same data once kitchen screens exist. Customers see friendly states, not a red "late". The kitchen keeps its printed tickets.
+
+**Hosting (new):**
+- [ADR] **Context:** uploads need a persistent disk; the SSE broker is in memory, so it needs one long-running process; the DM outbox worker runs continuously; DM needs a public HTTPS endpoint with no redirects; service workers only run over HTTPS or on localhost, so offline playback depends on real HTTPS.
+- **Decision:** one cloud VPS running Docker (existing standalone `Dockerfile`), Postgres, a volume for `MEDIA_ROOT`, a reverse proxy with automatic TLS, and scheduled backups of the database and media.
+- **Consequence:** Vercel-style serverless does not fit today's design. We run one server, so backups and updates are ours. Moving to something larger later means moving the event broker and media storage out of the process.
+- **To build:** compose file, `prisma migrate deploy` on release, health check, backups and restore test, secrets in env only, a staging URL first. The fresh database starts from the baseline; `mygd_edge_db` is not migrated.
+
+**Order of work:** hosting and Priority 1 on real screens run alongside Priority 2 (needs the PDF) and Priority 3 (needs the answers below).
+
+**Open (Sagar/Oli):** which device runs the browser on each TV; who marks a DM order ready when the kitchen has no screen; what the timer monitors run today; whether till orders must appear on them; the target time; the VPS provider and domain; the checklist PDF.

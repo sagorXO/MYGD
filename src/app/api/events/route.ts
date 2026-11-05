@@ -2,13 +2,21 @@
 // GET /api/events?channel=kds|display|boards|pos|admin|all
 
 import { NextRequest } from "next/server";
+import { clientIp } from "@/lib/auth/client-ip";
+import { createConnectionGate } from "@/lib/connection-gate";
 import { eventBroker, formatSSEMessage } from "@/lib/events";
+
+// Comfortably above the store's screens and devices; a flood gets 503 instead of exhausting the process.
+const gate = createConnectionGate({ total: 500, perKey: 50 });
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const channel = url.searchParams.get("channel") || "all";
+
+  const release = gate.acquire(clientIp(req.headers));
+  if (!release) return new Response("Too many live connections.", { status: 503, headers: { "Retry-After": "30" } });
 
   const encoder = new TextEncoder();
 
@@ -57,6 +65,7 @@ export async function GET(req: NextRequest) {
     },
 
     cancel() {
+      release();
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
@@ -70,6 +79,7 @@ export async function GET(req: NextRequest) {
 
   // Handle client abort
   req.signal.addEventListener("abort", () => {
+    release();
     if (unsubscribe) {
       unsubscribe();
       unsubscribe = null;

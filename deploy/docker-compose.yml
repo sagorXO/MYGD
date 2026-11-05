@@ -1,0 +1,103 @@
+# MY GERMAN DÖNER — production stack for one server. See deploy/README.md.
+# Only Caddy is reachable from outside. The database and the app publish no ports.
+name: mygd
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "5" }
+
+x-db-env: &db-env
+  DATABASE_URL: postgresql://mygd:${DB_PASSWORD:?set DB_PASSWORD in deploy/.env}@db:5432/mygd
+  DIRECT_URL: postgresql://mygd:${DB_PASSWORD}@db:5432/mygd
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mygd
+      POSTGRES_DB: mygd
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mygd -d mygd"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    security_opt: ["no-new-privileges:true"]
+    <<: *logging
+
+  # Runs on every start, applies new migrations, then exits. The app waits for it.
+  migrate:
+    build: { context: .., target: tools }
+    image: mygd-tools:${IMAGE_TAG:-latest}
+    restart: "no"
+    environment: *db-env
+    depends_on:
+      db: { condition: service_healthy }
+    networks: [backend]
+    security_opt: ["no-new-privileges:true"]
+    <<: *logging
+
+  app:
+    build: { context: .., target: runner }
+    image: mygd-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in deploy/.env}
+      MEDIA_ROOT: /data/media
+      AD_MEDIA_MAX_BYTES: ${AD_MEDIA_MAX_BYTES:-}
+    volumes:
+      - media-data:/data/media
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    networks: [backend, web]
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    <<: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in deploy/.env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in deploy/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [app]
+    networks: [web]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    <<: *logging
+
+  # One-off jobs, never started by "up": docker compose run --rm tools npm run user:create -- ...
+  tools:
+    profiles: [tools]
+    image: mygd-tools:${IMAGE_TAG:-latest}
+    environment: *db-env
+    depends_on:
+      db: { condition: service_healthy }
+    networks: [backend]
+
+volumes:
+  db-data:
+  media-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  backend:
+    internal: true
+  web:

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error("[API /api/admin/reports] Error:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to generate BI report" },
+      { success: false, error: "Failed to generate BI report" },
       { status: 500 }
     );
   }

@@ -15,6 +15,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(res);
   } catch (err: any) {
     console.error("[API /api/terminal/print] Error:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "The request could not be completed." }, { status: 500 });
   }
 }
