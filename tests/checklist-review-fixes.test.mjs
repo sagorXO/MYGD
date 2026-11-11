@@ -157,20 +157,6 @@ test("repeated wrong PINs lock for longer and longer", () => {
 // --- old code paths -------------------------------------------------------------
 const source = (path) => readFileSync(path, "utf8");
 
-test("the staff hub reports failures on screen and has no loose types", () => {
-  const hub = source("src/modules/haccp/components/StaffHaccpHub.tsx");
-  assert.doesNotMatch(hub, /\balert\(/);
-  assert.doesNotMatch(hub, /\bany\b/);
-  assert.doesNotMatch(hub, /catch \(err\) \{\s*console\.error\(err\);\s*\}/);
-});
-
-test("the old checklist log records the PIN holder, not a name from the request", () => {
-  const route = source("src/app/api/checklists/log/route.ts");
-  assert.match(route, /requireOperator/);
-  assert.match(route, /completedBy: auth\.operator\.name/);
-  assert.doesNotMatch(route, /const \{[^}]*completedBy[^}]*\} = body/);
-});
-
 test("the task loader matches tasks by their text and checks temperature targets", () => {
   const loader = source("scripts/load-checklists.ts");
   assert.match(loader, /planItemSync/);

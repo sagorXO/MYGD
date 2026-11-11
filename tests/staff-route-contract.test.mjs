@@ -9,7 +9,7 @@ function walk(dir) {
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
 }
-const clientFiles = ["src/modules/haccp/components", "src/modules/checklists/components"].flatMap(walk).filter((f) => /\.tsx?$/.test(f));
+const clientFiles = ["src/modules/checklists/components", "src/modules/signage/ads/components"].flatMap(walk).filter((f) => /\.tsx?$/.test(f));
 
 function routeExists(apiPath) {
   // `${x}` segments in a client path match a [param] folder.
@@ -29,8 +29,7 @@ test("every API path the staff screens call exists", () => {
   assert.deepEqual(missing, []);
 });
 
-test("the staff screens don't call the old checklist route or show its old message", () => {
-  const hub = readFileSync("src/modules/haccp/components/StaffHaccpHub.tsx", "utf8");
-  assert.equal(hub.includes('fetch("/api/checklists"'), false);
-  assert.equal(hub.includes("HACCP Record logged"), false);
+test("/staff and /admin send people to the two systems", () => {
+  assert.match(readFileSync("src/app/staff/page.tsx", "utf8"), /redirect\("\/staff\/checklists"\)/);
+  assert.match(readFileSync("src/app/admin/page.tsx", "utf8"), /redirect\("\/admin\/ads"\)/);
 });

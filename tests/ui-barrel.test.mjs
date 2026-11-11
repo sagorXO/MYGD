@@ -16,11 +16,6 @@ test("barrel exports the whole kit", () => {
   for (const name of expected) assert.ok(ui[name], `missing export ${name}`);
 });
 
-test("gallery 404s in production", () => {
-  const src = readFileSync("src/app/dev/ui/page.tsx", "utf8");
-  assert.match(src, /process\.env\.NODE_ENV === "production"/);
-  assert.match(src, /notFound\(\)/);
-});
 
 test("DESIGN.md documents the new primary and both themes", () => {
   const md = readFileSync("DESIGN.md", "utf8");

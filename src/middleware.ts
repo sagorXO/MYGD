@@ -3,7 +3,7 @@
 // Fails closed: if SESSION_SECRET is missing or weak, protected routes are refused.
 import { NextResponse, type NextRequest } from "next/server";
 import { isOperatorActivity, OPERATOR_COOKIE, operatorCookie, refreshOperatorToken } from "@/lib/auth/operator";
-import { hiddenInProduction, requiredRole } from "@/lib/auth/policy";
+import { requiredRole } from "@/lib/auth/policy";
 import { hasRole } from "@/lib/auth/roles";
 import { readSessionSecret, verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 
@@ -20,8 +20,6 @@ function deny(req: NextRequest, status: 401 | 403 | 503, error: string) {
 }
 
 export async function middleware(req: NextRequest) {
-  if (hiddenInProduction(req.nextUrl.pathname, process.env)) return new NextResponse(null, { status: 404 });
-
   const access = requiredRole(req.nextUrl.pathname, req.method, req.nextUrl.searchParams);
   if (access === "PUBLIC") return NextResponse.next();
 

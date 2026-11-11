@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const { evaluateTemperature, HACCP_LIMITS, limitText } = await import("../src/modules/haccp/temperature.ts");
-const { HACCPService } = await import("../src/modules/haccp/haccp.service.ts");
 
 const cases = [
   ["CHILLED", 0, true], ["CHILLED", 5, true], ["CHILLED", 5.01, false], ["CHILLED", -0.1, false],
@@ -13,7 +12,6 @@ const cases = [
 for (const [target, value, ok] of cases) {
   test(`${target} ${value} °C is ${ok ? "in range" : "out of range"}`, () => {
     assert.equal(evaluateTemperature(target, value).isCompliant, ok);
-    assert.equal(HACCPService.validateTemperature(target, value).isCompliant, ok);
   });
 }
 
