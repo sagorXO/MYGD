@@ -52,58 +52,203 @@
   },
   "stationGuide": {
     "general": [
-      { "kind": "RULE", "title": "How to use this manual", "text": "Each station has an Opening, During Shift, Quiet Period and Closing structure.", "sourcePage": 2 },
-      { "kind": "RULE", "title": "How to use this manual", "text": "The Register employee is also the Shift Leader / Restaurant Manager and is responsible for overall shift control.", "sourcePage": 2 },
-      { "kind": "RULE", "title": "How to use this manual", "text": "During peaks, employees should remain on their assigned station unless the Shift Leader reassigns them.", "sourcePage": 2 },
-      { "kind": "RULE", "title": "How to use this manual", "text": "The operating principle is: Clean - Restock - Prepare - Organise.", "sourcePage": 2 },
-      { "kind": "RULE", "title": "How to use this manual", "text": "Current opening hours are 11:30-22:00 daily. The system should allow these hours to be changed without rewriting the checklists.", "sourcePage": 2 },
-      { "kind": "IMPORTANT", "text": "For tablet implementation, every task should record the responsible employee, completion status, completion time and - for critical tasks - Shift Leader verification.", "sourcePage": 2 },
-      { "kind": "FLOW", "title": "Standard product flow", "text": "ORDER → BREAD → SAUCE → SALAD → MEAT → PACKING / EXPEDITOR → CUSTOMER", "sourcePage": 2 },
-      { "kind": "FLOW", "title": "Final operating principle", "text": "CLEAN → RESTOCK → PREPARE → ORGANISE", "sourcePage": 20 },
-      { "kind": "RULE", "title": "Final operating principle", "text": "Every station should be ready before it is needed - not after it becomes empty.", "sourcePage": 20 }
+      {
+        "kind": "RULE",
+        "title": "How to use this manual",
+        "text": "Each station has an Opening, During Shift, Quiet Period and Closing structure.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "RULE",
+        "title": "How to use this manual",
+        "text": "The Register employee is also the Shift Leader / Restaurant Manager and is responsible for overall shift control.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "RULE",
+        "title": "How to use this manual",
+        "text": "During peaks, employees should remain on their assigned station unless the Shift Leader reassigns them.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "RULE",
+        "title": "How to use this manual",
+        "text": "The operating principle is: Clean - Restock - Prepare - Organise.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "RULE",
+        "title": "How to use this manual",
+        "text": "Current opening hours are 11:30-22:00 daily. The system should allow these hours to be changed without rewriting the checklists.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "For tablet implementation, every task should record the responsible employee, completion status, completion time and - for critical tasks - Shift Leader verification.",
+        "sourcePage": 2
+      },
+      {
+        "kind": "FLOW",
+        "title": "Standard product flow",
+        "text": "ORDER → BREAD → SAUCE → SALAD → MEAT → PACKING / EXPEDITOR → CUSTOMER",
+        "sourcePage": 2
+      },
+      {
+        "kind": "FLOW",
+        "title": "Final operating principle",
+        "text": "CLEAN → RESTOCK → PREPARE → ORGANISE",
+        "sourcePage": 20
+      },
+      {
+        "kind": "RULE",
+        "title": "Final operating principle",
+        "text": "Every station should be ready before it is needed - not after it becomes empty.",
+        "sourcePage": 20
+      }
     ],
     "RESTAURANT": [
-      { "kind": "IMPORTANT", "text": "All opening tasks must be completed before 11:30 under the current opening hours. If opening hours change, the deadline changes with them.", "sourcePage": 3 },
-      { "kind": "IMPORTANT", "text": "Inventory should use numeric quantity fields, not simple checkboxes. Recommended logic: Last Count → Current Count → Status (OK / LOW / OUT).", "sourcePage": 3 }
+      {
+        "kind": "IMPORTANT",
+        "text": "All opening tasks must be completed before 11:30 under the current opening hours. If opening hours change, the deadline changes with them.",
+        "sourcePage": 3
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "Inventory should use numeric quantity fields, not simple checkboxes. Recommended logic: Last Count → Current Count → Status (OK / LOW / OUT).",
+        "sourcePage": 3
+      }
     ],
     "SHIFT_LEADER": [
-      { "kind": "RESPONSIBILITY", "text": "The Shift Leader is responsible for the overall operation of the restaurant during their shift. They normally work at the Register and coordinate service, team performance, customer satisfaction, product quality, cash, systems, stock and cleanliness.", "sourcePage": 5 },
-      { "kind": "IMPORTANT", "text": "During quiet periods, the Shift Leader may also act as Expeditor. During busy periods, a separate employee should take over the Expeditor position.", "sourcePage": 6 },
-      { "kind": "STANDARD", "text": "The Shift Leader should always know the current situation in the restaurant: orders waiting, staffing, stock, cleanliness and customer issues.", "sourcePage": 7 }
+      {
+        "kind": "RESPONSIBILITY",
+        "text": "The Shift Leader is responsible for the overall operation of the restaurant during their shift. They normally work at the Register and coordinate service, team performance, customer satisfaction, product quality, cash, systems, stock and cleanliness.",
+        "sourcePage": 5
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "During quiet periods, the Shift Leader may also act as Expeditor. During busy periods, a separate employee should take over the Expeditor position.",
+        "sourcePage": 6
+      },
+      {
+        "kind": "STANDARD",
+        "text": "The Shift Leader should always know the current situation in the restaurant: orders waiting, staffing, stock, cleanliness and customer issues.",
+        "sourcePage": 7
+      }
     ],
     "MEAT_HOT": [
-      { "kind": "RESPONSIBILITY", "text": "The Meat / Hot Station employee is responsible for ensuring a continuous supply of correctly prepared, hot, high-quality meat throughout service. The station must never run out of ready-to-serve meat.", "sourcePage": 8 },
-      { "kind": "FLOW", "title": "Continuous production flow", "text": "READY BATCH → NEXT BATCH IN PRODUCTION → BACKUP STOCK AVAILABLE", "sourcePage": 8 },
-      { "kind": "IMPORTANT", "text": "The Meat / Hot Station employee reports low stock but is not responsible for ordering unless specifically authorised.", "sourcePage": 9 },
-      { "kind": "STANDARD", "text": "The Meat / Hot Station must never run out of ready-to-serve meat during service. The next batch must be started before the current batch runs out.", "sourcePage": 9 }
+      {
+        "kind": "RESPONSIBILITY",
+        "text": "The Meat / Hot Station employee is responsible for ensuring a continuous supply of correctly prepared, hot, high-quality meat throughout service. The station must never run out of ready-to-serve meat.",
+        "sourcePage": 8
+      },
+      {
+        "kind": "FLOW",
+        "title": "Continuous production flow",
+        "text": "READY BATCH → NEXT BATCH IN PRODUCTION → BACKUP STOCK AVAILABLE",
+        "sourcePage": 8
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "The Meat / Hot Station employee reports low stock but is not responsible for ordering unless specifically authorised.",
+        "sourcePage": 9
+      },
+      {
+        "kind": "STANDARD",
+        "text": "The Meat / Hot Station must never run out of ready-to-serve meat during service. The next batch must be started before the current batch runs out.",
+        "sourcePage": 9
+      }
     ],
     "KITCHEN_PREP": [
-      { "kind": "RESPONSIBILITY", "text": "The Kitchen / Prep & Utility Team Member prepares fresh ingredients, keeps production stations supplied, prepares selected kitchen products, manages dishwashing and maintains cleanliness and hygiene throughout the kitchen.", "sourcePage": 10 },
-      { "kind": "IMPORTANT", "text": "During strong peaks, Fries should become a dedicated station whenever staffing allows.", "sourcePage": 11 },
-      { "kind": "IMPORTANT", "text": "Dirty dishes must not be allowed to build up. During quiet periods, dishwashing should be brought completely up to date before the next peak.", "sourcePage": 12 },
-      { "kind": "STANDARD", "text": "All essential preparation must be completed before opening.", "sourcePage": 12 },
-      { "kind": "STANDARD", "text": "No critical ingredient should run out during service.", "sourcePage": 12 },
-      { "kind": "STANDARD", "text": "The kitchen must remain clean and organised throughout the shift.", "sourcePage": 12 },
-      { "kind": "STANDARD", "text": "Low stock must be identified before it becomes Out of Stock.", "sourcePage": 12 }
+      {
+        "kind": "RESPONSIBILITY",
+        "text": "The Kitchen / Prep & Utility Team Member prepares fresh ingredients, keeps production stations supplied, prepares selected kitchen products, manages dishwashing and maintains cleanliness and hygiene throughout the kitchen.",
+        "sourcePage": 10
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "During strong peaks, Fries should become a dedicated station whenever staffing allows.",
+        "sourcePage": 11
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "Dirty dishes must not be allowed to build up. During quiet periods, dishwashing should be brought completely up to date before the next peak.",
+        "sourcePage": 12
+      },
+      {
+        "kind": "STANDARD",
+        "text": "All essential preparation must be completed before opening.",
+        "sourcePage": 12
+      },
+      {
+        "kind": "STANDARD",
+        "text": "No critical ingredient should run out during service.",
+        "sourcePage": 12
+      },
+      {
+        "kind": "STANDARD",
+        "text": "The kitchen must remain clean and organised throughout the shift.",
+        "sourcePage": 12
+      },
+      {
+        "kind": "STANDARD",
+        "text": "Low stock must be identified before it becomes Out of Stock.",
+        "sourcePage": 12
+      }
     ],
     "ASSEMBLY": [
-      { "kind": "RESPONSIBILITY", "text": "The Preparation / Assembly Team Member is responsible for correctly assembling MYGD products according to the order, recipe standards and customer modifications. The employee checks the individual product; the Expeditor / Shift Leader checks the complete customer order.", "sourcePage": 13 },
-      { "kind": "EXAMPLE", "title": "Special orders / modifications", "text": "Examples: NO ONION, NO TOMATO, NO CUCUMBER, NO SAUCE, EXTRA SAUCE, EXTRA MEAT, NO CHEESE, EXTRA CHEESE.", "sourcePage": 13 },
-      { "kind": "IMPORTANT", "text": "The Assembly employee checks the individual product. The Expeditor / Shift Leader performs the final check of the complete customer order.", "sourcePage": 14 },
-      { "kind": "STANDARD", "text": "ORDER + MYGD RECIPE + CUSTOMER MODIFICATIONS", "sourcePage": 15 },
-      { "kind": "STANDARD", "text": "No missing ingredients", "sourcePage": 15 },
-      { "kind": "STANDARD", "text": "No incorrect ingredients or sauces", "sourcePage": 15 },
-      { "kind": "STANDARD", "text": "No ignored modifications", "sourcePage": 15 },
-      { "kind": "STANDARD", "text": "No incorrect portions", "sourcePage": 15 },
-      { "kind": "STANDARD", "text": "Station remains CLEAN - STOCKED - ORGANISED - READY", "sourcePage": 15 }
+      {
+        "kind": "RESPONSIBILITY",
+        "text": "The Preparation / Assembly Team Member is responsible for correctly assembling MYGD products according to the order, recipe standards and customer modifications. The employee checks the individual product; the Expeditor / Shift Leader checks the complete customer order.",
+        "sourcePage": 13
+      },
+      {
+        "kind": "EXAMPLE",
+        "title": "Special orders / modifications",
+        "text": "Examples: NO ONION, NO TOMATO, NO CUCUMBER, NO SAUCE, EXTRA SAUCE, EXTRA MEAT, NO CHEESE, EXTRA CHEESE.",
+        "sourcePage": 13
+      },
+      {
+        "kind": "IMPORTANT",
+        "text": "The Assembly employee checks the individual product. The Expeditor / Shift Leader performs the final check of the complete customer order.",
+        "sourcePage": 14
+      },
+      {
+        "kind": "STANDARD",
+        "text": "ORDER + MYGD RECIPE + CUSTOMER MODIFICATIONS",
+        "sourcePage": 15
+      },
+      {
+        "kind": "STANDARD",
+        "text": "No missing ingredients",
+        "sourcePage": 15
+      },
+      {
+        "kind": "STANDARD",
+        "text": "No incorrect ingredients or sauces",
+        "sourcePage": 15
+      },
+      {
+        "kind": "STANDARD",
+        "text": "No ignored modifications",
+        "sourcePage": 15
+      },
+      {
+        "kind": "STANDARD",
+        "text": "No incorrect portions",
+        "sourcePage": 15
+      },
+      {
+        "kind": "STANDARD",
+        "text": "Station remains CLEAN - STOCKED - ORGANISED - READY",
+        "sourcePage": 15
+      }
     ]
   },
   "knownGaps": [
     "Critical tasks are not marked in the PDF; critical flags here are suggestions",
     "No Bread Station or stand-alone Packing/Expeditor checklist",
     "Mid Shift and Evening are named on page 16 but have no task lists",
-    "MYGD target production time has no number",
-    "MYGD Points is undefined"
+    "MYGD target production time has no number"
   ],
   "checklists": [
     {
@@ -1026,32 +1171,28 @@
           "label": "Complete daily MYGD Points evaluation",
           "kind": "CHECK",
           "critical": false,
-          "sourcePage": 7,
-          "needsReview": "MYGD Points is not defined in the PDF"
+          "sourcePage": 7
         },
         {
           "position": 2,
           "label": "Recognise strong employee performance",
           "kind": "CHECK",
           "critical": false,
-          "sourcePage": 7,
-          "needsReview": "MYGD Points is not defined in the PDF"
+          "sourcePage": 7
         },
         {
           "position": 3,
           "label": "Record improvement opportunities",
           "kind": "CHECK",
           "critical": false,
-          "sourcePage": 7,
-          "needsReview": "MYGD Points is not defined in the PDF"
+          "sourcePage": 7
         },
         {
           "position": 4,
           "label": "Give immediate feedback where appropriate",
           "kind": "CHECK",
           "critical": false,
-          "sourcePage": 7,
-          "needsReview": "MYGD Points is not defined in the PDF"
+          "sourcePage": 7
         }
       ]
     },
