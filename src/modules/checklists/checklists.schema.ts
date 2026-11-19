@@ -1,5 +1,6 @@
 // MY GERMAN DÖNER — Checklist API input validation.
 import { z } from "zod";
+import type { StationGuide } from "./board.types";
 
 const text = z.string().trim().max(500);
 const CLOCK = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -37,3 +38,16 @@ export const HaccpReadingSchema = z.object({
   temperature: Temperature,
   correctiveAction: text.optional(),
 });
+
+// Station guide text from Oliver's PDF. Checked when loaded and again when read back from settings.
+export const StationGuideSchema: z.ZodType<StationGuide> = z.record(
+  z.string().regex(/^(general|[A-Z][A-Z0-9_]{0,40})$/),
+  z.array(
+    z.object({
+      kind: z.enum(["RESPONSIBILITY", "IMPORTANT", "STANDARD", "RULE", "FLOW", "EXAMPLE"]),
+      title: z.string().min(1).optional(),
+      text: z.string().min(1),
+      sourcePage: z.number().int().min(1),
+    })
+  )
+);

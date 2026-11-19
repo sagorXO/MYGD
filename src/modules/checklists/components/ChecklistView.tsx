@@ -5,6 +5,7 @@ import { Badge, Button, ProgressBar } from "@/ui";
 import { cn } from "@/lib/cn";
 import { canFinish, isDone, type EntryInput } from "../rules";
 import type { Board, BoardSection, Phase } from "../board.types";
+import { StationGuideCard } from "./StationGuideCard";
 import { TaskRow } from "./TaskRow";
 import { clock, itemsFor, PHASE_LABEL, PHASES, progressFor, runFor, sectionsFor, stations } from "./helpers";
 
@@ -90,6 +91,8 @@ export function ChecklistView({ board, station, phase, onStation, onPhase, onAct
             <ProgressBar value={(p.done / p.total) * 100} label={`${p.done} of ${p.total} tasks done`} tone="success" />
           </div>
         )}
+
+        <StationGuideCard lines={board.stationGuide[station] ?? []} general={board.stationGuide.general ?? []} />
 
         {sections.map((s) => {
           if (s.mode === "TICK") {

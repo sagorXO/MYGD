@@ -1,0 +1,674 @@
+=====PAGE 1=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 1
+MYGD
+OPERATIONS & STATION CHECKLISTS
+Restaurant Operations Manual
+Current opening hours: 11:30-22:00 daily
+Opening hours may be adjusted at any time. All opening tasks must be completed before the current opening time.
+Version: 24 October 2026
+For staff training, shift control and tablet implementation
+=====PAGE 2=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 2
+1. How to Use This Manual
+• Each station has an Opening, During Shift, Quiet Period and Closing structure.
+• The Register employee is also the Shift Leader / Restaurant Manager and is responsible for overall shift control.
+• During peaks, employees should remain on their assigned station unless the Shift Leader reassigns them.
+• The operating principle is: Clean - Restock - Prepare - Organise.
+• Current opening hours are 11:30-22:00 daily. The system should allow these hours to be changed without rewriting the checklists.
+IMPORTANT: For tablet implementation, every task should record the responsible employee, completion status, completion time
+and - for critical tasks - Shift Leader verification.
+STANDARD PRODUCT FLOW
+ORDER → BREAD → SAUCE → SALAD → MEAT → PACKING / EXPEDITOR →
+CUSTOMER
+=====PAGE 3=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 3
+2. Restaurant Opening Checklist
+IMPORTANT: All opening tasks must be completed before 11:30 under the current opening hours. If opening hours change, the
+deadline changes with them.
+Restaurant
+□ Open the restaurant
+□ Open windows for ventilation
+□ Turn on all lights
+□ Turn on lights in the customer drinks refrigerators
+□ Turn on the air conditioning and then close all doors and windows
+□ Start the music - Spotify: Chill Out Playlist
+□ Check customer area, entrance and outside area are clean and ready
+Equipment
+□ Turn on all required equipment
+□ Prepare the grills
+□ Turn on and prepare the fryer
+□ Turn on and prepare the Konvektomat
+□ Prepare the post-mix machine
+□ Check drinks machines
+□ Check refrigerators are operating correctly
+□ Check salad bar refrigeration
+□ Report any equipment fault immediately
+Preparation
+□ Fully stock the salad bar
+□ Fully stock the sauce bar
+□ Refill the drinks refrigerator
+□ Prepare customer tables
+□ Refill napkins, cup lids, straws and customer supplies
+□ Refill takeaway and delivery packaging
+□ Prepare bread station
+□ Prepare meat for first service
+□ Prepare fries station
+□ Prepare packing / expeditor station
+Morning Inventory Check
+IMPORTANT: Inventory should use numeric quantity fields, not simple checkboxes. Recommended logic: Last Count → Current
+Count → Status (OK / LOW / OUT).
+□ Check meat stock
+□ Check bread stock
+□ Check wraps
+□ Check pizza bases
+□ Check burger buns
+□ Check vegetables and salad ingredients
+□ Check fries and side products
+=====PAGE 4=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 4
+□ Check sauces and dairy
+□ Check pizza ingredients
+□ Check drinks and post-mix stock
+□ Check packaging and cleaning supplies
+□ Review LOW / OUT OF STOCK list and report critical shortages to Shift Leader
+=====PAGE 5=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 5
+3. Register / Shift Leader
+Main Responsibility
+The Shift Leader is responsible for the overall operation of the restaurant during their shift. They normally work at the Register and
+coordinate service, team performance, customer satisfaction, product quality, cash, systems, stock and cleanliness.
+OPENING CHECKLIST
+Cash Register
+□ Open the cash register
+□ Count and verify the cash float
+□ Ensure sufficient change is available
+□ Check card payment terminal
+□ Check receipt printer
+□ Start POS system
+□ Check correct menu and prices are active
+Systems
+□ Open Foody
+□ Open Wolt
+□ Open all other delivery platforms
+□ Check internet connection
+□ Check all order printers
+□ Check kitchen display screens / KDS if available
+□ Check orders are correctly transmitted to the kitchen
+Restaurant Readiness
+□ Confirm all stations are ready
+□ Check Bread Station
+□ Check Sauce Station
+□ Check Salad Bar
+□ Check Meat / Hot Station
+□ Check Fries Station
+□ Check Packing / Expeditor Station
+□ Check drinks refrigerator
+□ Check packaging stock
+□ Check napkins, lids and straws
+□ Check customer tables and dining area
+□ Check cleanliness throughout the restaurant
+Team Briefing
+□ Confirm all employees are present
+□ Assign each employee to a station
+□ Explain expected busy periods
+□ Explain out-of-stock products
+□ Explain special promotions
+□ Confirm break schedule
+□ Remind staff about Clean As You Go
+□ Confirm opening readiness
+=====PAGE 6=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 6
+DURING THE SHIFT
+Customer Service
+□ Welcome customers in a friendly manner
+□ Take orders accurately
+□ Enter all special requests correctly into the POS
+□ Process payments correctly
+□ Handle complaints professionally
+□ Make sure customers receive the correct order
+□ Maintain excellent customer service
+Order Coordination
+□ Ensure special requests are correctly entered
+□ Ensure kitchen staff can clearly see modifications
+□ Monitor order sequence
+□ Ensure no order is forgotten
+□ Monitor waiting times
+□ Prioritise delivery orders correctly
+□ Identify dine-in, takeaway and delivery orders correctly
+Expeditor / Final Order Control
+□ Check order number
+□ Check number of products
+□ Check special requests
+□ Check fries / sides
+□ Check drinks
+□ Check sauces / extras
+□ Check packaging
+□ Confirm dine-in / takeaway / delivery
+IMPORTANT: During quiet periods, the Shift Leader may also act as Expeditor. During busy periods, a separate employee
+should take over the Expeditor position.
+Team Management
+□ Coordinate the team
+□ Monitor all workstations
+□ Keep employees on assigned stations during peaks
+□ Support employees when required
+□ Organise workflow
+□ Monitor production speed and waiting times
+□ Organise breaks
+□ Assign quiet-period tasks
+□ Prevent unnecessary standing / waiting
+□ Reassign employees when operationally required
+Stock / Cash / Quality
+□ Review daily inventory check
+□ Monitor drinks, packaging and cleaning supplies
+=====PAGE 7=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 7
+□ Monitor bread, meat, sauces, salad and fries
+□ Review Low Stock and Out of Stock lists
+□ Monitor cash float and change
+□ Record cash discrepancies immediately
+□ Check product presentation and portion sizes
+□ Check temperatures and freshness
+□ Ensure MYGD standards are followed
+MYGD Points
+□ Complete daily MYGD Points evaluation
+□ Recognise strong employee performance
+□ Record improvement opportunities
+□ Give immediate feedback where appropriate
+CLOSING CHECKLIST
+□ Close cash register
+□ Count cash drawer
+□ Complete daily cash reconciliation
+□ Record any discrepancy
+□ Secure cash
+□ Close Foody / Wolt / other delivery systems
+□ Log out of POS
+□ Confirm all orders are completed
+□ Confirm all stations are cleaned
+□ Confirm all food is stored correctly
+□ Check refrigerators
+□ Check salad bar, sauce station, bread station, meat/hot station, fries and packing area
+□ Check dishwashing and customer area
+□ Check rubbish has been removed
+□ Check floors
+□ Record maintenance issues and stock shortages
+□ Confirm restaurant is prepared for next day
+□ Turn off required equipment and music
+□ Check windows and doors
+□ Activate alarm
+□ Lock restaurant
+PERFORMANCE STANDARD
+The Shift Leader should always know the current situation in the restaurant: orders waiting, staffing, stock, cleanliness and
+customer issues.
+=====PAGE 8=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 8
+4. Meat / Hot Station
+The Meat / Hot Station employee is responsible for ensuring a continuous supply of correctly prepared, hot, high-quality meat
+throughout service. The station must never run out of ready-to-serve meat.
+OPENING CHECKLIST
+Meat Stock
+□ Check chicken stock
+□ Check beef stock
+□ Check other meat products required for the day
+□ Compare stock with expected sales
+□ Inform Shift Leader immediately if stock is low
+Konvektomat / Hot Equipment
+□ Switch on Konvektomat
+□ Check equipment is functioning correctly
+□ Prepare first meat batch
+□ Check correct programme / settings
+□ Prepare hot holding area
+□ Check required temperatures
+□ Prepare clean GN containers
+□ Prepare serving / portioning utensils
+Workstation
+□ Clean and sanitise workstation
+□ Prepare cutting board if required
+□ Prepare knives and tongs
+□ Prepare scales / portioning tools if used
+□ Ensure sanitiser and clean cloths are available
+□ Make sure enough meat is ready for opening
+DURING THE SHIFT
+Meat Production
+□ Produce meat according to MYGD procedure
+□ Follow correct Konvektomat programme
+□ Maintain correct food temperature
+□ Keep a continuous supply of meat ready
+□ Follow MYGD portion standards
+□ Maintain consistent portions
+□ Maintain product quality
+□ Avoid overproduction
+□ Minimise waste
+Continuous Production Flow
+READY BATCH → NEXT BATCH IN PRODUCTION → BACKUP STOCK AVAILABLE
+□ Monitor chicken, beef and other meat stock
+=====PAGE 9=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 9
+□ Estimate upcoming requirement
+□ Prepare next batch before current batch runs out
+□ Inform Shift Leader of low stock
+□ Record unusual waste
+IMPORTANT: The Meat / Hot Station employee reports low stock but is not responsible for ordering unless specifically
+authorised.
+Workstation / Quiet Period
+□ Keep station clean throughout service
+□ Remove food waste immediately
+□ Clean utensils regularly
+□ Replace dirty GN containers
+□ Keep equipment handles clean
+□ Keep floor clean and dry
+□ Check next meat batch
+□ Clean Konvektomat exterior
+□ Prepare clean GN containers
+□ Assist Fries Station only when station remains covered
+CLOSING CHECKLIST
+□ Check remaining meat
+□ Record remaining stock and waste
+□ Store usable product according to food safety procedure
+□ Dispose of product where required
+□ Clean Konvektomat
+□ Clean hot holding equipment
+□ Clean GN containers
+□ Clean knives, tongs and cutting boards
+□ Clean and sanitise workstation
+□ Clean shelves and handles
+□ Remove food waste and rubbish
+□ Sweep and mop floor
+□ Leave station ready for next day
+PERFORMANCE STANDARD
+The Meat / Hot Station must never run out of ready-to-serve meat during service. The next batch must be started before the current
+batch runs out.
+=====PAGE 10=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 10
+5. Kitchen / Prep & Utility
+The Kitchen / Prep & Utility Team Member prepares fresh ingredients, keeps production stations supplied, prepares selected
+kitchen products, manages dishwashing and maintains cleanliness and hygiene throughout the kitchen.
+OPENING CHECKLIST
+Fresh Preparation
+□ Wash all required vegetables
+□ Prepare and cut lettuce
+□ Prepare tomatoes
+□ Prepare cucumbers
+□ Prepare onions
+□ Prepare red cabbage
+□ Prepare additional salad ingredients
+□ Fill salad GN containers
+□ Prepare backup salad containers
+□ Check freshness and quality
+□ Label and date prepared products where required
+Sauce Preparation
+□ Prepare all required sauces
+□ Fill sauce containers
+□ Fill Sauce Bar
+□ Prepare backup sauces
+□ Check sauce consistency and quality
+□ Label and date sauces where required
+□ Refrigerate backup sauces correctly
+Salad & Sauce Bar
+□ Check Salad Bar refrigeration and temperature
+□ Fully stock Salad Bar
+□ Fully stock Sauce Bar
+□ Prepare clean serving utensils
+□ Ensure backup ingredients are available
+□ Clean and sanitise the entire station
+Fries Station
+□ Check fryer
+□ Switch on and preheat fryer
+□ Check oil level and condition
+□ Prepare French fries stock
+□ Prepare fryer baskets
+□ Prepare salt / seasoning
+□ Prepare fries packaging
+□ Check portion standard
+□ Ensure station is clean and ready
+=====PAGE 11=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 11
+Pizza Station
+□ Check pizza oven
+□ Switch on and preheat pizza oven
+□ Check pizza bases, sauce, cheese and toppings
+□ Prepare pizza ingredients and utensils
+□ Prepare pizza packaging
+□ Ensure pizza station is clean and ready
+Frozen Drinks
+□ Check frozen drinks machine
+□ Ensure machine is operating correctly
+□ Check product level
+□ Refill if required
+□ Check cups, lids and straws
+□ Clean dispensing area
+General Kitchen
+□ Clean and sanitise all work surfaces
+□ Prepare chopping boards, knives and utensils
+□ Prepare clean GN containers
+□ Check cleaning cloths and sanitiser
+□ Check rubbish bins and dishwashing area
+□ Ensure floors are clean and dry
+□ Ensure kitchen is fully prepared before service
+DURING THE SHIFT
+Production & Restocking
+□ Monitor Salad Bar continuously
+□ Refill ingredients before they run out
+□ Prepare additional salad when required
+□ Maintain backup GN containers
+□ Refill sauces before they run out
+□ Prepare additional sauce when required
+□ Cook fries to MYGD standard
+□ Prepare pizzas to MYGD standard
+□ Prepare frozen drinks to order
+□ Monitor kitchen stock and identify low stock early
+IMPORTANT: During strong peaks, Fries should become a dedicated station whenever staffing allows.
+Dishwashing
+□ Wash dirty GN containers
+□ Wash knives, chopping boards and utensils
+□ Wash preparation equipment
+□ Keep sink area clean
+□ Keep dishwasher loaded and operating when required
+□ Return clean equipment to correct station
+=====PAGE 12=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 12
+IMPORTANT: Dirty dishes must not be allowed to build up. During quiet periods, dishwashing should be brought completely up
+to date before the next peak.
+Quiet Period Priority
+• 1. RESTOCK - Salad Bar, Sauce Bar, fries, pizza ingredients, frozen drinks, packaging
+• 2. PREPARE - backup salad, vegetables, sauces, GN containers, next peak
+• 3. CLEAN - dishes, preparation surfaces, fryers, pizza station, refrigerators, floors, rubbish
+• 4. ORGANISE - refrigerators, FIFO, dates, dry storage, frozen stock, low-stock reporting
+CLOSING CHECKLIST
+□ Store all food correctly
+□ Cover and refrigerate salads, vegetables and sauces
+□ Label products where required
+□ Follow FIFO
+□ Dispose of food according to MYGD procedure
+□ Record unusual waste
+□ Wash GN containers and utensils
+□ Clean Salad Bar and Sauce Bar
+□ Clean fryer area and baskets
+□ Manage / filter oil according to procedure
+□ Store pizza ingredients correctly
+□ Clean pizza area and oven according to procedure
+□ Clean frozen drinks dispensing area
+□ Complete all dishwashing
+□ Clean dishwasher and sinks
+□ Clean and sanitise all work surfaces
+□ Organise refrigerators and storage
+□ Empty rubbish bins
+□ Sweep and mop floor
+□ Ensure kitchen is prepared for next day
+PERFORMANCE STANDARD
+• All essential preparation must be completed before opening.
+• No critical ingredient should run out during service.
+• The kitchen must remain clean and organised throughout the shift.
+• Low stock must be identified before it becomes Out of Stock.
+=====PAGE 13=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 13
+6. Preparation / Assembly Team Member
+The Preparation / Assembly Team Member is responsible for correctly assembling MYGD products according to the order, recipe
+standards and customer modifications. The employee checks the individual product; the Expeditor / Shift Leader checks the
+complete customer order.
+OPENING CHECKLIST
+Workstation
+□ Clean and sanitise workstation
+□ Prepare clean GN containers
+□ Prepare utensils, tongs and portioning tools
+□ Prepare knives where required
+□ Check cutting boards
+□ Ensure cleaning cloths and sanitiser are available
+□ Check packaging required at the station
+Ingredients & Order System
+□ Check all required ingredients
+□ Check Salad Bar and Sauce Bar
+□ Check cheese and toppings
+□ Check Döner, Dürüm, Burger and Bowl ingredients
+□ Check required pizza ingredients where applicable
+□ Check backup ingredients
+□ Report missing products to Shift Leader
+□ Check order screen / KDS
+□ Check printer if used
+□ Confirm special-order modifications are visible
+DURING THE SHIFT
+Food Preparation
+□ Prepare every product according to the customer order
+□ Follow MYGD recipes
+□ Follow standard portion sizes
+□ Follow correct production sequence
+□ Read all customer modifications before starting the product
+□ Assemble Döner correctly
+□ Roll Dürüm correctly and tightly
+□ Prepare Burgers according to MYGD standards
+□ Prepare Bowls according to MYGD standards
+□ Prepare Pizza according to assigned workflow
+Special Orders / Modifications
+• Examples: NO ONION, NO TOMATO, NO CUCUMBER, NO SAUCE, EXTRA SAUCE, EXTRA MEAT, NO CHEESE, EXTRA
+CHEESE.
+□ Read the complete modification before assembly
+□ Keep modified products clearly identifiable
+□ Never rely only on verbal communication
+=====PAGE 14=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 14
+□ Ask Shift Leader if the order is unclear
+□ Never guess a customer modification
+Product Quality Check
+□ Correct product
+□ Correct bread / wrap / bun / bowl
+□ Correct protein
+□ Correct ingredients
+□ Correct sauces
+□ Correct customer modifications
+□ Correct portion
+□ Correct presentation
+□ Correct individual packaging
+IMPORTANT: The Assembly employee checks the individual product. The Expeditor / Shift Leader performs the final check of
+the complete customer order.
+Speed & Communication
+□ Begin orders immediately when they appear
+□ Follow the correct order sequence
+□ Work efficiently without sacrificing quality
+□ Complete products within MYGD target production time
+□ Communicate immediately when production is delayed
+□ Avoid unnecessary movement away from the station
+□ Communicate bread needs to Bread Station
+□ Communicate meat needs and extra-meat orders to Meat / Hot Station
+□ Communicate missing ingredients to Kitchen Crew
+□ Hand completed products to the correct order / Expeditor
+□ Inform Shift Leader about low stock, equipment problems or unclear orders
+Stock & Cleanliness
+□ Monitor ingredients continuously
+□ Refill before containers are empty
+□ Keep backup ingredients ready
+□ Inform Kitchen / Prep before backup stock is exhausted
+□ Keep workstation clean throughout shift
+□ Clean spills immediately
+□ Clean utensils regularly
+□ Replace dirty utensils and GN containers
+□ Remove food waste
+□ Keep floor clean and dry
+□ Keep ingredients organised
+QUIET PERIOD
+• RESTOCK - sauces, salad, toppings, cheese, wraps/buns, packaging
+• PREPARE - backup ingredients, clean GN containers, next peak
+• CLEAN - workstation, utensils, GN containers, shelves, handles, floor, rubbish
+• SUPPORT - Packing / Expeditor, Kitchen / Prep, dishwashing, restocking, Bread Station if assigned
+=====PAGE 15=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 15
+CLOSING CHECKLIST
+□ Check remaining ingredients
+□ Store all ingredients correctly
+□ Cover, label and date products where required
+□ Refrigerate products
+□ Dispose of unusable food correctly
+□ Report unusual waste
+□ Empty and wash GN containers
+□ Clean utensils, knives, tongs and cutting boards
+□ Clean and sanitise workstation
+□ Clean shelves and handles
+□ Empty rubbish
+□ Sweep and mop floor
+□ Leave station ready for next shift
+PERFORMANCE STANDARD
+ORDER + MYGD RECIPE + CUSTOMER MODIFICATIONS
+• No missing ingredients
+• No incorrect ingredients or sauces
+• No ignored modifications
+• No incorrect portions
+• Station remains CLEAN - STOCKED - ORGANISED - READY
+=====PAGE 16=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 16
+7. Tablet Implementation Structure
+• Opening - tasks required before the current opening time.
+• Mid Shift - checks after lunch and preparation for dinner.
+• Quiet Period - task queue used whenever there are no active orders.
+• Evening / Closing - dinner preparation and closing duties.
+• Inventory - numeric quantities with LOW / OUT alerts.
+• Shift Leader Dashboard - status by station, incomplete critical tasks and verification.
+Recommended Task Fields
+□ Task name
+□ Station / responsible role
+□ Checkbox / status
+□ Time or deadline where necessary
+□ Employee name / initials
+□ Comment / issue field
+□ Shift Leader verification for critical tasks
+Recommended Statuses
+• Not Started
+• In Progress
+• Completed
+• Verified
+• Issue / Blocked
+IMPORTANT: The opening time should be a configurable setting. The checklist deadline should automatically follow the active
+opening time rather than being hard-coded to 11:30.
+=====PAGE 17=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 17
+Appendix A. Current Inventory Snapshot
+Snapshot provided for setup of the inventory list. These values are operational data and should remain editable in the tablet system.
+Meat / Protein
+Product Current Stock
+Chicken 6
+Beef 3
+Veggie Chicken 2
+Chicken Patties 7 packs
+Beef Patties 1 box
+Chicken Nuggets 9 bags + 4 boxes
+Meatballs 5 bags
+Chicken Wings 4 bags
+Bread / Wraps / Pizza Bases
+Product Current Stock
+Berlin Bread 6 boxes
+Burger Buns 6 bags
+Square Burger Buns 9 bags
+Wraps 4
+Big Pizza Bases 5 boxes
+Small Pizza Bases 3 boxes
+Vegetables / Salad
+Product Current Stock
+Lettuce 4 boxes
+Tomatoes 2 boxes
+Cucumbers 2 boxes
+Jalapeño Pickles 1 box
+Red Onion 2 boxes
+Red Cabbage 2 boxes
+Mushrooms OUT
+Fries / Sides
+Product Current Stock
+Fries 5 boxes
+Sweet Potato Fries OUT
+Onion Rings 2 boxes
+Rice 1 bag
+Mozzarella Sticks 2 boxes
+=====PAGE 18=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 18
+Sauces / Dairy
+Product Current Stock
+Mayonnaise 2 boxes
+Ketchup 2 boxes
+BBQ Sauce Bucket OUT
+Hollandaise Sauce 1 box
+Sour Cream 1 box
+Mustard OUT
+Yoghurt 5 boxes
+Feta Cheese 10 boxes
+Pizza Sauce 5
+Pizza Ingredients
+Product Current Stock
+Tomato Sauce 6 bags
+Salami 1 pack
+Mushrooms OUT
+Mozzarella Cheese OUT
+Halloumi 6 bags
+Gorgonzola 2
+Edam Cheese 8
+Parmesan 3
+German Products / Sausages
+Product Current Stock
+Original 1
+Pikante 1
+Cheese 1 box
+Leberkäse OUT
+Gutmann Bratwurst 8
+Weißwurst OUT
+Post-Mix
+Product Current Stock
+Coca-Cola Normal 1
+Sprite Zero 1
+Sprite 2
+Fanta 1
+Gas 1
+Cold Drinks
+Product Current Stock
+=====PAGE 19=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 19
+Ayran 2 boxes
+White Wine 15 bottles
+Red Wine 5 bottles
+Red Bull OUT
+Red Bull Zero 1 box
+Coco Loco 1 box
+Kombucha Ginger 1 box
+Kombucha Berries 1 box
+Kombucha Lemon OUT
+Kombucha Hibiscus OUT
+Water 43 boxes
+Soft Drinks / Beer
+Product Current Stock
+Fanta Zero 2 packs
+Fanta Lemon 1 pack
+Fanta Normal 1 pack
+Ice Tea Peach 3 packs
+Ice Tea Peach Zero 1 pack
+Ice Tea Lemon OUT
+Apple Juice 3 packs
+Orange Juice 5 packs
+Coca-Cola Zero 1 pack
+Coca-Cola Original 3 packs
+Corona Original OUT
+Corona Zero 1 box
+HB Original OUT
+HB Dark OUT
+HB Alcohol Free 2 boxes
+Carlsberg 1/2 box
+Carlsberg Alcohol Free 3 packs
+Keo OUT
+=====PAGE 20=====
+MYGD | OPERATIONS & STATION CHECKLISTS
+MYGD | Current opening hours: 11:30-22:00 daily | Hours may be adjusted | Page 20
+Final Operating Principle
+CLEAN → RESTOCK → PREPARE → ORGANISE
+Every station should be ready before it is needed - not after it becomes empty.

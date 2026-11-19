@@ -5,10 +5,12 @@ import { ZodError } from "zod";
 import { eventBroker } from "@/lib/events";
 import { prisma } from "@/lib/prisma";
 import type { Board, BoardEntry, StockRow } from "./board.types";
+import { StationGuideSchema } from "./checklists.schema";
 import { canFinish, ChecklistRuleError, entrySnapshot, minutesToOpening, missingTasks, nextEntry, shiftDateString, stockStatus, verifyEntry, type EntryInput, type Operator, type StockStatusValue } from "./rules";
 
 export const HOURS_KEY = "store.hours";
 export const QUIET_PERIOD_KEY = "checklists.quietPeriod";
+export const STATION_GUIDE_KEY = "checklists.stationGuide";
 const STORE_SLUG = "EMBA";
 
 type Tx = Prisma.TransactionClient | PrismaClient;
@@ -53,11 +55,11 @@ export async function getBoard(operator: Operator | null, now: Date = new Date()
   const location = await prisma.location.findUnique({ where: { slug: STORE_SLUG } });
   const timeZone = hours?.timeZone ?? "UTC";
   const date = shiftDateString(now, timeZone);
-  const empty: Board = { loaded: false, shiftDate: date, timeZone, openingTime: hours?.openingTime ?? "", closingTime: hours?.closingTime ?? "", minutesToOpening: 0, sections: [], runs: [], quietPeriod: {}, operator };
+  const empty: Board = { loaded: false, shiftDate: date, timeZone, openingTime: hours?.openingTime ?? "", closingTime: hours?.closingTime ?? "", minutesToOpening: 0, sections: [], runs: [], quietPeriod: {}, stationGuide: {}, operator };
   if (!hours || !location) return empty;
 
   const shiftDate = new Date(`${date}T00:00:00Z`);
-  const [sections, runs, quiet] = await Promise.all([
+  const [sections, runs, quiet, guide] = await Promise.all([
     prisma.checklistSection.findMany({
       where: { isActive: true },
       orderBy: { position: "asc" },
@@ -68,7 +70,10 @@ export async function getBoard(operator: Operator | null, now: Date = new Date()
       include: { entries: true, checkIns: { orderBy: { createdAt: "desc" } } },
     }),
     prisma.operationalSetting.findUnique({ where: { key: QUIET_PERIOD_KEY } }),
+    prisma.operationalSetting.findUnique({ where: { key: STATION_GUIDE_KEY } }),
   ]);
+  // A guide saved by an older loader or edited by hand is skipped rather than breaking the board.
+  const stationGuide = StationGuideSchema.safeParse(guide?.value ?? {});
   const entries = new Map(runs.flatMap((r) => r.entries.map((e) => [e.itemId, e] as const)));
   const checkIns = new Map<string, { name: string; at: string }>();
   for (const c of runs.flatMap((r) => r.checkIns).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())) {
@@ -80,6 +85,7 @@ export async function getBoard(operator: Operator | null, now: Date = new Date()
     loaded: sections.length > 0,
     minutesToOpening: minutesToOpening(hours.openingTime, now, timeZone),
     quietPeriod: (quiet?.value ?? {}) as Record<string, string[]>,
+    stationGuide: stationGuide.success ? stationGuide.data : {},
     runs: runs.map((r) => ({ station: r.station, phase: r.phase, status: r.status, completedByName: r.completedByName, completedAt: r.completedAt?.toISOString() ?? null })),
     sections: sections.map((s) => ({
       id: s.id,

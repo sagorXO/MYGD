@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
+import { StationGuideSchema } from "../src/modules/checklists/checklists.schema";
 import { planItemSync } from "../src/modules/checklists/item-sync";
 
 const DIR = join(process.cwd(), "data", "checklists");
@@ -13,6 +14,7 @@ const DIR = join(process.cwd(), "data", "checklists");
 const ChecklistFile = z.object({
   suggestedSettings: z.object({ openingTime: z.string(), closingTime: z.string(), timeZone: z.string() }),
   quietPeriod: z.record(z.string(), z.array(z.string())),
+  stationGuide: StationGuideSchema,
   checklists: z.array(
     z.object({
       station: z.string(),
@@ -83,6 +85,7 @@ async function main(): Promise<void> {
 
         await tx.operationalSetting.upsert({ where: { key: "store.hours" }, update: {}, create: { key: "store.hours", value: data.suggestedSettings } });
         await tx.operationalSetting.upsert({ where: { key: "checklists.quietPeriod" }, update: { value: data.quietPeriod }, create: { key: "checklists.quietPeriod", value: data.quietPeriod } });
+        await tx.operationalSetting.upsert({ where: { key: "checklists.stationGuide" }, update: { value: data.stationGuide }, create: { key: "checklists.stationGuide", value: data.stationGuide } });
         console.log(`Loaded ${tasks} tasks in ${liveSections.length} sections and ${liveStock.length} stock lines.`);
       },
       { timeout: 120_000 }

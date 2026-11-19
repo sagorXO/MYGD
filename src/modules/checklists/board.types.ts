@@ -55,8 +55,22 @@ export interface Board {
   sections: BoardSection[];
   runs: BoardRun[];
   quietPeriod: Record<string, string[]>;
+  stationGuide: StationGuide;
   operator: Operator | null;
 }
+
+// Oliver's non-task guidance from the PDF, keyed by station id plus "general".
+export type GuideKind = "RESPONSIBILITY" | "IMPORTANT" | "STANDARD" | "RULE" | "FLOW" | "EXAMPLE";
+
+// A type alias (not an interface) so it stays assignable to Prisma's JSON input type.
+export type GuideLine = {
+  kind: GuideKind;
+  title?: string;
+  text: string;
+  sourcePage: number;
+};
+
+export type StationGuide = Record<string, GuideLine[]>;
 
 export interface StockRow {
   id: string;
