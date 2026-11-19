@@ -6,7 +6,7 @@ import { eventBroker } from "@/lib/events";
 import { prisma } from "@/lib/prisma";
 import type { Board, BoardEntry, StockRow } from "./board.types";
 import { StationGuideSchema } from "./checklists.schema";
-import { canFinish, ChecklistRuleError, entrySnapshot, minutesToOpening, missingTasks, nextEntry, shiftDateString, stockStatus, verifyEntry, type EntryInput, type Operator, type StockStatusValue } from "./rules";
+import { canFinish, ChecklistRuleError, entrySnapshot, minutesToOpening, missingTasks, nextEntry, shiftDateString, stockStatus, type EntryInput, type Operator, type StockStatusValue } from "./rules";
 
 export const HOURS_KEY = "store.hours";
 export const QUIET_PERIOD_KEY = "checklists.quietPeriod";
@@ -46,8 +46,6 @@ const toEntry = (e: Prisma.ChecklistEntryGetPayload<object>): BoardEntry => ({
   note: e.note,
   recordedByName: e.recordedByName,
   recordedAt: e.recordedAt?.toISOString() ?? null,
-  verifiedByName: e.verifiedByName,
-  verifiedAt: e.verifiedAt?.toISOString() ?? null,
 });
 
 export async function getBoard(operator: Operator | null, now: Date = new Date()): Promise<Board> {
@@ -97,7 +95,7 @@ export async function getBoard(operator: Operator | null, now: Date = new Date()
       lastCheckIn: checkIns.get(s.id) ?? null,
       items: s.items.map((i) => {
         const e = entries.get(i.id);
-        return { id: i.id, label: i.label, kind: i.kind, isCritical: i.isCritical, haccpTarget: i.haccpTarget, needsReview: i.needsReview, mode: s.mode, entry: e ? toEntry(e) : null };
+        return { id: i.id, label: i.label, kind: i.kind, haccpTarget: i.haccpTarget, needsReview: i.needsReview, mode: s.mode, entry: e ? toEntry(e) : null };
       }),
     })),
   };
@@ -154,19 +152,6 @@ export async function saveEntry(itemId: string, input: EntryInput, operator: Ope
   return entry;
 }
 
-export async function verifyItem(itemId: string, operator: Operator, now: Date = new Date()) {
-  return prisma.$transaction(async (tx) => {
-    const { location, shiftDate } = await requireContext(tx, now);
-    const item = await loadItem(tx, itemId);
-    const run = await openRun(tx, location.id, item.section.station, item.section.phase, shiftDate);
-    const current = await tx.checklistEntry.findUnique({ where: { runId_itemId: { runId: run.id, itemId } } });
-    const next = verifyEntry({ item, current, operator, now });
-    const saved = await tx.checklistEntry.update({ where: { runId_itemId: { runId: run.id, itemId } }, data: next });
-    await audit(tx, location.id, operator, "CHECKLIST_TASK_VERIFIED", { itemId, recordedBy: current?.recordedByName });
-    return toEntry(saved);
-  });
-}
-
 export async function checkIn(sectionId: string, operator: Operator, now: Date = new Date()) {
   return prisma.$transaction(async (tx) => {
     const { location, shiftDate } = await requireContext(tx, now);
@@ -188,7 +173,7 @@ export async function finishRun(station: string, phase: ChecklistPhase, operator
 
     const entries = await tx.checklistEntry.findMany({ where: { runId: run.id } });
     const statusOf = new Map(entries.map((e) => [e.itemId, e.status]));
-    const items = sections.flatMap((s) => s.items.map((i) => ({ id: i.id, label: i.label, mode: s.mode, isCritical: i.isCritical, entry: statusOf.has(i.id) ? { status: statusOf.get(i.id)! } : null })));
+    const items = sections.flatMap((s) => s.items.map((i) => ({ id: i.id, label: i.label, mode: s.mode, entry: statusOf.has(i.id) ? { status: statusOf.get(i.id)! } : null })));
     if (!canFinish(items)) {
       const missing = missingTasks(items).map((i) => i.label);
       throw new ChecklistRuleError(missing.length ? `Still open: ${missing.join("; ")}` : "This phase has nothing to finish.", 409);

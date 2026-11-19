@@ -11,7 +11,7 @@ const { createPinLimiter } = await import("../src/lib/auth/rate-limit.ts");
 const NOW = new Date("2026-11-05T08:52:00Z");
 const ANA = { id: "u1", name: "Ana", role: "STORE_STAFF" };
 const SAM = { id: "u2", name: "Sam", role: "STORE_MANAGER" };
-const task = (o = {}) => ({ kind: "CHECK", isCritical: true, haccpTarget: null, mode: "TICK", ...o });
+const task = (o = {}) => ({ kind: "CHECK", haccpTarget: null, mode: "TICK", ...o });
 const verified = { status: "VERIFIED", recordedById: "u1", verifiedById: "u2", verifiedByName: "Sam", verifiedAt: NOW };
 const next = (current, input, operator) => R.nextEntry({ item: task(), current, input, operator, now: NOW });
 const statusOf = (fn) => {
@@ -24,17 +24,11 @@ const statusOf = (fn) => {
 };
 
 // --- entries ------------------------------------------------------------------
-test("staff cannot undo or overwrite a Shift Leader's sign-off", () => {
-  for (const input of [{ action: "UNDO" }, { action: "DONE" }, { action: "ISSUE" }]) {
-    assert.equal(statusOf(() => next(verified, input, ANA)), 403, input.action);
-  }
-});
-
-test("a Shift Leader can undo a sign-off, and staff can still add a note to it", () => {
-  assert.equal(next(verified, { action: "UNDO" }, SAM).status, "NOT_STARTED");
-  const noted = next(verified, { action: "NOTE", note: "Checked again" }, ANA);
-  assert.equal(noted.status, "VERIFIED");
-  assert.equal(noted.verifiedById, "u2");
+test("a task left signed off by the old flow is not locked: staff can undo, re-tick or flag it", () => {
+  assert.equal(next(verified, { action: "UNDO" }, ANA).status, "NOT_STARTED");
+  assert.equal(next(verified, { action: "DONE" }, ANA).status, "COMPLETED");
+  assert.equal(next(verified, { action: "ISSUE" }, ANA).status, "ISSUE_BLOCKED");
+  assert.equal(next(verified, { action: "NOTE", note: "Checked again" }, ANA).note, "Checked again");
 });
 
 test("clearing an issue only works on a task that has one, so it can't wipe a finished task", () => {
@@ -44,8 +38,8 @@ test("clearing an issue only works on a task that has one, so it can't wipe a fi
 });
 
 test("the change record keeps the previous reading, action and people", () => {
-  const before = { status: "COMPLETED", temperature: 3, correctiveAction: null, note: "n", recordedByName: "Ana", verifiedByName: null };
-  assert.deepEqual(R.entrySnapshot(before), { status: "COMPLETED", temperature: 3, correctiveAction: null, note: "n", recordedByName: "Ana", verifiedByName: null });
+  const before = { status: "COMPLETED", temperature: 3, correctiveAction: null, note: "n", recordedByName: "Ana" };
+  assert.deepEqual(R.entrySnapshot(before), { status: "COMPLETED", temperature: 3, correctiveAction: null, note: "n", recordedByName: "Ana" });
   assert.equal(R.entrySnapshot(null), null);
 });
 

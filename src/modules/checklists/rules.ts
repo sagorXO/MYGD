@@ -1,5 +1,5 @@
 // MY GERMAN DÖNER — Shift checklist rules (pure, used by the server and the tablet).
-import { hasRole, type Role } from "@/lib/auth/roles";
+import type { Role } from "@/lib/auth/roles";
 import { evaluateTemperature, isHaccpTarget } from "@/modules/haccp/temperature";
 import { zonedDateString } from "@/modules/signage/ads/zoned";
 
@@ -36,7 +36,6 @@ export type EntryInput =
 
 export interface RuleItem {
   kind: string;
-  isCritical: boolean;
   haccpTarget: string | null;
   mode: SectionMode;
 }
@@ -91,9 +90,6 @@ export function nextEntry(args: {
   const { item, input, operator, now } = args;
   const base: EntryState = { ...blankEntry(), ...args.current };
   if (item.mode !== "TICK") throw new ChecklistRuleError("This task isn't ticked one by one.");
-  if (base.status === "VERIFIED" && input.action !== "NOTE" && !hasRole(operator.role, "STORE_MANAGER")) {
-    throw new ChecklistRuleError("A Shift Leader has signed this off. Only a Shift Leader can change it.", 403);
-  }
   const stamp = { recordedById: operator.id, recordedByName: operator.name, recordedAt: now };
 
   switch (input.action) {
@@ -111,46 +107,25 @@ export function nextEntry(args: {
   }
 }
 
-type EntrySnapshotFields = Pick<EntryState, "status" | "temperature" | "correctiveAction" | "note" | "recordedByName" | "verifiedByName">;
+type EntrySnapshotFields = Pick<EntryState, "status" | "temperature" | "correctiveAction" | "note" | "recordedByName">;
 
 /** What an entry said before a change, for the audit log. */
 export function entrySnapshot(entry: EntrySnapshotFields | null): EntrySnapshotFields | null {
   if (!entry) return null;
-  const { status, temperature, correctiveAction, note, recordedByName, verifiedByName } = entry;
-  return { status, temperature, correctiveAction, note, recordedByName, verifiedByName };
-}
-
-/** Shift Leader sign-off of a finished critical task. */
-export function verifyEntry(args: {
-  item: Pick<RuleItem, "isCritical">;
-  current: Partial<EntryState> | null;
-  operator: Operator;
-  now: Date;
-}): EntryState {
-  const { item, current, operator, now } = args;
-  if (!hasRole(operator.role, "STORE_MANAGER")) {
-    throw new ChecklistRuleError("Only a Shift Leader can sign off. Enter a Shift Leader's PIN.", 403);
-  }
-  if (!item.isCritical) throw new ChecklistRuleError("This task doesn't need sign-off.");
-  if (current?.status !== "COMPLETED") throw new ChecklistRuleError("Only a finished task can be signed off.", 409);
-  return {
-    ...blankEntry(),
-    ...current,
-    status: "VERIFIED",
-    verifiedById: operator.id,
-    verifiedByName: operator.name,
-    verifiedAt: now,
-  };
+  const { status, temperature, correctiveAction, note, recordedByName } = entry;
+  return { status, temperature, correctiveAction, note, recordedByName };
 }
 
 export interface ProgressItem {
   id: string;
   label: string;
   mode: SectionMode;
-  isCritical: boolean;
   entry: { status: EntryStatus } | null;
 }
 
+// [ADR] Context: Sagar (19 Nov 2026) dropped the Shift Leader sign-off; the leader checks everything in person.
+// Decision: a ticked task is done. VERIFIED stays in the database enum only for rows saved before this change.
+// Consequence: no verify step, no "critical" flag in the app; the verify columns are left unused (no migration).
 export function isDone(status: EntryStatus | undefined | null): boolean {
   return status === "COMPLETED" || status === "VERIFIED";
 }
@@ -170,8 +145,6 @@ export function canFinish(items: ProgressItem[]): boolean {
 export interface Progress {
   total: number;
   done: number;
-  critOpen: number;
-  signoff: number;
   issues: number;
 }
 
@@ -180,15 +153,13 @@ export function progress(items: ProgressItem[]): Progress {
   return {
     total: ticks.length,
     done: ticks.filter((i) => isDone(i.entry?.status)).length,
-    critOpen: ticks.filter((i) => i.isCritical && !isDone(i.entry?.status)).length,
-    signoff: ticks.filter((i) => i.isCritical && i.entry?.status === "COMPLETED").length,
     issues: ticks.filter((i) => i.entry?.status === "ISSUE_BLOCKED").length,
   };
 }
 
 export function stationStatus(p: Progress): EntryStatus {
   if (p.issues > 0) return "ISSUE_BLOCKED";
-  if (p.total > 0 && p.done === p.total) return p.signoff > 0 ? "COMPLETED" : "VERIFIED";
+  if (p.total > 0 && p.done === p.total) return "COMPLETED";
   return p.done > 0 ? "IN_PROGRESS" : "NOT_STARTED";
 }
 

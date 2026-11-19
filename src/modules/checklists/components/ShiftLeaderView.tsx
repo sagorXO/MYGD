@@ -18,7 +18,6 @@ interface ShiftLeaderViewProps {
   onPhase: (phase: Phase) => void;
   onOpenStation: (id: string) => void;
   onOpenStock: () => void;
-  onVerify: (itemId: string) => void;
   onResolve: (itemId: string) => void;
   onOpeningTime: (time: string) => void;
 }
@@ -35,15 +34,15 @@ function Tile({ value, label, tone }: { value: string | number; label: string; t
   );
 }
 
-export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, onOpenStock, onVerify, onResolve, onOpeningTime }: ShiftLeaderViewProps) {
+export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, onOpenStock, onResolve, onOpeningTime }: ShiftLeaderViewProps) {
   const [opening, setOpening] = useState(board.openingTime);
   useEffect(() => setOpening(board.openingTime), [board.openingTime]);
 
   const list = stations(board).filter((s) => sectionsFor(board, s.id, phase).length > 0);
   const rows = list.map((s) => ({ ...s, p: progressFor(board, s.id, phase) }));
-  const sum = (key: "done" | "total" | "critOpen") => rows.reduce((a, r) => a + r.p[key], 0);
+  const sum = (key: "done" | "total") => rows.reduce((a, r) => a + r.p[key], 0);
   const withStation = list.flatMap((s) => itemsFor(board, s.id, phase).map((item) => ({ item, name: s.name })));
-  const signoff = withStation.filter(({ item }) => item.isCritical && item.entry?.status === "COMPLETED");
+  const outOfRange = withStation.filter(({ item }) => item.entry?.isCompliant === false);
   const issues = withStation.filter(({ item }) => item.entry?.status === "ISSUE_BLOCKED");
   const isLeader = board.operator ? hasRole(board.operator.role, "STORE_MANAGER") : false;
 
@@ -53,11 +52,10 @@ export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, o
       <div role="tablist" aria-label="Phase" className="flex flex-wrap gap-1 border-b border-border">
         {PHASES.map((ph) => <button key={ph} role="tab" type="button" aria-selected={ph === phase} onClick={() => onPhase(ph)} className={cn("-mb-px min-h-[52px] border-b-[3px] px-4 font-semibold", ph === phase ? "border-accent text-text" : "border-transparent text-text-secondary")}>{PHASE_LABEL[ph]}</button>)}
       </div>
-      {!isLeader && <Banner tone="info" title="Enter a Shift Leader's PIN to sign off tasks or change the opening time." />}
+      {!isLeader && <Banner tone="info" title="Enter a Shift Leader's PIN to change the opening time." />}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2.5">
         <Tile value={`${sum("done")} / ${sum("total")}`} label="Tasks done" />
-        <Tile value={sum("critOpen")} label="Critical tasks open" tone="text-danger" />
-        <Tile value={signoff.length} label="Waiting for my sign-off" tone="text-info" />
+        <Tile value={outOfRange.length} label="Out-of-range readings" tone="text-danger" />
         <Tile value={issues.length} label="Issues" tone="text-warning" />
       </div>
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -66,13 +64,12 @@ export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, o
             <header className={HEADER}><h2 className="text-base font-semibold">Stations</h2></header>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
-                <thead><tr className="text-left text-xs text-text-secondary"><th className="px-3 py-2 font-semibold">Station</th><th className="px-3 py-2 font-semibold">Progress</th><th className="px-3 py-2 font-semibold">Critical open</th><th className="px-3 py-2 font-semibold">Status</th></tr></thead>
+                <thead><tr className="text-left text-xs text-text-secondary"><th className="px-3 py-2 font-semibold">Station</th><th className="px-3 py-2 font-semibold">Progress</th><th className="px-3 py-2 font-semibold">Status</th></tr></thead>
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.id} className="border-t border-border">
                       <td className="px-3 py-1.5"><button type="button" onClick={() => onOpenStation(r.id)} className="min-h-11 text-left font-semibold">{r.name}</button></td>
                       <td className="min-w-28 px-3 py-1.5"><div className="text-[13px] tabular-nums text-text-secondary">{r.p.done}/{r.p.total}</div><ProgressBar value={r.p.total ? (r.p.done / r.p.total) * 100 : 0} label={`${r.name} progress`} tone="success" /></td>
-                      <td className="px-3 py-1.5 tabular-nums">{r.p.critOpen}</td>
                       <td className="px-3 py-1.5"><StationChip status={stationStatus(r.p)} /></td>
                     </tr>
                   ))}
@@ -104,9 +101,9 @@ export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, o
         </div>
         <div className="flex min-w-0 flex-col gap-3">
           <section className={CARD}>
-            <header className={HEADER}><h2 className="text-base font-semibold">Needs my sign-off</h2><span className="ml-auto text-sm tabular-nums text-text-secondary">{signoff.length}</span></header>
-            {signoff.length === 0 && <p className="px-3.5 py-4 text-sm text-text-secondary">Nothing is waiting for you.</p>}
-            {signoff.map(({ item, name }) => (
+            <header className={HEADER}><h2 className="text-base font-semibold">Out-of-range readings</h2><span className="ml-auto text-sm tabular-nums text-text-secondary">{outOfRange.length}</span></header>
+            {outOfRange.length === 0 && <p className="px-3.5 py-4 text-sm text-text-secondary">All readings are in range.</p>}
+            {outOfRange.map(({ item, name }) => (
               <div key={item.id} className="flex flex-wrap items-center gap-2 border-t border-border px-3.5 py-2.5 first:border-t-0">
                 <div className="min-w-0 flex-[1_1_180px]"><p className="font-medium">{item.label}</p><small className="text-[13px] tabular-nums text-text-secondary">{name} · {item.entry?.recordedByName} {clock(item.entry?.recordedAt, board.timeZone)}{item.entry?.temperature != null ? ` · ${item.entry.temperature} °C` : ""}</small>
                   {item.entry?.isCompliant === false && (
@@ -116,7 +113,6 @@ export function ShiftLeaderView({ board, phase, stock, onPhase, onOpenStation, o
                     </div>
                   )}
                 </div>
-                <Button variant="primary" size="lg" onClick={() => onVerify(item.id)}>Verify</Button>
               </div>
             ))}
           </section>

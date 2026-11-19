@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Check, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Check } from "lucide-react";
 import { Badge, Button, ProgressBar } from "@/ui";
 import { cn } from "@/lib/cn";
 import { canFinish, isDone, type EntryInput } from "../rules";
@@ -66,7 +66,7 @@ export function ChecklistView({ board, station, phase, onStation, onPhase, onAct
           const x = progressFor(board, s.id, phase);
           return (
             <button key={s.id} type="button" disabled={!has} aria-current={s.id === station} onClick={() => onStation(s.id)} className={cn("flex min-h-[60px] min-w-[150px] shrink-0 items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-[15px] font-semibold leading-5 disabled:opacity-40 md:min-w-0", s.id === station ? "border-accent bg-accent-subtle" : "border-transparent")}>
-              <span>{s.name}{x.critOpen > 0 && <small className="block text-xs font-medium text-text-secondary">{x.critOpen} critical open</small>}</span>
+              <span>{s.name}</span>
               <span className="whitespace-nowrap text-sm text-text-secondary tabular-nums">{has && x.total > 0 ? (x.done === x.total ? <Check size={18} className="text-success" aria-label="All done" /> : `${x.done}/${x.total}`) : "–"}</span>
             </button>
           );
@@ -85,7 +85,6 @@ export function ChecklistView({ board, station, phase, onStation, onPhase, onAct
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary">
               <b className="text-text tabular-nums">{p.done} of {p.total} done</b>
-              {p.critOpen > 0 && <Badge tone="critical" icon={ShieldCheck}>{p.critOpen} critical open</Badge>}
               {p.issues > 0 && <Badge tone="critical" icon={AlertTriangle}>{p.issues} issue{p.issues > 1 ? "s" : ""}</Badge>}
             </div>
             <ProgressBar value={(p.done / p.total) * 100} label={`${p.done} of ${p.total} tasks done`} tone="success" />
@@ -128,7 +127,7 @@ export function ChecklistView({ board, station, phase, onStation, onPhase, onAct
         {p.total > 0 && (
           <div className="sticky bottom-0 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-border bg-surface px-3.5 py-2.5">
             <span className="flex-[1_1_200px] text-sm text-text-secondary">
-              {finished ? `Finished by ${run?.completedByName} at ${clock(run?.completedAt, board.timeZone)}` : open > 0 ? `${open} task${open > 1 ? "s" : ""} still open${p.critOpen ? `, ${p.critOpen} critical` : ""}` : "All tasks done"}
+              {finished ? `Finished by ${run?.completedByName} at ${clock(run?.completedAt, board.timeZone)}` : open > 0 ? `${open} task${open > 1 ? "s" : ""} still open` : "All tasks done"}
             </span>
             <Button variant="primary" size="xl" disabled={finished || !canFinish(items)} onClick={onFinish}>Finish {PHASE_LABEL[phase]}</Button>
           </div>

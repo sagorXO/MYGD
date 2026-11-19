@@ -144,7 +144,6 @@ export function ChecklistApp() {
           onPhase={setPhase}
           onOpenStation={(id) => { chooseStation(id); setView("list"); }}
           onOpenStock={() => setView("stock")}
-          onVerify={(id) => void perform(() => api.verifyItem(id))}
           onResolve={(id) => act(id, { action: "CLEAR_ISSUE" })}
           onOpeningTime={(t) => void perform(() => api.setOpeningTime(t))}
         />

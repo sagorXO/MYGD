@@ -8,7 +8,7 @@ import type { Role } from "./roles";
 
 export const OPERATOR_COOKIE = "mygd_operator";
 // [ADR] Context: staff walk away from a shared tablet, so a long-lived PIN records the next person's work
-// under the wrong name, including Shift Leader sign-offs.
+// under the wrong name, including Shift Leader changes.
 // Decision: a PIN lapses after a short idle time. Each action restarts it (see the middleware).
 // Consequence: someone returning after a break enters their PIN again.
 export const OPERATOR_MAX_AGE_SECONDS = 5 * 60;

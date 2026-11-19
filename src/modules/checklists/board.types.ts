@@ -11,15 +11,12 @@ export interface BoardEntry {
   note: string | null;
   recordedByName: string | null;
   recordedAt: string | null;
-  verifiedByName: string | null;
-  verifiedAt: string | null;
 }
 
 export interface BoardItem {
   id: string;
   label: string;
   kind: "CHECK" | "TEMPERATURE" | "COUNT";
-  isCritical: boolean;
   haccpTarget: string | null;
   needsReview: string | null;
   mode: SectionMode;

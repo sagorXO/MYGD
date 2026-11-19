@@ -24,7 +24,6 @@ export const fetchBoard = () => call<{ board: Board }>("/api/checklists/board");
 export const fetchStock = () => call<{ stock: StockRow[] }>("/api/checklists/stock");
 export const enterPin = (pin: string) => call<{ operator: Operator }>("/api/checklists/operator", "POST", { pin });
 export const saveEntry = (itemId: string, input: EntryInput) => call(`/api/checklists/items/${itemId}/entry`, "PUT", input);
-export const verifyItem = (itemId: string) => call(`/api/checklists/items/${itemId}/verify`, "POST");
 export const checkIn = (sectionId: string) => call(`/api/checklists/sections/${sectionId}/check-in`, "POST");
 export const finishRun = (station: string, phase: Phase) => call("/api/checklists/runs/finish", "POST", { station, phase });
 export const setOpeningTime = (openingTime: string) => call("/api/checklists/settings/opening-time", "PUT", { openingTime });
