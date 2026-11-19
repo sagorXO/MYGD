@@ -23,6 +23,12 @@ artifacts
 deploy
 .claude
 Menu
+AGENTS.md
+CLAUDE.md
+DESIGN.md
+README.md
+tsconfig.test.json
+.eslintrc.json
 
 # Legacy store data (GDPR-sensitive) — never ship
 import

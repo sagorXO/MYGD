@@ -11,8 +11,11 @@ import { z } from "zod";
 import { ROLES, isRole, type Role } from "./roles";
 
 export const SESSION_COOKIE = "mygd_session";
-// TODO(Q-SEC-3): session length per device type is an open question; 12 h covers one trading day.
-export const SESSION_TTL_SECONDS = 12 * 60 * 60;
+// [ADR] Context: the kitchen tablet signs in before opening prep and must last past the 22:00 closing checklist;
+// 12 hours would sign it out mid-closing.
+// Decision: 16 hours. Each action on the tablet still needs a person's PIN, which lapses after 5 idle minutes.
+// Consequence: a tablet signed in at 08:00 stays signed in until midnight.
+export const SESSION_TTL_SECONDS = 16 * 60 * 60;
 
 const TOKEN_VERSION = "v1";
 const MIN_SECRET_LENGTH = 32;
